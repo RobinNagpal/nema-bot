@@ -77,9 +77,9 @@ export async function indexAllData() {
         if (content.type === ContentType.ARTICLE) {
           docs = await loadWebPage(content as WebArticleContent);
         } else if (content.type == ContentType.GITHUB) {
-          docs = await loadGithubData(content as GithubContent);
+          // docs = await loadGithubData(content as GithubContent);
         } else {
-          docs = await loadGitbookData(content as GitbookContent);
+          // docs = await loadGitbookData(content as GitbookContent);
         }
         allDocs = allDocs.concat(docs);
       } catch (e) {

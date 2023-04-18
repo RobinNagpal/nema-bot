@@ -12,10 +12,11 @@ const getMatchesFromEmbeddings = async (embeddings: number[], pinecone: Pinecone
   }
 
   const index = pinecone!.Index(process.env.PINECONE_INDEX_NAME);
-  const queryRequest = {
+  const queryRequest: QueryRequest = {
     vector: embeddings,
     topK,
-    includeMetadata: true
+    includeMetadata: true,
+    namespace: uniswapV3ProjectContents.namespace
   }
   try {
     const queryResult = await index.query({

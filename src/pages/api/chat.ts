@@ -56,9 +56,7 @@ const handleRequest = async ({ prompt, userId }: { prompt: string, userId: strin
     const inquiry = inquiryChainResult.text
 
     // Embed the user's intent and query the Pinecone index
-    const embedder = new OpenAIEmbeddings({
-      modelName: "text-embedding-ada-002"
-    });
+    const embedder = new OpenAIEmbeddings();
     channel.publish({
       data: {
         event: "status",
@@ -74,8 +72,10 @@ const handleRequest = async ({ prompt, userId }: { prompt: string, userId: strin
       }
     })
 
+    console.log('embeddings', embeddings.length)
     const matches = await getMatchesFromEmbeddings(embeddings, pinecone!, 3);
 
+    console.log('matches', matches.length)
     channel.publish({
       data: {
         event: "status",
