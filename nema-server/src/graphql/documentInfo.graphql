@@ -1,0 +1,20 @@
+type DocumentInfo {
+  id: Int!
+  name: String!
+  link: String!
+  status: String!
+}
+
+
+
+extend type Mutation {
+  createDocumentInfo(name: String!, link: String!, status: String!): DocumentInfo!
+  updateDocumentInfo(id: Int!, name: String, link: String, status: String): DocumentInfo
+  deleteDocumentInfo(id: Int!): DocumentInfo
+}
+
+extend type Query {
+  documentInfos: [DocumentInfo!]!
+  documentInfo(id: Int!): DocumentInfo
+}
+
