@@ -60,11 +60,6 @@ export type MutationUpdateDocumentInfoArgs = {
   status?: InputMaybe<Scalars['String']>;
 };
 
-export type User = {
-  __typename?: 'User';
-  id: Scalars['String'];
-};
-
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -142,7 +137,6 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -153,7 +147,6 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Mutation: {};
   Boolean: Scalars['Boolean'];
-  User: User;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -175,15 +168,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateDocumentInfo?: Resolver<Maybe<ResolversTypes['DocumentInfo']>, ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id'>>;
 };
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   DocumentInfo?: DocumentInfoResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  User?: UserResolvers<ContextType>;
 };
 

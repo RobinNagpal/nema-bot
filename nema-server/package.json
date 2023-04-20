@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/server.ts",
-    "graphql:generate": "graphql-codegen --config codegen.yml"
+    "graphql:generate": "graphql-codegen --config codegen.yml",
+    "dev": "npm run graphql:generate && ts-node src/server.ts"
   },
   "keywords": [],
   "author": "robin",

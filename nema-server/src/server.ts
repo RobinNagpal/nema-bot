@@ -16,9 +16,6 @@ const typeDefs = mergeTypeDefs(typesArray);
 
 const rootValue = { Mutation, Query, ...resolvers };
 
-
-
-
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express();

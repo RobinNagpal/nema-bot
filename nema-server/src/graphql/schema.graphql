@@ -1,8 +1,3 @@
 type Query
 
 type Mutation
-
-
-type User {
-  id: String!
-}
