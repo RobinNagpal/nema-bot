@@ -4,4 +4,4 @@ import getDocumentInfos from '@/documentInfo/queries/getDocumentInfos';
 export default {
   documentInfos: getDocumentInfos,
   documentInfo: getDocumentInfo,
-}
+};

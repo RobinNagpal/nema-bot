@@ -9,7 +9,6 @@ import Mutation from './mutations';
 import Query from './queries';
 import resolvers from './resolvers';
 
-
 const typesArray = loadFilesSync(path.join(__dirname, './graphql'), { extensions: ['graphql'] });
 
 const typeDefs = mergeTypeDefs(typesArray);
@@ -25,7 +24,5 @@ const server = new ApolloServer({ schema, rootValue });
   await server.start();
   server.applyMiddleware({ app });
 
-  app.listen({ port: 4000 }, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-  );
+  app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
 })();
