@@ -1,4 +1,4 @@
-# Pinecone Chatbot Demo
+# Nema ChatBot
 
 To run this demo, you need to have:
 
@@ -13,21 +13,54 @@ To run this demo, you need to have:
 1. Clone this repository
 
 ```bash
-git clone https://github.com/pinecone-io/chatbot-demo.git
+git clone https://github.com/RobinNagpal/nema-bot.git
 ```
 
-2. Install dependencies
+2. Create your Pinecone, OpenAI, Ably, FingerprintJS and Cockroach accounts and get your API keys
+
+3. Create your Pinecone index
+
+### Nema-Server
+
+1. Install dependencies
 
 ```bash
-cd chatbot-demo
+cd nema-server
 npm install
 ```
 
-3. Create your Pinecone, OpenAI, Ably, FingerprintJS and Cockroach accounts and get your API keys
+2. Create a `.env` file in nema-server and add your database url:
 
-4. Create your Pinecone index
+```
+DATABASE_URL=...
+```
 
-5. Create a `.env` file in the root directory of the project and add your API keys:
+3. Prisma Migration
+
+```bash
+npx prisma migrate dev
+npx prisma studio
+```
+
+4. Graphql Server
+
+Open a new terminal and run the below command:
+
+```bash
+cd nema-server
+npm run dev
+```
+
+### Nema-Client
+
+1. Install dependencies
+
+```bash
+cd nema-client
+npm install
+```
+
+2. Create a `.env` file in nema-client and add your API keys:
 
 ```
 OPENAI_API_KEY=...
