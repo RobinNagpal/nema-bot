@@ -6,7 +6,10 @@ export default function updateDocumentInfo(_: any, { id, ...args }: MutationUpda
     where: { id: id },
     data: {
       name: args.name || undefined,
-      link: args.link || undefined,
+      url: args.url || undefined,
+      branch: args.branch || undefined,
+      type: args.type || undefined,
+      xpath: args.xpath || undefined,
     },
   });
 }

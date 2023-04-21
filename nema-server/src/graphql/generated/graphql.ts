@@ -17,53 +17,64 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   documentInfo?: Maybe<DocumentInfo>;
-  documentInfos: Array<DocumentInfo>;
+  documentInfos?: Maybe<Array<Maybe<DocumentInfo>>>;
 };
 
+
 export type QueryDocumentInfoArgs = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
 };
 
 export type DocumentInfo = {
   __typename?: 'DocumentInfo';
-  id: Scalars['Int'];
-  link: Scalars['String'];
+  branch?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  status: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  xpath?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createDocumentInfo: DocumentInfo;
+  createDocumentInfo?: Maybe<DocumentInfo>;
   deleteDocumentInfo?: Maybe<DocumentInfo>;
   updateDocumentInfo?: Maybe<DocumentInfo>;
 };
 
+
 export type MutationCreateDocumentInfoArgs = {
-  link: Scalars['String'];
+  branch?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
-  status: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  xpath?: InputMaybe<Scalars['String']>;
 };
+
 
 export type MutationDeleteDocumentInfoArgs = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
 };
+
 
 export type MutationUpdateDocumentInfoArgs = {
-  id: Scalars['Int'];
-  link?: InputMaybe<Scalars['String']>;
+  branch?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
   name?: InputMaybe<Scalars['String']>;
-  status?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<Scalars['String']>;
+  url?: InputMaybe<Scalars['String']>;
+  xpath?: InputMaybe<Scalars['String']>;
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -122,12 +133,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  DocumentInfo: ResolverTypeWrapper<DocumentInfo>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  DocumentInfo: ResolverTypeWrapper<DocumentInfo>;
   Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -135,33 +147,29 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Query: {};
-  Int: Scalars['Int'];
-  DocumentInfo: DocumentInfo;
   String: Scalars['String'];
+  DocumentInfo: DocumentInfo;
   Mutation: {};
   Boolean: Scalars['Boolean'];
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   documentInfo?: Resolver<Maybe<ResolversTypes['DocumentInfo']>, ParentType, ContextType, RequireFields<QueryDocumentInfoArgs, 'id'>>;
-  documentInfos?: Resolver<Array<ResolversTypes['DocumentInfo']>, ParentType, ContextType>;
+  documentInfos?: Resolver<Maybe<Array<Maybe<ResolversTypes['DocumentInfo']>>>, ParentType, ContextType>;
 };
 
 export type DocumentInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['DocumentInfo'] = ResolversParentTypes['DocumentInfo']> = {
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  link?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  branch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  xpath?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createDocumentInfo?: Resolver<
-    ResolversTypes['DocumentInfo'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateDocumentInfoArgs, 'link' | 'name' | 'status'>
-  >;
+  createDocumentInfo?: Resolver<Maybe<ResolversTypes['DocumentInfo']>, ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'name' | 'type' | 'url'>>;
   deleteDocumentInfo?: Resolver<Maybe<ResolversTypes['DocumentInfo']>, ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id'>>;
   updateDocumentInfo?: Resolver<Maybe<ResolversTypes['DocumentInfo']>, ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id'>>;
 };
@@ -171,3 +179,4 @@ export type Resolvers<ContextType = any> = {
   DocumentInfo?: DocumentInfoResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
 };
+

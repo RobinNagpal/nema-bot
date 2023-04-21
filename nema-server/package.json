@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "graphql:generate": "graphql-codegen --config codegen.yml",
+    "prisma:generate": "prisma generate",
     "dev": "npm run graphql:generate && ts-node src/server.ts",
     "lint": "eslint . --ext .ts,.js --fix",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"

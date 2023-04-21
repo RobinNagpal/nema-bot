@@ -1,20 +1,32 @@
 type DocumentInfo {
-  id: Int!
+  id: String
   name: String!
-  link: String!
-  status: String!
+  xpath: String
+  url: String!
+  type: String!
+  branch: String
 }
 
-
-
 extend type Mutation {
-  createDocumentInfo(name: String!, link: String!, status: String!): DocumentInfo!
-  updateDocumentInfo(id: Int!, name: String, link: String, status: String): DocumentInfo
-  deleteDocumentInfo(id: Int!): DocumentInfo
+  createDocumentInfo(
+    name: String!
+    url: String!
+    type: String!
+    xpath: String
+    branch: String
+  ): DocumentInfo
+  updateDocumentInfo(
+    id: String!
+    name: String
+    url: String
+    type: String
+    xpath: String
+    branch: String
+  ): DocumentInfo
+  deleteDocumentInfo(id: String!): DocumentInfo
 }
 
 extend type Query {
-  documentInfos: [DocumentInfo!]!
-  documentInfo(id: Int!): DocumentInfo
+  documentInfos: [DocumentInfo]
+  documentInfo(id: String!): DocumentInfo
 }
-
