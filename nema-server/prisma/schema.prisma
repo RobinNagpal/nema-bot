@@ -13,8 +13,8 @@ datasource db {
 model DocumentInfo {
     id     String @id @default(uuid())
     name   String
-    xpath  String
+    xpath  String?
     url    String
     type   String
-    branch String
+    branch String?
 }
