@@ -14,7 +14,7 @@ extend type Mutation {
     type: String!
     xpath: String
     branch: String
-  ): DocumentInfo
+  ): DocumentInfo!
   updateDocumentInfo(
     id: String!
     name: String
@@ -22,11 +22,11 @@ extend type Mutation {
     type: String
     xpath: String
     branch: String
-  ): DocumentInfo
-  deleteDocumentInfo(id: String!): DocumentInfo
+  ): DocumentInfo!
+  deleteDocumentInfo(id: String!): DocumentInfo!
 }
 
 extend type Query {
-  documentInfos: [DocumentInfo]
-  documentInfo(id: String!): DocumentInfo
+  documentInfos: [DocumentInfo!]
+  documentInfo(id: String!): DocumentInfo!
 }

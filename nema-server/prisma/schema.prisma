@@ -10,6 +10,18 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model Conversation {
+    userId    String   @id @map("user_id")
+    entry     String?  @map("entry")
+    speaker   Speaker  @map("speaker")
+    createdAt DateTime @default(now()) @map("created_at")
+}
+
+enum Speaker {
+    USER
+    ASSISTANT
+}
+
 model DocumentInfo {
     id     String @id @default(uuid())
     name   String
