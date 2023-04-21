@@ -6,5 +6,4 @@ export default {
   createDocumentInfo,
   updateDocumentInfo,
   deleteDocumentInfo,
-
-}
+};
