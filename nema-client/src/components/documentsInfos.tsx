@@ -1,23 +1,33 @@
-import { useQuery } from '@apollo/client';
-import { DOCUMENT_INFOS } from '../lib/graphql/queries';
+import { useState } from 'react';
 import Table from './documentsTable';
+import Dropdown from './dropdown';
+import CreateDocumentInfo from './createDocumentInfo';
 
 const Docs = () => {
-  const { loading, error, data } = useQuery(DOCUMENT_INFOS);
-  if (loading) {
-    console.log('loading');
-  }
-  if (error) {
-    console.log('error');
-  }
-  console.log(data);
+  const [isDropdown, setIsDropdown] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateClick = () => {
+    setIsCreating(true);
+  };
+
+  const handleCreateCancel = () => {
+    setIsCreating(false);
+  };
+
+  const handleClick = () => {
+    setIsDropdown((prevValue) => !prevValue);
+  };
 
   return (
-    <div>
-      <main>
-        <h1 className="text-4xl flex justify-center m-5">Documents List</h1>
-        <Table />
-      </main>
+    <div className="border-2 border-black m-20 rounded-xl">
+      <div className="flex flex-col items-center">
+        <h1 className="text-4xl mt-5 mx-5">Documents List</h1>
+        <div className="mr-5 static ml-auto transform translate-y-[-70%]">
+          <Dropdown options={['Create']} handleCreateClick={handleCreateClick} />
+        </div>
+      </div>
+      {isCreating ? <CreateDocumentInfo handleCreateCancel={handleCreateCancel} /> : <Table />}
     </div>
   );
 };

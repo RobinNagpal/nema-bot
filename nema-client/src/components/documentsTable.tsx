@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { DOCUMENT_INFOS, DELETE_DOCUMENT_INFO } from '../lib/graphql/queries';
-import CreateDocumentInfo from './createDocumentInfo';
 import UpdateDocumentInfo from './updateDocumentInfo';
+import Dropdown from './dropdown';
 
 const Table = () => {
   const { loading, error, data } = useQuery(DOCUMENT_INFOS);
@@ -11,27 +11,24 @@ const Table = () => {
   if (error) return <p>Error...</p>;
 
   return (
-    <>
-      <table className="table-auto w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th className="py-3 px-4 text-center">ID</th>
-            <th className="py-3 px-4 text-center">Name</th>
-            <th className="py-3 px-4 text-center">XPath</th>
-            <th className="py-3 px-4 text-center">URL</th>
-            <th className="py-3 px-4 text-center">Type</th>
-            <th className="py-3 px-4 text-center">Branch</th>
-            <th className="py-3 px-4 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-sm font-light">
-          {data.documentInfos.map((documentInfo) => (
-            <TableRow key={documentInfo.id} documentInfo={documentInfo} />
-          ))}
-        </tbody>
-      </table>
-      <CreateDocumentInfo />
-    </>
+    <table className="table-auto w-full border-collapse">
+      <thead>
+        <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+          <th className="py-3 px-4 text-center">ID</th>
+          <th className="py-3 px-4 text-center">Name</th>
+          <th className="py-3 px-4 text-center">XPath</th>
+          <th className="py-3 px-4 text-center">URL</th>
+          <th className="py-3 px-4 text-center">Type</th>
+          <th className="py-3 px-4 text-center">Branch</th>
+          <th className="py-3 px-4 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody className="text-gray-600 text-sm font-light">
+        {data.documentInfos.map((documentInfo) => (
+          <TableRow key={documentInfo.id} documentInfo={documentInfo} />
+        ))}
+      </tbody>
+    </table>
   );
 };
 
@@ -72,18 +69,10 @@ const TableRow = ({ documentInfo }) => {
         {isEditing ? (
           <>
             <UpdateDocumentInfo documentInfo={documentInfo} handleCancelClick={handleCancelClick} />
-            {/* <button onClick={handleCancelClick}>Cancel</button> */}
           </>
         ) : (
           <>
-            <div className="flex justify-center">
-              <button onClick={handleEditClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-4">
-                Edit
-              </button>
-              <button onClick={deleteDocumentInfo} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mx-4">
-                Delete
-              </button>
-            </div>
+            <Dropdown options={['Edit', 'Delete']} handleEdit={handleEditClick} handleDelete={deleteDocumentInfo} />
           </>
         )}
       </td>
