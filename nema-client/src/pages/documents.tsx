@@ -1,4 +1,4 @@
-import DocumentsInfoTable from 'components/DocumentsInfoTable';
+import DocumentsInfoTable from 'components/documentInfo/DocumentsInfoTable';
 
 export default function Home() {
   return <DocumentsInfoTable />;

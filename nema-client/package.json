@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_INSEPCT=true & next dev",
+    "dev": "graphql-codegen --config codegen.yml && NODE_INSEPCT=true & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "index": "ts-node --esm ./src/indexData.ts",
     "build:css": "tailwindcss build ./src/styles/styles.css -o ./public/styles.css",
-    "download-schema": "graphql-codegen --config introspection.yml",
-    "generate-types": "graphql-codegen --config codegen.yml"
+    "graphql:download": "graphql-codegen --config introspection.yml",
+    "graphql:generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@ably-labs/react-hooks": "^2.1.0",

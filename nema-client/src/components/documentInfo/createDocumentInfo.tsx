@@ -1,9 +1,11 @@
+import { Input } from 'components/core/Input';
 import { DocumentInfosDocument, useCreateDocumentInfoMutation } from 'graphql/generated/generated-types';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 
 export interface CreateDocumentInfoProps {
   handleCreateCancel: () => void;
 }
+
 const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => {
   const [formData, setFormData] = useState({
     id: Date.now().toString(),
@@ -71,18 +73,7 @@ const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => 
                       required
                     />
                   </div>
-                  <div className="mb-4">
-                    <label htmlFor="type">Type:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="type"
-                      name="type"
-                      value={formData.type}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+                  <Input modelValue={formData.type} onChange={handleChange} label={'Type'} />
                   <div className="mb-4">
                     <label htmlFor="xpath">XPath:</label>
                     <input

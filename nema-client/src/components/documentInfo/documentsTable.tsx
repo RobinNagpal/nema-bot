@@ -1,7 +1,7 @@
 import { DocumentInfo, DocumentInfoDocument, useDeleteDocumentInfoMutation, useDocumentInfosQuery } from 'graphql/generated/generated-types';
 import React, { useState } from 'react';
-import Dropdown from './dropdown';
-import UpdateDocumentInfo from './UpdateDocumentInfo';
+import Dropdown from 'components/core/dropdown';
+import UpdateDocumentInfo from 'components/documentInfo/UpdateDocumentInfo';
 
 const Table = () => {
   const { loading, error, data } = useDocumentInfosQuery();
