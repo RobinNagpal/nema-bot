@@ -1,5 +1,6 @@
 import { DocumentInfo, DocumentInfoDocument, useUpdateDocumentInfoMutation } from 'graphql/generated/generated-types';
 import React, { FormEvent, useState } from 'react';
+import { Input } from 'components/core/Input';
 
 export interface UpdateDocumentInfoProps {
   documentInfo: DocumentInfo;
@@ -38,64 +39,17 @@ const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }: UpdateDocumentI
               <div className="sm:flex sm:items-start">
                 <div className="w-full">
                   <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2" htmlFor="name">
-                      Name
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
+                    <Input modelValue={name} onChange={(e) => setName(e.target.value)} label={'Name'} required={true} />
                   </div>
                   <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2" htmlFor="url">
-                      URL
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="url"
-                      type="text"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                    />
+                    <Input modelValue={url} onChange={(e) => setName(e.target.value)} label={'Url'} required={true} />
+                  </div>
+                  <Input modelValue={type} onChange={(e) => setName(e.target.value)} label={'Type'} required={true} />
+                  <div className="mb-4">
+                    <Input modelValue={xpath || ''} onChange={(e) => setName(e.target.value)} label={'xPath'} />
                   </div>
                   <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2" htmlFor="type">
-                      Type
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="type"
-                      type="text"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2" htmlFor="xpath">
-                      XPath
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="xpath"
-                      type="text"
-                      value={xpath || ''}
-                      onChange={(e) => setXpath(e.target.value)}
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 font-bold mb-2" htmlFor="branch">
-                      Branch
-                    </label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="branch"
-                      type="text"
-                      value={branch || ''}
-                      onChange={(e) => setBranch(e.target.value)}
-                    />
+                    <Input modelValue={branch || ''} onChange={(e) => setName(e.target.value)} label={'Branch'} />
                   </div>
                 </div>
               </div>

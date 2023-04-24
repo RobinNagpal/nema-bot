@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Table from 'components/documentInfo/documentsTable';
-import Dropdown from 'components/core/dropdown';
-import CreateDocumentInfo from 'components/documentInfo/createDocumentInfo';
+import Table from 'components/documentInfo/DocumentsTable';
+import Dropdown from 'components/core/Dropdown';
+import CreateDocumentInfo from 'components/documentInfo/CreateDocumentInfo';
 
 const Docs = () => {
   const [isDropdown, setIsDropdown] = useState(false);
@@ -24,7 +24,7 @@ const Docs = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-4xl mt-5 mx-5">Documents List</h1>
         <div className="mr-5 static ml-auto transform translate-y-[-70%]">
-          <Dropdown options={['Create']} handleCreateClick={handleCreateClick} />
+          <Dropdown options={['Create']} handleCreateClick={handleCreateClick} handleEdit={function (): void {}} handleDelete={function (): void {}} />
         </div>
       </div>
       {isCreating ? <CreateDocumentInfo handleCreateCancel={handleCreateCancel} /> : <Table />}

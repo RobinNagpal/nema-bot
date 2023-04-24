@@ -50,51 +50,17 @@ const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => 
               <div className="sm:flex sm:items-start">
                 <div className="w-full">
                   <div className="mb-4">
-                    <label htmlFor="name">Name:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input modelValue={formData.name} onChange={handleChange} label={'Name'} required={true} />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="url">URL:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="url"
-                      name="url"
-                      value={formData.url}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input modelValue={formData.url} onChange={handleChange} label={'Url'} required={true} />
                   </div>
-                  <Input modelValue={formData.type} onChange={handleChange} label={'Type'} />
+                  <Input modelValue={formData.type} onChange={handleChange} label={'Type'} required={true} />
                   <div className="mb-4">
-                    <label htmlFor="xpath">XPath:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="xpath"
-                      name="xpath"
-                      value={formData.xpath}
-                      onChange={handleChange}
-                    />
+                    <Input modelValue={formData.xpath} onChange={handleChange} label={'xPath'} />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="branch">Branch:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="branch"
-                      name="branch"
-                      value={formData.branch}
-                      onChange={handleChange}
-                    />
+                    <Input modelValue={formData.branch} onChange={handleChange} label={'Branch'} />
                   </div>
                 </div>
               </div>
