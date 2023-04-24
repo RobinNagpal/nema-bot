@@ -1,13 +1,13 @@
+import { uniswapV3ProjectContents } from '@/contents/projects';
+import { ContentType, GitbookContent, GithubContent, PageMetadata, WebArticleContent } from '@/contents/projectsContents';
+import { loadGitbookData } from '@/loaders/gitbookLoader';
+import { loadGithubData } from '@/loaders/githubLoader';
+import { loadWebPage } from '@/loaders/webpageLoader';
 import { PineconeClient, Vector } from '@pinecone-database/pinecone';
 import Bottleneck from 'bottleneck';
 import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { uniswapV3ProjectContents } from 'pages/api/contents/projects';
-import { ContentType, GitbookContent, GithubContent, PageMetadata, WebArticleContent } from 'pages/api/contents/projectsContents';
-import { loadGitbookData } from 'pages/api/loaders/gitbookLoader';
-import { loadGithubData } from 'pages/api/loaders/githubLoader';
-import { loadWebPage } from 'pages/api/loaders/webpageLoader';
+
 import { uuid } from 'uuidv4';
 
 const limiter = new Bottleneck({
@@ -77,9 +77,9 @@ export async function indexAllData() {
         if (content.type === ContentType.ARTICLE) {
           docs = await loadWebPage(content as WebArticleContent);
         } else if (content.type == ContentType.GITHUB) {
-          // docs = await loadGithubData(content as GithubContent);
+          docs = await loadGithubData(content as GithubContent);
         } else {
-          // docs = await loadGitbookData(content as GitbookContent);
+          docs = await loadGitbookData(content as GitbookContent);
         }
         allDocs = allDocs.concat(docs);
       } catch (e) {
@@ -115,7 +115,7 @@ export async function indexAllData() {
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+export default async function handler(req: any, res: any) {
   if (!process.env.PINECONE_INDEX_NAME) {
     res.status(500).json({ message: 'PINECONE_INDEX_NAME not set' });
     return;

@@ -1,5 +1,5 @@
-import { Content } from 'pages/api/contents/projectsContents';
-import { uniswapV3Contents } from 'pages/api/contents/uniswapV3Contents';
+import { Content } from '@/contents/projectsContents';
+import { uniswapV3Contents } from '@/contents/uniswapV3Contents';
 
 export interface Project {
   id: string;
