@@ -1,0 +1,33 @@
+mutation CreateDocumentInfo($id: String!, $name: String!, $url: String!, $type: String!, $xpath: String, $branch: String) {
+  createDocumentInfo(id: $id, name: $name, url: $url, type: $type, xpath: $xpath, branch: $branch) {
+    id
+    name
+    xpath
+    url
+    type
+    branch
+  }
+}
+
+
+mutation UpdateDocumentInfo($id: String!, $name: String, $url: String, $type: String, $xpath: String, $branch: String) {
+  updateDocumentInfo(id: $id, name: $name, url: $url, type: $type, xpath: $xpath, branch: $branch) {
+    id
+    name
+    xpath
+    url
+    type
+    branch
+  }
+}
+
+mutation DeleteDocumentInfo($id: String!) {
+  deleteDocumentInfo(id: $id) {
+    id
+    name
+    xpath
+    url
+    type
+    branch
+  }
+}

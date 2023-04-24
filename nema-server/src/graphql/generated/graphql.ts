@@ -17,7 +17,7 @@ export type Scalars = {
 export type DocumentInfo = {
   __typename?: 'DocumentInfo';
   branch?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
   type: Scalars['String'];
   url: Scalars['String'];
@@ -34,6 +34,7 @@ export type Mutation = {
 
 export type MutationCreateDocumentInfoArgs = {
   branch?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
   type: Scalars['String'];
   url: Scalars['String'];
@@ -155,7 +156,7 @@ export type ResolversParentTypes = {
 
 export type DocumentInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['DocumentInfo'] = ResolversParentTypes['DocumentInfo']> = {
   branch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -164,7 +165,7 @@ export type DocumentInfoResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'name' | 'type' | 'url'>>;
+  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'name' | 'type' | 'url'>>;
   deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id'>>;
   updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id'>>;
 };

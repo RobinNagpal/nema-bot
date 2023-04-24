@@ -1,0 +1,21 @@
+query DocumentInfos {
+  documentInfos {
+    id
+    name
+    xpath
+    url
+    type
+    branch
+  }
+}
+
+query DocumentInfo($id: String!) {
+  documentInfo(id: $id) {
+    id
+    name
+    xpath
+    url
+    type
+    branch
+  }
+}

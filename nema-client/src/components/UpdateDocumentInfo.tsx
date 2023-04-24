@@ -1,37 +1,25 @@
-import React, { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
-import { UPDATE_DOCUMENT_INFO, DOCUMENT_INFO } from '../lib/graphql/queries';
-import Table from './documentsTable';
+import { DocumentInfo, DocumentInfoDocument, useUpdateDocumentInfoMutation } from 'graphql/generated/generated-types';
+import React, { FormEvent, useState } from 'react';
 
-const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }) => {
+export interface UpdateDocumentInfoProps {
+  documentInfo: DocumentInfo;
+  handleCancelClick: () => void;
+}
+const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }: UpdateDocumentInfoProps) => {
   const [name, setName] = useState(documentInfo.name);
   const [url, setUrl] = useState(documentInfo.url);
   const [type, setType] = useState(documentInfo.type);
   const [xpath, setXpath] = useState(documentInfo.xpath);
   const [branch, setBranch] = useState(documentInfo.branch);
 
-  const [updateDocumentInfo] = useMutation(UPDATE_DOCUMENT_INFO, {
+  const [updateDocumentInfoMutation] = useUpdateDocumentInfoMutation({
     variables: { id: documentInfo.id, name, url, type, xpath, branch },
-    update(cache, { data: { updateDocumentInfo } }) {
-      cache.modify({
-        fields: {
-          documentInfos(existingDocumentInfos, { readField }) {
-            return existingDocumentInfos.map((docInfo) => {
-              if (readField('id', docInfo) === updateDocumentInfo.id) {
-                return updateDocumentInfo;
-              } else {
-                return docInfo;
-              }
-            });
-          },
-        },
-      });
-    },
+    refetchQueries: [{ query: DocumentInfoDocument, variables: { id: documentInfo.id } }],
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    updateDocumentInfo();
+    updateDocumentInfoMutation();
     handleCancelClick();
   };
 
@@ -93,7 +81,7 @@ const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }) => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       id="xpath"
                       type="text"
-                      value={xpath}
+                      value={xpath || ''}
                       onChange={(e) => setXpath(e.target.value)}
                     />
                   </div>
@@ -105,7 +93,7 @@ const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }) => {
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       id="branch"
                       type="text"
-                      value={branch}
+                      value={branch || ''}
                       onChange={(e) => setBranch(e.target.value)}
                     />
                   </div>

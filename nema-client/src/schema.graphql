@@ -1,0 +1,24 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type DocumentInfo {
+  branch: String
+  id: String!
+  name: String!
+  type: String!
+  url: String!
+  xpath: String
+}
+
+type Mutation {
+  createDocumentInfo(branch: String, id: String!, name: String!, type: String!, url: String!, xpath: String): DocumentInfo!
+  deleteDocumentInfo(id: String!): DocumentInfo!
+  updateDocumentInfo(branch: String, id: String!, name: String, type: String, url: String, xpath: String): DocumentInfo!
+}
+
+type Query {
+  documentInfo(id: String!): DocumentInfo!
+  documentInfos: [DocumentInfo!]
+}

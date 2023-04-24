@@ -1,11 +1,10 @@
+import { DocumentInfo, DocumentInfoDocument, useDeleteDocumentInfoMutation, useDocumentInfosQuery } from 'graphql/generated/generated-types';
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-import { DOCUMENT_INFOS, DELETE_DOCUMENT_INFO } from '../lib/graphql/queries';
-import UpdateDocumentInfo from './updateDocumentInfo';
 import Dropdown from './dropdown';
+import UpdateDocumentInfo from './UpdateDocumentInfo';
 
 const Table = () => {
-  const { loading, error, data } = useQuery(DOCUMENT_INFOS);
+  const { loading, error, data } = useDocumentInfosQuery();
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
@@ -24,7 +23,7 @@ const Table = () => {
         </tr>
       </thead>
       <tbody className="text-gray-600 text-sm font-light">
-        {data.documentInfos.map((documentInfo) => (
+        {data?.documentInfos?.map((documentInfo) => (
           <TableRow key={documentInfo.id} documentInfo={documentInfo} />
         ))}
       </tbody>
@@ -32,19 +31,10 @@ const Table = () => {
   );
 };
 
-const TableRow = ({ documentInfo }) => {
-  const [deleteDocumentInfo] = useMutation(DELETE_DOCUMENT_INFO, {
+const TableRow = ({ documentInfo }: { documentInfo: DocumentInfo }) => {
+  const [deleteDocumentInfo] = useDeleteDocumentInfoMutation({
     variables: { id: documentInfo.id },
-    update(cache) {
-      const existingDocumentInfos = cache.readQuery({
-        query: DOCUMENT_INFOS,
-      });
-      const newDocumentInfos = existingDocumentInfos.documentInfos.filter((docInfo) => docInfo.id !== documentInfo.id);
-      cache.writeQuery({
-        query: DOCUMENT_INFOS,
-        data: { documentInfos: newDocumentInfos },
-      });
-    },
+    refetchQueries: [{ query: DocumentInfoDocument }],
   });
 
   const [isEditing, setIsEditing] = useState(false);

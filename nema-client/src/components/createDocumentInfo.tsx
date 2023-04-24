@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { CREATE_DOCUMENT_INFO, DOCUMENT_INFOS } from '../lib/graphql/queries';
+import { DocumentInfosDocument, useCreateDocumentInfoMutation } from 'graphql/generated/generated-types';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 
-const CreateDocumentInfo = ({ handleCreateCancel }) => {
+export interface CreateDocumentInfoProps {
+  handleCreateCancel: () => void;
+}
+const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => {
   const [formData, setFormData] = useState({
+    id: Date.now().toString(),
     name: '',
     url: '',
     type: '',
@@ -11,19 +14,12 @@ const CreateDocumentInfo = ({ handleCreateCancel }) => {
     branch: '',
   });
 
-  const [createDocumentInfo] = useMutation(CREATE_DOCUMENT_INFO, {
-    update(cache, { data: { createDocumentInfo } }) {
-      const existingDocumentInfos = cache.readQuery({
-        query: DOCUMENT_INFOS,
-      });
-      cache.writeQuery({
-        query: DOCUMENT_INFOS,
-        data: { documentInfos: [createDocumentInfo, ...existingDocumentInfos.documentInfos] },
-      });
-    },
+  const [createDocumentInfo] = useCreateDocumentInfoMutation({
+    variables: formData,
+    refetchQueries: [{ query: DocumentInfosDocument }],
   });
 
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -31,14 +27,9 @@ const CreateDocumentInfo = ({ handleCreateCancel }) => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     createDocumentInfo({ variables: formData });
-    const { name, value } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: '',
-    }));
     handleCreateCancel();
   };
 

@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "index": "ts-node --esm ./src/indexData.ts",
-    "build:css": "tailwindcss build ./src/styles/styles.css -o ./public/styles.css"
+    "build:css": "tailwindcss build ./src/styles/styles.css -o ./public/styles.css",
+    "download-schema": "graphql-codegen --config introspection.yml",
+    "generate-types": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@ably-labs/react-hooks": "^2.1.0",
@@ -25,7 +27,6 @@
     "dotenv": "^16.0.3",
     "exponential-backoff": "^3.1.1",
     "graphql": "^16.6.0",
-    "graphql-request": "^6.0.0",
     "graphql-tag": "^2.12.6",
     "langchain": "^0.0.51",
     "nema-chat-ui-kit-styles": "^1.4.2",
@@ -45,6 +46,12 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/introspection": "^3.0.1",
+    "@graphql-codegen/schema-ast": "^3.0.1",
+    "@graphql-codegen/typescript": "^3.0.4",
+    "@graphql-codegen/typescript-operations": "^3.0.4",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/pg": "^8.6.6",
     "@types/react": "18.0.28",
     "autoprefixer": "^10.4.14",

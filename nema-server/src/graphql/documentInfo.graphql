@@ -1,5 +1,5 @@
 type DocumentInfo {
-  id: String
+  id: String!
   name: String!
   xpath: String
   url: String!
@@ -9,6 +9,7 @@ type DocumentInfo {
 
 extend type Mutation {
   createDocumentInfo(
+    id: String!
     name: String!
     url: String!
     type: String!
