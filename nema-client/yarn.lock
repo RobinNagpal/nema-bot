@@ -574,7 +574,7 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dqbd/tiktoken@^1.0.4":
+"@dqbd/tiktoken@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.6.tgz#96bfd0a4909726c61551a8c783493f01841bd163"
   integrity sha512-umSdeZTy/SbPPKVuZKV/XKyFPmXSN145CcM3iHjBbmhlohBJg7vaDp4cPCW+xNlWL6L2U1sp7T2BD+di2sUKdA==
@@ -1298,10 +1298,10 @@
     tslib "^2.5.0"
     webcrypto-core "^1.7.7"
 
-"@pinecone-database/pinecone@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@pinecone-database/pinecone/-/pinecone-0.0.10.tgz#c8ad15f952f4f21dd14d621d5947e7ad213e1b2f"
-  integrity sha512-SwfobqOmSQvEkEtw44uc6ZZ9R/aU5bDYkBAX0cGOcSk6wWlm5yiJA+XeZkyMeUsFb1EQaGhbafIy97TDqcnnsw==
+"@pinecone-database/pinecone@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pinecone-database/pinecone/-/pinecone-0.0.14.tgz#a74e387843327c2d2cfdecf294e233e2ab95e230"
+  integrity sha512-uQspP/fGB2xhS/PWVD9/XnNnzuTfjukuX9IKH0EYqJMXd0Yx+ewcRADVFrF5RBeBWXBWrpGhIhvWE0hTPy/BAg==
   dependencies:
     cross-fetch "^3.1.5"
 
@@ -5716,7 +5716,7 @@ puppeteer-core@19.11.0:
     unbzip2-stream "1.4.3"
     ws "8.13.0"
 
-puppeteer@^19.8.5:
+puppeteer@^19.11.0:
   version "19.11.0"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-19.11.0.tgz#1aa5c9d12ff0b8e533a04ee95ce910e36f328956"
   integrity sha512-xE0BTOFIR/fEXEHQNfGGMWGr3IQBB2AY760K+pE11kjBKe5P0jivzWG1LHr0TA1/xiHxu9nAhQzv5zh2Dy0YEQ==

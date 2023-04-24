@@ -1,13 +1,11 @@
+import { uniswapV3ProjectContents } from '@/contents/projects';
+import { ContentType, PageMetadata, WebArticleContent } from '@/contents/projectsContents';
+import { loadWebPage } from '@/loaders/webpageLoader';
 import { PineconeClient, Vector } from '@pinecone-database/pinecone';
 import Bottleneck from 'bottleneck';
 import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { uniswapV3ProjectContents } from 'pages/api/contents/projects';
-import { ContentType, GitbookContent, GithubContent, PageMetadata, WebArticleContent } from 'pages/api/contents/projectsContents';
-import { loadGitbookData } from 'pages/api/loaders/gitbookLoader';
-import { loadGithubData } from 'pages/api/loaders/githubLoader';
-import { loadWebPage } from 'pages/api/loaders/webpageLoader';
+
 import { uuid } from 'uuidv4';
 
 const limiter = new Bottleneck({
@@ -115,7 +113,7 @@ export async function indexAllData() {
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+export default async function handler(req: any, res: any) {
   if (!process.env.PINECONE_INDEX_NAME) {
     res.status(500).json({ message: 'PINECONE_INDEX_NAME not set' });
     return;

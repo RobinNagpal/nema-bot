@@ -1,10 +1,10 @@
 // https://js.langchain.com/docs/modules/indexes/vector_stores/integrations/pinecone
 
+import { PageMetadata, WebArticleContent } from '@/contents/projectsContents';
+import { split } from '@/loaders/splitter';
 import * as dotenv from 'dotenv';
 import { Document as LGCDocument } from 'langchain/document';
 import { PuppeteerWebBaseLoader } from 'langchain/document_loaders';
-import { PageMetadata, WebArticleContent } from 'pages/api/contents/projectsContents';
-import { split } from 'pages/api/loaders/splitter';
 import { Browser, Page } from 'puppeteer';
 
 dotenv.config();

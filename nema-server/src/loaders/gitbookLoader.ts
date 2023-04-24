@@ -1,7 +1,7 @@
+import { GitbookContent, PageMetadata } from '@/contents/projectsContents';
+import { split } from '@/loaders/splitter';
 import { Document as LGCDocument } from 'langchain/document';
 import { GitbookLoader } from 'langchain/document_loaders';
-import { GitbookContent, PageMetadata } from 'pages/api/contents/projectsContents';
-import { split } from 'pages/api/loaders/splitter';
 
 export async function loadGitbookData(content: GitbookContent): Promise<LGCDocument<PageMetadata>[]> {
   const gitbookLoader = new GitbookLoader(content.url, {
