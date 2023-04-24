@@ -1,19 +1,24 @@
 import { useState } from 'react';
 
-const Dropdown = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
+export interface DropdownProps {
+  options: string[];
+  handleCreateClick?: () => void;
+  handleEdit?: () => void;
+  handleDelete?: () => void;
+}
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
+const Dropdown = ({ options, handleCreateClick, handleEdit, handleDelete }: DropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOptionClick = (option: string) => {
     if (option == 'Create') {
-      props.handleCreateClick?.();
+      handleCreateClick?.();
     }
     if (option == 'Edit') {
-      props.handleEdit?.();
+      handleEdit?.();
     }
     if (option == 'Delete') {
-      props.handleDelete?.();
+      handleDelete?.();
     }
     setIsOpen(false);
   };
@@ -31,7 +36,7 @@ const Dropdown = (props) => {
       </button>
       {isOpen && (
         <div className="absolute z-10 mt-2 rounded-md bg-white shadow-lg">
-          {props.options?.map((option) => (
+          {options?.map((option) => (
             <button
               key={option}
               className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"

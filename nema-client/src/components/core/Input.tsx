@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Input(props: { modelValue?: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; label: string }) {
+export function Input(props: { modelValue?: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; label: string; required?: boolean }) {
   return (
     <div className="mb-4">
       <label htmlFor="type">{props.label}:</label>
@@ -11,7 +11,7 @@ export function Input(props: { modelValue?: string; onChange: (event: React.Chan
         name="type"
         value={props.modelValue}
         onChange={props.onChange}
-        required
+        required={props.required ? true : false}
       />
     </div>
   );

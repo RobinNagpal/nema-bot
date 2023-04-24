@@ -7,31 +7,21 @@ export interface CreateDocumentInfoProps {
 }
 
 const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => {
-  const [formData, setFormData] = useState({
-    id: Date.now().toString(),
-    name: '',
-    url: '',
-    type: '',
-    xpath: '',
-    branch: '',
-  });
+  const [id, setId] = useState(Date.now().toString());
+  const [name, setName] = useState('');
+  const [url, setUrl] = useState('');
+  const [type, setType] = useState('');
+  const [xpath, setXpath] = useState('');
+  const [branch, setBranch] = useState('');
 
   const [createDocumentInfo] = useCreateDocumentInfoMutation({
-    variables: formData,
+    variables: { id, name, url, type, xpath, branch },
     refetchQueries: [{ query: DocumentInfosDocument }],
   });
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    createDocumentInfo({ variables: formData });
+    createDocumentInfo({ variables: { id, name, url, type, xpath, branch } });
     handleCreateCancel();
   };
 
@@ -50,51 +40,17 @@ const CreateDocumentInfo = ({ handleCreateCancel }: CreateDocumentInfoProps) => 
               <div className="sm:flex sm:items-start">
                 <div className="w-full">
                   <div className="mb-4">
-                    <label htmlFor="name">Name:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input modelValue={name} onChange={(e) => setName(e.target.value)} label={'Name'} required={true} />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="url">URL:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="url"
-                      name="url"
-                      value={formData.url}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Input modelValue={url} onChange={(e) => setUrl(e.target.value)} label={'Url'} required={true} />
                   </div>
-                  <Input modelValue={formData.type} onChange={handleChange} label={'Type'} />
+                  <Input modelValue={type} onChange={(e) => setType(e.target.value)} label={'Type'} required={true} />
                   <div className="mb-4">
-                    <label htmlFor="xpath">XPath:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="xpath"
-                      name="xpath"
-                      value={formData.xpath}
-                      onChange={handleChange}
-                    />
+                    <Input modelValue={xpath || ''} onChange={(e) => setXpath(e.target.value)} label={'xPath'} />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="branch">Branch:</label>
-                    <input
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      type="text"
-                      id="branch"
-                      name="branch"
-                      value={formData.branch}
-                      onChange={handleChange}
-                    />
+                    <Input modelValue={branch || ''} onChange={(e) => setBranch(e.target.value)} label={'Branch'} />
                   </div>
                 </div>
               </div>

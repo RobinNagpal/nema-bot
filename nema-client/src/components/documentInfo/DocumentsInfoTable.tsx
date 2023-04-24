@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Table from 'components/documentInfo/documentsTable';
-import Dropdown from 'components/core/dropdown';
-import CreateDocumentInfo from 'components/documentInfo/createDocumentInfo';
+import Table from 'components/documentInfo/DocumentsTable';
+import Dropdown from 'components/core/Dropdown';
+import CreateDocumentInfo from 'components/documentInfo/CreateDocumentInfo';
 
 const Docs = () => {
   const [isDropdown, setIsDropdown] = useState(false);
