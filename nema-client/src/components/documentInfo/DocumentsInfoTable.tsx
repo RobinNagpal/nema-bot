@@ -24,7 +24,7 @@ const Docs = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-4xl mt-5 mx-5">Documents List</h1>
         <div className="mr-5 static ml-auto transform translate-y-[-70%]">
-          <Dropdown options={['Create']} handleCreateClick={handleCreateClick} handleEdit={function (): void {}} handleDelete={function (): void {}} />
+          <Dropdown options={['Create']} handleCreateClick={handleCreateClick} />
         </div>
       </div>
       {isCreating ? <CreateDocumentInfo handleCreateCancel={handleCreateCancel} /> : <Table />}

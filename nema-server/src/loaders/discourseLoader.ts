@@ -1,6 +1,6 @@
+import { PageMetadata } from '@/contents/projectsContents';
+import { split } from '@/loaders/splitter';
 import { Document as LGCDocument } from 'langchain/document';
-import { PageMetadata } from 'pages/api/contents/projectsContents';
-import { split } from 'pages/api/loaders/splitter';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 // https://stackoverflow.com/a/53527984/440432
@@ -50,9 +50,7 @@ export interface DiscourseThread {
   contents: string;
 }
 async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(discourseUrl);
   await page.setViewport({

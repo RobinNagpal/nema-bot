@@ -1,4 +1,4 @@
-import { Content, ContentType, GitbookContent, GithubContent, WebArticleContent } from 'pages/api/contents/projectsContents';
+import { Content, ContentType, GitbookContent, GithubContent, WebArticleContent } from './projectsContents';
 
 const uniswapArticles: WebArticleContent[] = [
   {
