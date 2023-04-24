@@ -103,14 +103,12 @@ export default function Home() {
         <div className={'uniswap'} style={{ position: 'relative', height: '98vh', overflow: 'hidden' }}>
           <MainContainer>
             <ChatContainer>
-              <ConversationHeader
-                style={{ backgroundColor: 'var(--header-bg)'}}
-              >
+              <ConversationHeader style={{ backgroundColor: 'var(--header-bg)' }}>
                 <ConversationHeader.Actions></ConversationHeader.Actions>
                 <ConversationHeader.Content userName="Nema Chatbot" info={statusMessage} />
               </ConversationHeader>
 
-              <MessageList typingIndicator={botIsTyping ? <TypingIndicator content="Nema is typing" style={{backgroundColor: 'var(--bg-color)'}} /> : null}>
+              <MessageList typingIndicator={botIsTyping ? <TypingIndicator content="Nema is typing" style={{ backgroundColor: 'var(--bg-color)' }} /> : null}>
                 {conversation.map((entry, index) => {
                   return (
                     <Message

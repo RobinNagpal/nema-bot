@@ -18,14 +18,12 @@ const rootValue = { Mutation, Query, ...resolvers };
 
 const app = express();
 
-
-const server = new ApolloServer({  typeDefs, resolvers: rootValue, plugins: [] });
-
+const server = new ApolloServer({ typeDefs, resolvers: rootValue, plugins: [] });
 
 (async () => {
   await server.start();
   // server.applyMiddleware({ app });
   app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(server));
 
-  app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4000/graphql`));
+  app.listen({ port: 8000 }, () => console.log(`🚀 Server ready at http://localhost:8000/graphql`));
 })();
