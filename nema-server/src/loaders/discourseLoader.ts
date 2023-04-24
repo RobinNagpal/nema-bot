@@ -50,9 +50,7 @@ export interface DiscourseThread {
   contents: string;
 }
 async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(discourseUrl);
   await page.setViewport({

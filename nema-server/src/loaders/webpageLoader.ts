@@ -11,9 +11,6 @@ dotenv.config();
 
 export async function loadWebPage(url: WebArticleContent): Promise<LGCDocument<PageMetadata>[]> {
   const loader = new PuppeteerWebBaseLoader(url.url, {
-    launchOptions: {
-      headless: true,
-    },
     gotoOptions: {
       waitUntil: 'networkidle2',
     },
