@@ -62,7 +62,7 @@ const TableRow = ({ documentInfo }: { documentInfo: DocumentInfo }) => {
           </>
         ) : (
           <>
-            <Dropdown options={['Edit', 'Delete']} handleEdit={handleEditClick} handleDelete={deleteDocumentInfo} handleCreateClick={function (): void {}} />
+            <Dropdown options={['Edit', 'Delete']} handleEdit={handleEditClick} handleDelete={deleteDocumentInfo} />
           </>
         )}
       </td>

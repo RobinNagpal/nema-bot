@@ -42,14 +42,14 @@ const UpdateDocumentInfo = ({ documentInfo, handleCancelClick }: UpdateDocumentI
                     <Input modelValue={name} onChange={(e) => setName(e.target.value)} label={'Name'} required={true} />
                   </div>
                   <div className="mb-4">
-                    <Input modelValue={url} onChange={(e) => setName(e.target.value)} label={'Url'} required={true} />
+                    <Input modelValue={url} onChange={(e) => setUrl(e.target.value)} label={'Url'} required={true} />
                   </div>
-                  <Input modelValue={type} onChange={(e) => setName(e.target.value)} label={'Type'} required={true} />
+                  <Input modelValue={type} onChange={(e) => setType(e.target.value)} label={'Type'} required={true} />
                   <div className="mb-4">
-                    <Input modelValue={xpath || ''} onChange={(e) => setName(e.target.value)} label={'xPath'} />
+                    <Input modelValue={xpath || ''} onChange={(e) => setXpath(e.target.value)} label={'xPath'} />
                   </div>
                   <div className="mb-4">
-                    <Input modelValue={branch || ''} onChange={(e) => setName(e.target.value)} label={'Branch'} />
+                    <Input modelValue={branch || ''} onChange={(e) => setBranch(e.target.value)} label={'Branch'} />
                   </div>
                 </div>
               </div>

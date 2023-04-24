@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 export interface DropdownProps {
   options: string[];
-  handleCreateClick: () => void;
-  handleEdit: () => void;
-  handleDelete: () => void;
+  handleCreateClick?: () => void;
+  handleEdit?: () => void;
+  handleDelete?: () => void;
 }
 
 const Dropdown = ({ options, handleCreateClick, handleEdit, handleDelete }: DropdownProps) => {
