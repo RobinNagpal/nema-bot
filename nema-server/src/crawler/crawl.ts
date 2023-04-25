@@ -1,8 +1,6 @@
 import { uniswapV3ProjectContents } from '@/contents/projects';
-import { ContentType, GitbookContent, GithubContent, PageMetadata, WebArticleContent } from '@/contents/projectsContents';
-import { loadGitbookData } from '@/loaders/gitbookLoader';
-import { loadGithubData } from '@/loaders/githubLoader';
-import { loadWebPage } from '@/loaders/webpageLoader';
+import { PageMetadata } from '@/contents/projectsContents';
+import { getUnIndexedDocs } from '@/indexer/getUnIndexedDocs';
 import { PineconeClient, Vector } from '@pinecone-database/pinecone';
 import Bottleneck from 'bottleneck';
 import { Document } from 'langchain/document';
@@ -69,23 +67,7 @@ export async function indexAllData() {
     await index?.delete1({ deleteAll: true });
 
     console.log('done deleting documents in index');
-
-    let allDocs: Document<PageMetadata>[] = [];
-    for (const content of uniswapV3ProjectContents.contents) {
-      let docs: Document<PageMetadata>[] = [];
-      try {
-        if (content.type === ContentType.ARTICLE) {
-          docs = await loadWebPage(content as WebArticleContent);
-        } else if (content.type == ContentType.GITHUB) {
-          docs = await loadGithubData(content as GithubContent);
-        } else {
-          docs = await loadGitbookData(content as GitbookContent);
-        }
-        allDocs = allDocs.concat(docs);
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    const allDocs = await getUnIndexedDocs();
 
     let vectors: Vector[] = [];
 

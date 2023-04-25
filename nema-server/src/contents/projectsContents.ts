@@ -1,30 +1,34 @@
-export enum ContentType {
-  IMAGE = 'image',
-  PDF_DOCUMENT = 'pdf_document',
-  ARTICLE = 'article',
-  DISCOURSE = 'discourse',
-  GITBOOK = 'gitbook',
-  GITHUB = 'github',
-}
+import { DocumentInfo } from '@prisma/client';
 
-export interface Content {
+export interface Content extends DocumentInfo {
   id: string;
-  type: ContentType;
   url: string;
 }
 
 export interface WebArticleContent extends Content {
-  type: ContentType.ARTICLE;
-  xpath: string;
+  type: 'ARTICLE';
+  details: {
+    xpath: string;
+  };
 }
 
 export interface GitbookContent extends Content {
-  type: ContentType.GITBOOK;
+  type: 'GITBOOK';
 }
 
 export interface GithubContent extends Content {
-  type: ContentType.GITHUB;
-  branch: string;
+  type: 'GITHUB';
+
+  details: {
+    branch: string;
+  };
+}
+
+export interface DiscordContent extends Content {
+  type: 'DISCORD';
+  serverId: string;
+  includeChannels: string[];
+  includeUsers: string[];
 }
 
 export interface PageMetadata {
