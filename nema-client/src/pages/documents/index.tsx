@@ -1,7 +1,7 @@
 import EllipsisDropdown from 'components/core/dropdowns/EllipsisDropdown';
 import { Table, TableActions, TableRow } from 'components/core/table/Table';
 import DefaultLayout from 'components/layouts/DefaultLayout';
-import { useDocumentInfosQuery } from 'graphql/generated/generated-types';
+import { DocumentInfo, useDocumentInfosQuery } from 'graphql/generated/generated-types';
 import { useRouter } from 'next/router';
 import React from 'react';
 
@@ -17,10 +17,10 @@ const Docs = () => {
       { label: 'Edit', key: 'edit' },
       { label: 'Delete', key: 'delete' },
     ],
-    onSelect: (key, id) => {
+    onSelect: (key, item: DocumentInfo) => {
       switch (key) {
         case 'edit':
-          router.push(`/documents/${id}/edit`);
+          router.push(`/documents/${item.id}/edit`);
           break;
         case 'delete':
           break;
