@@ -12,6 +12,10 @@ const uniswapArticles: WebArticleContent[] = [
       xpath: '/html/body/div[1]/div/div[1]/div[2]/div[2]/section/div[1]',
     },
     name: 'Whiteboard Crypto - Impermanent Loss Calculator',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
   {
     id: 'uniswap-impermanent-loss-chainbulletin',
@@ -23,7 +27,11 @@ const uniswapArticles: WebArticleContent[] = [
     details: {
       xpath: '/html/body/div[1]/div/div/div[2]',
     },
-    name: 'Whiteboard Crypto - Impermanent Loss Calculator',
+    name: 'Chainbulletin - Impermanent Loss Calculator',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
   // other
   {
@@ -36,7 +44,11 @@ const uniswapArticles: WebArticleContent[] = [
     details: {
       xpath: '/html/body/div[1]/div/main/section[1]/div[1]/article/div[3]',
     },
-    name: 'Whiteboard Crypto - Impermanent Loss Calculator',
+    name: 'Blockworks - Impermanent Loss Calculator',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
   {
     id: 'uniswap-impermanent-loss-ledger',
@@ -48,7 +60,11 @@ const uniswapArticles: WebArticleContent[] = [
     details: {
       xpath: '/html/body/main/div/div',
     },
-    name: 'Whiteboard Crypto - Impermanent Loss Calculator',
+    name: 'Ledger - Impermanent Loss Calculator',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
   {
     id: 'uniswap-impermanent-loss-coinmonks-medium',
@@ -60,6 +76,10 @@ const uniswapArticles: WebArticleContent[] = [
       xpath: '/html/body/div[1]/div/div[3]/div[2]/div/main/div/div[3]/div/div/article/div/div[2]/section/div/div[2]',
     },
     name: 'Coinmonks - Impermanent Loss Calculator',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
 ];
 const uniswapGitbooks: GitbookContent[] = [
@@ -71,6 +91,10 @@ const uniswapGitbooks: GitbookContent[] = [
     namespace: 'uniswapV3',
     details: {},
     name: 'Gitbook Docs - Uniswap V3',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
 ];
 const uniswapGithub: GithubContent[] = [
@@ -85,6 +109,10 @@ const uniswapGithub: GithubContent[] = [
     details: {
       branch: 'main',
     },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    indexed: false,
+    indexedAt: null,
   },
 ];
 
