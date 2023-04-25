@@ -6,15 +6,17 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-interface EllipsisDropdownProps<T> {
-  items: {
-    label: string;
-    item: T;
-    active?: boolean;
-  }[];
-  onSelect: (item: T) => void;
+export interface EllipsisDropdownItem {
+  label: string;
+  key: string;
+  active?: boolean;
 }
-export default function EllipsisDropdown(props: EllipsisDropdownProps<any>) {
+
+export interface EllipsisDropdownProps {
+  items: EllipsisDropdownItem[];
+  onSelect: (item: string) => void;
+}
+export default function EllipsisDropdown(props: EllipsisDropdownProps) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -40,7 +42,7 @@ export default function EllipsisDropdown(props: EllipsisDropdownProps<any>) {
                 <a
                   href="#"
                   className={classNames(item.active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm')}
-                  onClick={() => props.onSelect(item)}
+                  onClick={() => props.onSelect(item.key)}
                 >
                   {item.label}
                 </a>

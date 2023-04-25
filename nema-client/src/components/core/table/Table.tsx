@@ -1,12 +1,27 @@
+import EllipsisDropdown, { EllipsisDropdownItem } from 'components/core/dropdowns/EllipsisDropdown';
+import React from 'react';
+
+export interface TableRow {
+  columns: string[];
+  id: string;
+  item: any;
+}
+
+export interface TableActions {
+  items: EllipsisDropdownItem[];
+  onSelect: (key: string, item: any) => void;
+}
+
 export interface TableProps {
   heading: string;
   infoText?: string;
-  data: string[][];
+  data: TableRow[];
   columnsHeadings: string[];
   columnsWidthPercents: number[];
   onAddNew?: () => void;
   addNewLabel?: string;
   firstColumnBold?: boolean;
+  actions?: TableActions;
 }
 export function Table(props: TableProps) {
   return (
@@ -36,7 +51,7 @@ export function Table(props: TableProps) {
               <thead>
                 <tr>
                   {props.columnsHeadings.map((heading, index) => (
-                    <th key={index} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    <th key={index} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">
                       {heading}
                     </th>
                   ))}
@@ -45,7 +60,7 @@ export function Table(props: TableProps) {
               <tbody className="divide-y divide-gray-200">
                 {props.data.map((row, index) => (
                   <tr key={index}>
-                    {row.map((cell, index) => {
+                    {row.columns.map((cell, index) => {
                       return index === 0 && props.firstColumnBold ? (
                         <td
                           width={`${props.columnsWidthPercents?.[index] || 100}%`}
@@ -60,11 +75,16 @@ export function Table(props: TableProps) {
                         </td>
                       );
                     })}
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                        Edit
-                      </a>
-                    </td>
+                    {props.actions && (
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                        <EllipsisDropdown
+                          items={props.actions.items}
+                          onSelect={(key) => {
+                            props.actions?.onSelect(key, row.item);
+                          }}
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
