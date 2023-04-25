@@ -3,19 +3,44 @@ schema {
   mutation: Mutation
 }
 
-type DocumentInfo {
-  branch: String
-  id: String!
+input CreateOrUpdateDocumentInfoInput {
+  details: JSONObject!
   name: String!
+  namespace: String!
   type: String!
+  url: String!
+}
+
+type DocumentInfo {
+  createdAt: String!
+  details: JSONObject!
+  id: String!
+  indexed: Boolean!
+  indexedAt: String
+  name: String!
+  namespace: String!
+  spaceId: String!
+  type: String!
+  updatedAt: String!
   url: String!
   xpath: String
 }
 
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 type Mutation {
-  createDocumentInfo(branch: String, id: String!, name: String!, type: String!, url: String!, xpath: String): DocumentInfo!
-  deleteDocumentInfo(id: String!): DocumentInfo!
-  updateDocumentInfo(branch: String, id: String!, name: String, type: String, url: String, xpath: String): DocumentInfo!
+  createDocumentInfo(id: String!, input: CreateOrUpdateDocumentInfoInput!, spaceId: String!): DocumentInfo!
+  deleteDocumentInfo(id: String!, spaceId: String!): DocumentInfo!
+  indexDocumentInfo(id: String!, spaceId: String!): DocumentInfo!
+  updateDocumentInfo(id: String!, input: CreateOrUpdateDocumentInfoInput!, spaceId: String!): DocumentInfo!
 }
 
 type Query {

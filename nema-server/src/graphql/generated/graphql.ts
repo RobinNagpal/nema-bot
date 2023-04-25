@@ -16,6 +16,14 @@ export type Scalars = {
   JSONObject: any;
 };
 
+export type CreateOrUpdateDocumentInfoInput = {
+  details: Scalars['JSONObject'];
+  name: Scalars['String'];
+  namespace: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+};
+
 export type DocumentInfo = {
   __typename?: 'DocumentInfo';
   createdAt: Scalars['String'];
@@ -42,13 +50,9 @@ export type Mutation = {
 
 
 export type MutationCreateDocumentInfoArgs = {
-  details: Scalars['JSONObject'];
   id: Scalars['String'];
-  name: Scalars['String'];
-  namespace: Scalars['String'];
+  input: CreateOrUpdateDocumentInfoInput;
   spaceId: Scalars['String'];
-  type: Scalars['String'];
-  url: Scalars['String'];
 };
 
 
@@ -66,7 +70,7 @@ export type MutationIndexDocumentInfoArgs = {
 
 export type MutationUpdateDocumentInfoArgs = {
   id: Scalars['String'];
-  input: UpdateDocumentInfoInput;
+  input: CreateOrUpdateDocumentInfoInput;
   spaceId: Scalars['String'];
 };
 
@@ -79,12 +83,6 @@ export type Query = {
 
 export type QueryDocumentInfoArgs = {
   id: Scalars['String'];
-};
-
-export type UpdateDocumentInfoInput = {
-  details: Scalars['JSONObject'];
-  name: Scalars['String'];
-  url: Scalars['String'];
 };
 
 
@@ -159,25 +157,25 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CreateOrUpdateDocumentInfoInput: CreateOrUpdateDocumentInfoInput;
   DocumentInfo: ResolverTypeWrapper<DocumentInfo>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  UpdateDocumentInfoInput: UpdateDocumentInfoInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
+  CreateOrUpdateDocumentInfoInput: CreateOrUpdateDocumentInfoInput;
   DocumentInfo: DocumentInfo;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
   Mutation: {};
   Query: {};
   String: Scalars['String'];
-  UpdateDocumentInfoInput: UpdateDocumentInfoInput;
 };
 
 export type DocumentInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['DocumentInfo'] = ResolversParentTypes['DocumentInfo']> = {
@@ -205,7 +203,7 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'details' | 'id' | 'name' | 'namespace' | 'spaceId' | 'type' | 'url'>>;
+  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
   deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id' | 'spaceId'>>;
   indexDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationIndexDocumentInfoArgs, 'id' | 'spaceId'>>;
   updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;

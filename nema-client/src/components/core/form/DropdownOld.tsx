@@ -7,7 +7,7 @@ export interface DropdownProps {
   handleDelete?: () => void;
 }
 
-const Dropdown = ({ options, handleCreateClick, handleEdit, handleDelete }: DropdownProps) => {
+const DropdownOld = ({ options, handleCreateClick, handleEdit, handleDelete }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOptionClick = (option: string) => {
@@ -51,4 +51,4 @@ const Dropdown = ({ options, handleCreateClick, handleEdit, handleDelete }: Drop
   );
 };
 
-export default Dropdown;
+export default DropdownOld;

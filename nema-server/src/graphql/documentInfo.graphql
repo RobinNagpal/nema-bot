@@ -18,17 +18,13 @@ type DocumentInfo {
 extend type Mutation {
   createDocumentInfo(
     id: String!
-    name: String!
-    url: String!
-    type: String!
-    details: JSONObject!
     spaceId: String!
-    namespace: String!
+    input: CreateOrUpdateDocumentInfoInput!
   ): DocumentInfo!
   updateDocumentInfo(
     id: String!
     spaceId: String!
-    input: UpdateDocumentInfoInput!
+    input: CreateOrUpdateDocumentInfoInput!
   ): DocumentInfo!
 
   deleteDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
@@ -41,7 +37,9 @@ extend type Query {
   documentInfo(id: String!): DocumentInfo!
 }
 
-input UpdateDocumentInfoInput {
+input CreateOrUpdateDocumentInfoInput {
+  namespace: String!
+  type: String!
   name: String!
   url: String!
   details: JSONObject!

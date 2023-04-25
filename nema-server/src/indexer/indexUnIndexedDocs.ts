@@ -34,7 +34,7 @@ export async function indexUnIndexedDocs(index: null | VectorOperationsApi) {
             details: content.details || {},
             createdAt: new Date(),
             updatedAt: new Date(),
-            indexedAt: new Date(),
+            indexedAt: null,
           },
         });
       }
@@ -52,7 +52,7 @@ export async function indexUnIndexedDocs(index: null | VectorOperationsApi) {
           throw new Error(`Unknown content type : ${content.type}`);
         }
 
-        await prisma.documentInfo.update({ where: { id: content.id }, data: { indexed: true } });
+        await prisma.documentInfo.update({ where: { id: content.id }, data: { indexed: true, indexedAt: new Date() } });
       } catch (e) {
         console.error(e);
       }
