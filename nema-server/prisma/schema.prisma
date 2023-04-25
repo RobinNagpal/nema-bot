@@ -42,7 +42,7 @@ model DocumentInfo {
 
   details   Json
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   indexedAt DateTime? @map("indexed_at")
   indexed   Boolean  @default(false)

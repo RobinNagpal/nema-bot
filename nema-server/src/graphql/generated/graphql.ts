@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -12,14 +12,22 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  JSON: any;
+  JSONObject: any;
 };
 
 export type DocumentInfo = {
   __typename?: 'DocumentInfo';
-  branch?: Maybe<Scalars['String']>;
+  createdAt: Scalars['String'];
+  details: Scalars['JSONObject'];
   id: Scalars['String'];
+  indexed: Scalars['Boolean'];
+  indexedAt?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  namespace: Scalars['String'];
+  spaceId: Scalars['String'];
   type: Scalars['String'];
+  updatedAt: Scalars['String'];
   url: Scalars['String'];
   xpath?: Maybe<Scalars['String']>;
 };
@@ -28,32 +36,38 @@ export type Mutation = {
   __typename?: 'Mutation';
   createDocumentInfo: DocumentInfo;
   deleteDocumentInfo: DocumentInfo;
+  indexDocumentInfo: DocumentInfo;
   updateDocumentInfo: DocumentInfo;
 };
 
 
 export type MutationCreateDocumentInfoArgs = {
-  branch?: InputMaybe<Scalars['String']>;
+  details: Scalars['JSONObject'];
   id: Scalars['String'];
   name: Scalars['String'];
+  namespace: Scalars['String'];
+  spaceId: Scalars['String'];
   type: Scalars['String'];
   url: Scalars['String'];
-  xpath?: InputMaybe<Scalars['String']>;
 };
 
 
 export type MutationDeleteDocumentInfoArgs = {
   id: Scalars['String'];
+  spaceId: Scalars['String'];
+};
+
+
+export type MutationIndexDocumentInfoArgs = {
+  id: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
 export type MutationUpdateDocumentInfoArgs = {
-  branch?: InputMaybe<Scalars['String']>;
   id: Scalars['String'];
-  name?: InputMaybe<Scalars['String']>;
-  type?: InputMaybe<Scalars['String']>;
-  url?: InputMaybe<Scalars['String']>;
-  xpath?: InputMaybe<Scalars['String']>;
+  input: UpdateDocumentInfoInput;
+  spaceId: Scalars['String'];
 };
 
 export type Query = {
@@ -65,6 +79,12 @@ export type Query = {
 
 export type QueryDocumentInfoArgs = {
   id: Scalars['String'];
+};
+
+export type UpdateDocumentInfoInput = {
+  details: Scalars['JSONObject'];
+  name: Scalars['String'];
+  url: Scalars['String'];
 };
 
 
@@ -140,34 +160,55 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   DocumentInfo: ResolverTypeWrapper<DocumentInfo>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']>;
+  JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  UpdateDocumentInfoInput: UpdateDocumentInfoInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   DocumentInfo: DocumentInfo;
+  JSON: Scalars['JSON'];
+  JSONObject: Scalars['JSONObject'];
   Mutation: {};
   Query: {};
   String: Scalars['String'];
+  UpdateDocumentInfoInput: UpdateDocumentInfoInput;
 };
 
 export type DocumentInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['DocumentInfo'] = ResolversParentTypes['DocumentInfo']> = {
-  branch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  details?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  indexed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  indexedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  namespace?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  spaceId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   xpath?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'name' | 'type' | 'url'>>;
-  deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id'>>;
-  updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id'>>;
+  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'details' | 'id' | 'name' | 'namespace' | 'spaceId' | 'type' | 'url'>>;
+  deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id' | 'spaceId'>>;
+  indexDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationIndexDocumentInfoArgs, 'id' | 'spaceId'>>;
+  updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -177,6 +218,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type Resolvers<ContextType = any> = {
   DocumentInfo?: DocumentInfoResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
+  JSONObject?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };

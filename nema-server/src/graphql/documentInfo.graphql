@@ -3,8 +3,16 @@ type DocumentInfo {
   name: String!
   xpath: String
   url: String!
+  spaceId: String!
+  namespace: String!
   type: String!
-  branch: String
+
+  details: JSONObject!
+  createdAt: String!
+  updatedAt: String!
+
+  indexedAt: String
+  indexed: Boolean!
 }
 
 extend type Mutation {
@@ -13,21 +21,28 @@ extend type Mutation {
     name: String!
     url: String!
     type: String!
-    xpath: String
-    branch: String
+    details: JSONObject!
+    spaceId: String!
+    namespace: String!
   ): DocumentInfo!
   updateDocumentInfo(
     id: String!
-    name: String
-    url: String
-    type: String
-    xpath: String
-    branch: String
+    spaceId: String!
+    input: UpdateDocumentInfoInput!
   ): DocumentInfo!
-  deleteDocumentInfo(id: String!): DocumentInfo!
+
+  deleteDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
+
+  indexDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
 }
 
 extend type Query {
   documentInfos: [DocumentInfo!]
   documentInfo(id: String!): DocumentInfo!
+}
+
+input UpdateDocumentInfoInput {
+  name: String!
+  url: String!
+  details: JSONObject!
 }
