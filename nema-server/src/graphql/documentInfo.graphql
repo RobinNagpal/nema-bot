@@ -30,6 +30,8 @@ extend type Mutation {
   deleteDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
 
   indexDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
+
+  createSignedUrl(spaceId: String!, namespace: String!, input: CreateSignedUrlInput!): String!
 }
 
 extend type Query {
@@ -43,4 +45,10 @@ input CreateOrUpdateDocumentInfoInput {
   name: String!
   url: String!
   details: JSONObject!
+}
+
+
+input CreateSignedUrlInput {
+  name: String!
+  contentType: String!
 }

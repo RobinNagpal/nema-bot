@@ -24,6 +24,11 @@ export type CreateOrUpdateDocumentInfoInput = {
   url: Scalars['String'];
 };
 
+export type CreateSignedUrlInput = {
+  contentType: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type DocumentInfo = {
   __typename?: 'DocumentInfo';
   createdAt: Scalars['String'];
@@ -43,6 +48,7 @@ export type DocumentInfo = {
 export type Mutation = {
   __typename?: 'Mutation';
   createDocumentInfo: DocumentInfo;
+  createSignedUrl: Scalars['String'];
   deleteDocumentInfo: DocumentInfo;
   indexDocumentInfo: DocumentInfo;
   updateDocumentInfo: DocumentInfo;
@@ -52,6 +58,13 @@ export type Mutation = {
 export type MutationCreateDocumentInfoArgs = {
   id: Scalars['String'];
   input: CreateOrUpdateDocumentInfoInput;
+  spaceId: Scalars['String'];
+};
+
+
+export type MutationCreateSignedUrlArgs = {
+  input: CreateSignedUrlInput;
+  namespace: Scalars['String'];
   spaceId: Scalars['String'];
 };
 
@@ -158,6 +171,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CreateOrUpdateDocumentInfoInput: CreateOrUpdateDocumentInfoInput;
+  CreateSignedUrlInput: CreateSignedUrlInput;
   DocumentInfo: ResolverTypeWrapper<DocumentInfo>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
@@ -170,6 +184,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   CreateOrUpdateDocumentInfoInput: CreateOrUpdateDocumentInfoInput;
+  CreateSignedUrlInput: CreateSignedUrlInput;
   DocumentInfo: DocumentInfo;
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
@@ -204,6 +219,7 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
+  createSignedUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationCreateSignedUrlArgs, 'input' | 'namespace' | 'spaceId'>>;
   deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id' | 'spaceId'>>;
   indexDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationIndexDocumentInfoArgs, 'id' | 'spaceId'>>;
   updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
