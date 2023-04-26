@@ -2,6 +2,7 @@ import { EditDocumentInfo } from 'components/documentInfo/EditDocumentInfo';
 import DefaultLayout from 'components/layouts/DefaultLayout';
 import { CreateOrUpdateDocumentInfoInput, DocumentInfosDocument, useCreateDocumentInfoMutation } from 'graphql/generated/generated-types';
 import React from 'react';
+import Link from 'next/link';
 
 const CreateDocumentInfo = () => {
   const [createDocumentInfo] = useCreateDocumentInfoMutation({
@@ -14,6 +15,9 @@ const CreateDocumentInfo = () => {
 
   return (
     <DefaultLayout>
+      <Link className="cursor-pointer" href="/documents">
+        &#8592; Back
+      </Link>
       <EditDocumentInfo handleSubmit={handleSubmit} />
     </DefaultLayout>
   );

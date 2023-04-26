@@ -55,23 +55,19 @@ export const EditDocumentInfo = ({ handleSubmit, documentInfo: initial }: EditDo
   ];
 
   return (
-    <DefaultLayout>
-      <div className="max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <Form
-            heading={'Create New Document'}
-            infoText={'You can index this documents and then search for information from them'}
-            onSave={() => handleSubmit(documentInfo)}
-          >
-            <Input modelValue={documentInfo.name} onChange={(e) => updateDocumentInfoField('name', e.target.value)} label={'Name'} required={true} />
+    <div className="mt-10">
+      <Form
+        heading={'Create New Document'}
+        infoText={'You can index this documents and then search for information from them'}
+        onSave={() => handleSubmit(documentInfo)}
+      >
+        <Input modelValue={documentInfo.name} onChange={(e) => updateDocumentInfoField('name', e.target.value)} label={'Name'} required={true} />
 
-            <Input modelValue={documentInfo.url} onChange={(e) => updateDocumentInfoField('url', e.target.value)} label={'Url'} required={true} />
+        <Input modelValue={documentInfo.url} onChange={(e) => updateDocumentInfoField('url', e.target.value)} label={'Url'} required={true} />
 
-            <Select options={selectOptions} onChange={(e) => updateDocumentInfoField('type', e)} id="document_info_type_select_id" label="Type" />
-            <EditDocumentInfoDetails type={documentInfo.type} details={documentInfo.details} updateDetailsField={updateDetailsField} />
-          </Form>
-        </div>
-      </div>
-    </DefaultLayout>
+        <Select options={selectOptions} onChange={(e) => updateDocumentInfoField('type', e)} id="document_info_type_select_id" label="Type" />
+        <EditDocumentInfoDetails type={documentInfo.type} details={documentInfo.details} updateDetailsField={updateDetailsField} />
+      </Form>
+    </div>
   );
 };

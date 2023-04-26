@@ -20,13 +20,13 @@ git clone https://github.com/RobinNagpal/nema-bot.git
 
 3. Create your Pinecone index
 
-### Nema-Server
+## Nema-Server
 
 1. Install dependencies
 
 ```bash
 cd nema-server
-npm install
+yarn install
 ```
 
 2. Create a `.env` file in nema-server and add your database url:
@@ -35,11 +35,10 @@ npm install
 DATABASE_URL=...
 ```
 
-3. Prisma Migration
+3. DB Update to latest schema
 
 ```bash
-npx prisma migrate dev
-npx prisma studio
+npx prisma db push
 ```
 
 4. Graphql Server
@@ -48,16 +47,16 @@ Open a new terminal and run the below command:
 
 ```bash
 cd nema-server
-npm run dev
+yarn dev
 ```
 
-### Nema-Client
+## Nema-Client
 
 1. Install dependencies
 
 ```bash
 cd nema-client
-npm install
+yarn install
 ```
 
 2. Create a `.env` file in nema-client and add your API keys:
@@ -73,8 +72,4 @@ FINGERPRINTJS_API_KEY=...
 API_ROOT="http://localhost:3000"
 ```
 
-## Start the development server
 
-```bash
-npm run dev
-```

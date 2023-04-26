@@ -1,4 +1,3 @@
-import EllipsisDropdown from 'components/core/dropdowns/EllipsisDropdown';
 import { Table, TableActions, TableRow } from 'components/core/table/Table';
 import DefaultLayout from 'components/layouts/DefaultLayout';
 import { DocumentInfo, useDocumentInfosQuery } from 'graphql/generated/generated-types';
@@ -33,16 +32,11 @@ const Docs = () => {
   };
   return (
     <DefaultLayout>
-      <div className="float-right">
-        <EllipsisDropdown
-          items={[{ label: 'Add New', key: 'add_new' }]}
-          onSelect={() => {
-            router.push('/documents/create');
-          }}
-        />
-      </div>
       <Table
         heading={'All Documents'}
+        onAddNew={() => {
+          router.push('/documents/create');
+        }}
         data={
           data?.documentInfos?.map(
             (documentInfo): TableRow => ({ id: documentInfo.id, item: documentInfo, columns: [documentInfo.id, documentInfo.name, documentInfo.type] })
