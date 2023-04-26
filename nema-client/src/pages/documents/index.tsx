@@ -14,11 +14,15 @@ const Docs = () => {
 
   const actions: TableActions = {
     items: [
+      { label: 'View', key: 'view' },
       { label: 'Edit', key: 'edit' },
       { label: 'Delete', key: 'delete' },
     ],
     onSelect: (key, item: DocumentInfo) => {
       switch (key) {
+        case 'view':
+          router.push(`/documents/${item.id}`);
+          break;
         case 'edit':
           router.push(`/documents/${item.id}/edit`);
           break;
