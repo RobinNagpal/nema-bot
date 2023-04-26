@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "index": "ts-node --esm ./src/indexData.ts",
-    "build:css": "tailwindcss build ./src/styles/styles.css -o ./public/styles.css",
     "graphql:download": "graphql-codegen --config introspection.yml",
     "graphql:generate": "graphql-codegen --config codegen.yml"
   },
@@ -19,6 +18,8 @@
     "@chatscope/chat-ui-kit-react": "^1.10.1",
     "@dqbd/tiktoken": "^1.0.6",
     "@fingerprintjs/fingerprintjs-pro-react": "^2.3.0",
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
     "@pinecone-database/pinecone": "^0.0.14",
     "ably": "^1.2.5-beta.1",
     "apollo-boost": "^0.4.9",

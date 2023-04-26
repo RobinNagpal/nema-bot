@@ -3,31 +3,44 @@ type DocumentInfo {
   name: String!
   xpath: String
   url: String!
+  spaceId: String!
+  namespace: String!
   type: String!
-  branch: String
+
+  details: JSONObject!
+  createdAt: String!
+  updatedAt: String!
+
+  indexedAt: String
+  indexed: Boolean!
 }
 
 extend type Mutation {
   createDocumentInfo(
     id: String!
-    name: String!
-    url: String!
-    type: String!
-    xpath: String
-    branch: String
+    spaceId: String!
+    input: CreateOrUpdateDocumentInfoInput!
   ): DocumentInfo!
   updateDocumentInfo(
     id: String!
-    name: String
-    url: String
-    type: String
-    xpath: String
-    branch: String
+    spaceId: String!
+    input: CreateOrUpdateDocumentInfoInput!
   ): DocumentInfo!
-  deleteDocumentInfo(id: String!): DocumentInfo!
+
+  deleteDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
+
+  indexDocumentInfo(spaceId: String!, id: String!): DocumentInfo!
 }
 
 extend type Query {
   documentInfos: [DocumentInfo!]
   documentInfo(id: String!): DocumentInfo!
+}
+
+input CreateOrUpdateDocumentInfoInput {
+  namespace: String!
+  type: String!
+  name: String!
+  url: String!
+  details: JSONObject!
 }

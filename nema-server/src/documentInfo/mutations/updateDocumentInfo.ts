@@ -5,11 +5,9 @@ export default function updateDocumentInfo(_: any, { id, ...args }: MutationUpda
   return prisma.documentInfo.update({
     where: { id: id },
     data: {
-      name: args.name || undefined,
-      url: args.url || undefined,
-      branch: args.branch || undefined,
-      type: args.type || undefined,
-      xpath: args.xpath || undefined,
+      name: args.input.name,
+      url: args.input.url,
+      details: args.input.details,
     },
   });
 }
