@@ -1,13 +1,10 @@
 import { uniswapV3ProjectContents } from '@/contents/projects';
 import { indexUnIndexedDocs } from '@/indexer/indexUnIndexedDocs';
 import { PineconeClient } from '@pinecone-database/pinecone';
-import Bottleneck from 'bottleneck';
-
-const limiter = new Bottleneck({
-  minTime: 2000,
-});
+import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 
 let pinecone: PineconeClient | null = null;
+const pineconeIndex: VectorOperationsApi | null = null;
 
 const initPineconeClient = async () => {
   pinecone = new PineconeClient();
@@ -18,22 +15,18 @@ const initPineconeClient = async () => {
   });
 };
 
-type Response = {
-  message: string;
-};
-
-export async function indexAllData() {
+export async function reIndexAllData() {
   try {
     if (!pinecone) {
       await initPineconeClient();
     }
 
-    const index = pinecone && pinecone.Index(uniswapV3ProjectContents.indexName);
+    const documentInfo = pinecone && pinecone.Index(uniswapV3ProjectContents.indexName);
 
     console.log('start indexing');
-    await index?.delete1({ deleteAll: true });
+    await documentInfo?.delete1({ deleteAll: true });
     console.log('done deleting documents in index');
-    await indexUnIndexedDocs(index);
+    await indexUnIndexedDocs(documentInfo);
 
     console.log('done indexing');
   } catch (e) {
@@ -50,7 +43,7 @@ export default async function handler(req: any, res: any) {
   const { query } = req;
 
   const { urls: urlString, limit } = query;
-  await indexAllData();
+  await reIndexAllData();
 
   res.status(200).json({ message: 'Done' });
 }

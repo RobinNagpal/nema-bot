@@ -1,13 +1,8 @@
 import { uniswapV3ProjectContents } from '@/contents/projects';
-import { GitbookContent, GithubContent, PageMetadata, WebArticleContent } from '@/contents/projectsContents';
-import { indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
-import { loadGitbookData } from '@/loaders/gitbookLoader';
-import { loadGithubData } from '@/loaders/githubLoader';
-import { loadWebPage } from '@/loaders/webpageLoader';
+import { indexDocument } from '@/indexer/indexDocument';
 import { prisma } from '@/prisma';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
-import { DocumentInfo, DocumentInfoType } from '@prisma/client';
-import { Document } from 'langchain/document';
+import { DocumentInfo } from '@prisma/client';
 
 export async function indexUnIndexedDocs(index: null | VectorOperationsApi) {
   const documentInfos: DocumentInfo[] = await prisma.documentInfo.findMany({
@@ -18,11 +13,11 @@ export async function indexUnIndexedDocs(index: null | VectorOperationsApi) {
   });
 
   for (const content of uniswapV3ProjectContents.contents) {
-    const documentInfo = documentInfos.find((documentInfo: DocumentInfo) => content.id === documentInfo.id);
+    let documentInfo = documentInfos.find((documentInfo: DocumentInfo) => content.id === documentInfo.id);
 
     if (!documentInfo?.indexed) {
       if (!documentInfo) {
-        await prisma.documentInfo.create({
+        documentInfo = await prisma.documentInfo.create({
           data: {
             id: content.id,
             indexed: false,
@@ -38,24 +33,8 @@ export async function indexUnIndexedDocs(index: null | VectorOperationsApi) {
           },
         });
       }
-      try {
-        if (content.type === DocumentInfoType.ARTICLE) {
-          const docs: Document<PageMetadata>[] = await loadWebPage(content as WebArticleContent);
-          await indexDocsInPinecone(docs, index);
-        } else if (content.type == DocumentInfoType.GITHUB) {
-          const docs: Document<PageMetadata>[] = await loadGithubData(content as GithubContent);
-          await indexDocsInPinecone(docs, index);
-        } else if (content.type == DocumentInfoType.GITBOOK) {
-          const docs: Document<PageMetadata>[] = await loadGitbookData(content as GitbookContent);
-          await indexDocsInPinecone(docs, index);
-        } else {
-          throw new Error(`Unknown content type : ${content.type}`);
-        }
-
-        await prisma.documentInfo.update({ where: { id: content.id }, data: { indexed: true, indexedAt: new Date() } });
-      } catch (e) {
-        console.error(e);
-      }
+      if (!documentInfo) throw new Error(`Could not create documentInfo for ${content.id}`);
+      await indexDocument(documentInfo, index);
     }
   }
 }

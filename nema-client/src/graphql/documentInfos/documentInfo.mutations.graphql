@@ -21,6 +21,17 @@ mutation UpdateDocumentInfo($id: String!, $spaceId: String!, $input: CreateOrUpd
   }
 }
 
+mutation IndexDocumentInfo($id: String!, $spaceId: String!){
+  indexDocumentInfo(id: $id, spaceId: $spaceId) {
+    id
+    name
+    xpath
+    url
+    type
+    details
+  }
+}
+
 mutation DeleteDocumentInfo($id: String!, $spaceId: String!) {
   deleteDocumentInfo(id: $id, spaceId: $spaceId) {
     id

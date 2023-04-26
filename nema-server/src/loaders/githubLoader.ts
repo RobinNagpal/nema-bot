@@ -8,6 +8,7 @@ export async function loadGithubData(content: GithubContent): Promise<LGCDocumen
     branch: content.details.branch,
     recursive: true,
     unknown: 'warn',
+    ignoreFiles: ['yarn.lock'],
   });
   const docs: LGCDocument[] = await githubLoader.load();
   const updatedDocs = docs.map((doc): LGCDocument<Omit<PageMetadata, 'chunk'>> => {

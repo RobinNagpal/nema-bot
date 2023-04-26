@@ -20,5 +20,9 @@ query DocumentInfo($id: String!) {
     namespace
     spaceId
 
+    indexed
+    indexedAt
+    createdAt
+    updatedAt
   }
 }

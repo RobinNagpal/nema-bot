@@ -32,7 +32,7 @@ const UpdateDocumentInfo = () => {
     showNotification({
       type: 'success',
       duration: 5000,
-      heading: 'Document Info Updated',
+      heading: 'Success',
       details: 'Document Info has been updated successfully',
     });
 

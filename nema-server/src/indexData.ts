@@ -1,3 +1,3 @@
-import { indexAllData } from '@/crawler/crawl';
+import { reIndexAllData } from '@/crawler/crawl';
 
-indexAllData();
+reIndexAllData();
