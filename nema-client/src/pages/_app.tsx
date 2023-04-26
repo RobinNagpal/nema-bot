@@ -1,5 +1,4 @@
 import 'styles/global.scss';
-import 'styles/styles.css';
 
 import type { AppProps } from 'next/app';
 import { FpjsProvider } from '@fingerprintjs/fingerprintjs-pro-react';
@@ -21,13 +20,13 @@ const fpjsPublicApiKey = process.env.FINGERPRINT as string;
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={client}>
-      {/* <FpjsProvider
+      <FpjsProvider
         loadOptions={{
           apiKey: fpjsPublicApiKey,
         }}
-      > */}
-      <Component {...pageProps} />
-      {/* </FpjsProvider> */}
+      >
+        <Component {...pageProps} />
+      </FpjsProvider>
     </ApolloProvider>
   );
 }
