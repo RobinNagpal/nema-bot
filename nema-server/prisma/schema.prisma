@@ -10,11 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Conversation {
+model Conversation  {
   userId    String   @id @map("user_id")
   entry     String?  @map("entry")
   speaker   Speaker  @map("speaker")
   createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("conversations")
+
 }
 
 enum Speaker {
@@ -48,4 +51,6 @@ model DocumentInfo {
   indexed   Boolean  @default(false)
 
   @@unique([name, spaceId])
+
+  @@map("document_infos")
 }
