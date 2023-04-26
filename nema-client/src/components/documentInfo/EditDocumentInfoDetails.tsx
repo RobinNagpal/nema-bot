@@ -13,11 +13,16 @@ export default function EditDocumentInfoDetails({ type, details, updateDetailsFi
       {type === 'ARTICLE' && <Input modelValue={details.xpath} onChange={(e) => updateDetailsField('xpath', e.target.value)} label={'Xpath'} required={true} />}
 
       {type === 'DISCORD' && (
-        <Input modelValue={details.xpath} onChange={(e) => updateDetailsField('serverId', e.target.value)} label={'Discord Server Id'} required={true} />
+        <Input
+          modelValue={details.serverId || ''}
+          onChange={(e) => updateDetailsField('serverId', e.target.value)}
+          label={'Discord Server Id'}
+          required={true}
+        />
       )}
 
       {type === 'GITHUB' && (
-        <Input modelValue={details.xpath} onChange={(e) => updateDetailsField('branch', e.target.value)} label={'Github Branch'} required={true} />
+        <Input modelValue={details.branch || ''} onChange={(e) => updateDetailsField('branch', e.target.value)} label={'Github Branch'} required={true} />
       )}
     </div>
   );

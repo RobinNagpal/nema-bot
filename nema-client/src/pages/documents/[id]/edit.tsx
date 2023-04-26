@@ -7,7 +7,7 @@ import React from 'react';
 const UpdateDocumentInfo = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data } = useDocumentInfoQuery({ variables: { id: id as string } });
+  const { data } = useDocumentInfoQuery({ variables: { id: id as string }, skip: !id });
   const [updateDocumentInfoMutation] = useUpdateDocumentInfoMutation({
     refetchQueries: [{ query: DocumentInfoDocument, variables: { id: data?.documentInfo.id } }],
   });

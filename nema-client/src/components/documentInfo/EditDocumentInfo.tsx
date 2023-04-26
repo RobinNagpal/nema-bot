@@ -1,9 +1,10 @@
 import Form from 'components/core/form/Form';
 import { Input } from 'components/core/form/Input';
+import Select, { SelectOption } from 'components/core/form/Select';
 import EditDocumentInfoDetails from 'components/documentInfo/EditDocumentInfoDetails';
 import DefaultLayout from 'components/layouts/DefaultLayout';
 import { CreateOrUpdateDocumentInfoInput } from 'graphql/generated/generated-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface EditDocumentInfoProps {
   documentInfo?: CreateOrUpdateDocumentInfoInput;
@@ -11,15 +12,20 @@ export interface EditDocumentInfoProps {
 }
 
 export const EditDocumentInfo = ({ handleSubmit, documentInfo: initial }: EditDocumentInfoProps) => {
-  const [documentInfo, setDocumentInfo] = useState<CreateOrUpdateDocumentInfoInput>(
-    initial || {
-      name: '',
-      url: '',
-      type: '',
-      details: {},
-      namespace: 'uniswapV3',
+  const [documentInfo, setDocumentInfo] = useState<CreateOrUpdateDocumentInfoInput>({
+    name: '',
+    url: '',
+    type: '',
+    details: {},
+    namespace: 'uniswapV3',
+    ...initial,
+  });
+
+  useEffect(() => {
+    if (initial) {
+      setDocumentInfo(initial);
     }
-  );
+  }, [initial]);
 
   function updateDocumentInfoField(field: keyof CreateOrUpdateDocumentInfoInput, value: any) {
     setDocumentInfo({
@@ -38,6 +44,16 @@ export const EditDocumentInfo = ({ handleSubmit, documentInfo: initial }: EditDo
     });
   }
 
+  const selectOptions: SelectOption[] = [
+    { key: 'ARTICLE', value: 'ARTICLE' },
+    { key: 'DISCORD', value: 'DISCORD' },
+    { key: 'DISCOURSE', value: 'DISCOURSE' },
+    { key: 'GITBOOK', value: 'GITBOOK' },
+    { key: 'GITHUB', value: 'GITHUB' },
+    { key: 'IMAGE', value: 'IMAGE' },
+    { key: 'PDF_DOCUMENT', value: 'PDF_DOCUMENT' },
+  ];
+
   return (
     <DefaultLayout>
       <div className="max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -51,7 +67,7 @@ export const EditDocumentInfo = ({ handleSubmit, documentInfo: initial }: EditDo
 
             <Input modelValue={documentInfo.url} onChange={(e) => updateDocumentInfoField('url', e.target.value)} label={'Url'} required={true} />
 
-            <Input modelValue={documentInfo.type} onChange={(e) => updateDocumentInfoField('type', e.target.value)} label={'Type'} required={true} />
+            <Select options={selectOptions} onChange={(e) => updateDocumentInfoField('type', e)} id="document_info_type_select_id" label="Type" />
             <EditDocumentInfoDetails type={documentInfo.type} details={documentInfo.details} updateDetailsField={updateDetailsField} />
           </Form>
         </div>
