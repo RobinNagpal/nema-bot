@@ -11,7 +11,7 @@ const UpdateDocumentInfo = () => {
   const { id } = router.query;
   const { data } = useDocumentInfoQuery({ variables: { id: id as string }, skip: !id });
   const [updateDocumentInfoMutation] = useUpdateDocumentInfoMutation({
-    // refetchQueries: [{ query: DocumentInfoDocument, variables: { id: data?.documentInfo.id } }],
+    refetchQueries: [{ query: DocumentInfoDocument, variables: { id: data?.documentInfo.id } }],
   });
   const { showNotification } = useNotificationContext();
   const handleSubmit = async (e: CreateOrUpdateDocumentInfoInput) => {
@@ -36,7 +36,7 @@ const UpdateDocumentInfo = () => {
       details: 'Document Info has been updated successfully',
     });
 
-    // router.push(`/documents/${data?.documentInfo.id}`);
+    router.push(`/documents/${data?.documentInfo.id}`);
   };
 
   return (

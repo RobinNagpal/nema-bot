@@ -20,13 +20,22 @@ configureAbly({
 const fpjsPublicApiKey = process.env.FINGERPRINT as string;
 
 const NotificationWrapper = () => {
-  const { notification } = useNotificationContext();
+  const { notification, hideNotification } = useNotificationContext();
 
   if (!notification) return null;
 
   const key = `${notification.heading}_${notification.type}_${notification.duration}_${Date.now()}`;
 
-  return <Notification key={key} type={notification.type} duration={notification.duration} heading={notification.heading} details={notification.details} />;
+  return (
+    <Notification
+      key={key}
+      type={notification.type}
+      duration={notification.duration}
+      heading={notification.heading}
+      details={notification.details}
+      onClose={hideNotification}
+    />
+  );
 };
 
 export default function App({ Component, pageProps }: AppProps) {

@@ -8,19 +8,26 @@ export interface NotificationProps {
   heading: string;
   details: string;
   duration?: number;
+  onClose?: () => void;
 }
-export default function Notification({ heading, details, duration = 500, type = 'success' }: NotificationProps) {
+export default function Notification({ heading, details, duration = 500, type = 'success', onClose }: NotificationProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
+      if (onClose) onClose();
     }, duration);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [duration]);
+  }, [duration, onClose]);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
 
   if (!isVisible) return null;
 
@@ -57,7 +64,7 @@ export default function Notification({ heading, details, duration = 500, type = 
                       type="button"
                       className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       onClick={() => {
-                        setIsVisible(false);
+                        handleClose();
                       }}
                     >
                       <span className="sr-only">Close</span>
