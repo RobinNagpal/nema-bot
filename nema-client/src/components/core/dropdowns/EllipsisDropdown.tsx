@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import styled from 'styled-components';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -16,14 +17,36 @@ export interface EllipsisDropdownProps {
   items: EllipsisDropdownItem[];
   onSelect: (item: string) => void;
 }
+
+const MenuButton = styled(Menu.Button)`
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  &:hover {
+    color: var(--primary-color);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color), 0 0 0 4px var(--bg-color);
+  }
+`;
+
+const DropdownItem = styled.a<{ active?: boolean }>`
+  color: ${({ active }) => (active ? 'var(--text-color)' : 'var(--link-color)')};
+  background-color: ${({ active }) => (active ? 'var(--block-bg)' : 'transparent')};
+  &:hover {
+    background-color: var(--block-bg);
+    color: var(--text-color);
+  }
+`;
+
 export default function EllipsisDropdown(props: EllipsisDropdownProps) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="flex items-center rounded-full bg-gray-100 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+        <MenuButton className="flex items-center rounded-full focus:ring-offset-2">
           <span className="sr-only">Open options</span>
           <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
-        </Menu.Button>
+        </MenuButton>
       </div>
 
       <Transition
@@ -39,13 +62,9 @@ export default function EllipsisDropdown(props: EllipsisDropdownProps) {
           <div className="py-1">
             {props.items.map((item, index) => (
               <Menu.Item key={index}>
-                <a
-                  href="#"
-                  className={classNames(item.active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm')}
-                  onClick={() => props.onSelect(item.key)}
-                >
+                <DropdownItem href="#" className="block px-4 py-2 text-sm" active={item.active} onClick={() => props.onSelect(item.key)}>
                   {item.label}
-                </a>
+                </DropdownItem>
               </Menu.Item>
             ))}
           </div>

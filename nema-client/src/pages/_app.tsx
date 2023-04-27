@@ -1,4 +1,8 @@
 import 'styles/global.scss';
+import AaveTheme from 'components/themes/AaveTheme';
+import CompoundTheme from 'components/themes/CompoundTheme';
+import GlobalTheme from 'components/themes/GlobalTheme';
+import UniswapTheme from 'components/themes/UniswapTheme';
 import { NotificationProvider, useNotificationContext } from 'contexts/NotificationContext';
 import Notification from 'components/core/notify/Notification';
 
@@ -39,6 +43,9 @@ const NotificationWrapper = () => {
 };
 
 export default function App({ Component, pageProps }: AppProps) {
+  const isThemeCompound = false;
+  const isThemeAave = true;
+  const isThemeUniswap = false;
   return (
     <ApolloProvider client={client}>
       <NotificationProvider>
@@ -47,6 +54,10 @@ export default function App({ Component, pageProps }: AppProps) {
             apiKey: fpjsPublicApiKey,
           }}
         >
+          <GlobalTheme />
+          {isThemeUniswap && <UniswapTheme />}
+          {isThemeAave && <AaveTheme />}
+          {isThemeCompound && <CompoundTheme />}
           <Component {...pageProps} />
         </FpjsProvider>
         <NotificationWrapper />

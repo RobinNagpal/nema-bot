@@ -43,6 +43,7 @@
     "react-markdown": "^8.0.5",
     "sequelize": "^6.29.2",
     "sequelize-cockroachdb": "^6.0.5",
+    "styled-components": "^5.3.10",
     "timeago.js": "^4.0.2",
     "turndown": "^7.1.1",
     "uuidv4": "^6.2.13"
@@ -56,6 +57,7 @@
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/pg": "^8.6.6",
     "@types/react": "18.0.28",
+    "@types/styled-components": "^5.1.26",
     "autoprefixer": "^10.4.14",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
