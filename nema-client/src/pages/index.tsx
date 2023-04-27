@@ -100,7 +100,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className={'uniswap'} style={{ position: 'relative', height: '98vh', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', height: '98vh', overflow: 'hidden' }}>
           <MainContainer>
             <ChatContainer>
               <ConversationHeader style={{ backgroundColor: 'var(--header-bg)' }}>

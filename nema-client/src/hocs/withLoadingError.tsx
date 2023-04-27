@@ -1,3 +1,4 @@
+import Loading from 'components/core/Loading';
 import React from 'react';
 
 interface WithLoadingErrorProps {
@@ -8,7 +9,7 @@ interface WithLoadingErrorProps {
 export const withLoadingError = <P extends object>(WrappedComponent: React.ComponentType<P>): React.FC<P & WithLoadingErrorProps> => {
   return function WithLoadingErrorWrapper({ loading, error, ...props }: WithLoadingErrorProps) {
     if (loading) {
-      return <div>Loading...</div>;
+      return <Loading />;
     }
 
     if (error) {
