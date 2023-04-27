@@ -9,14 +9,14 @@ import { Browser, Page } from 'puppeteer';
 
 dotenv.config();
 
-export async function loadWebPage(url: WebArticleContent): Promise<LGCDocument<PageMetadata>[]> {
-  const loader = new PuppeteerWebBaseLoader(url.url, {
+export async function loadWebPage(webArticleContent: WebArticleContent): Promise<LGCDocument<PageMetadata>[]> {
+  const loader = new PuppeteerWebBaseLoader(webArticleContent.url, {
     gotoOptions: {
       waitUntil: 'networkidle2',
     },
     async evaluate(page: Page, browser: Browser): Promise<string> {
-      const [element] = await page.$x(url.xpath);
-      await page.waitForXPath(url.xpath);
+      const [element] = await page.$x(webArticleContent.details.xpath);
+      await page.waitForXPath(webArticleContent.details.xpath);
       const contents: string = await page.evaluate((el) => el.textContent as string, element);
       console.log('contents : ', contents);
       return contents;
@@ -24,9 +24,9 @@ export async function loadWebPage(url: WebArticleContent): Promise<LGCDocument<P
   });
   const docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[] = (await loader.load()).map((doc): LGCDocument<Omit<PageMetadata, 'chunk'>> => {
     const metadata: Omit<PageMetadata, 'chunk'> = {
-      url: url.url,
+      url: webArticleContent.url,
       text: doc.pageContent,
-      source: url.url,
+      source: webArticleContent.url,
     };
     return { ...doc, metadata };
   });

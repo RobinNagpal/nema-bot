@@ -2,31 +2,55 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model Conversation {
-    userId    String   @id @map("user_id")
-    entry     String?  @map("entry")
-    speaker   Speaker  @map("speaker")
-    createdAt DateTime @default(now()) @map("created_at")
+model Conversation  {
+  userId    String   @id @map("user_id")
+  entry     String?  @map("entry")
+  speaker   Speaker  @map("speaker")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("conversations")
+
 }
 
 enum Speaker {
-    USER
-    ASSISTANT
+  USER
+  ASSISTANT
+}
+
+enum DocumentInfoType {
+  ARTICLE
+  DISCORD
+  DISCOURSE
+  GITBOOK
+  GITHUB
+  IMAGE
+  PDF_DOCUMENT
 }
 
 model DocumentInfo {
-    id     String @id @default(uuid())
-    name   String
-    xpath  String?
-    url    String
-    type   String
-    branch String?
+  id        String           @id @unique
+  name      String
+  url       String
+  spaceId   String           @map("space_id")
+  namespace String
+  type      DocumentInfoType
+
+  details   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  indexedAt DateTime? @map("indexed_at")
+  indexed   Boolean  @default(false)
+
+  @@unique([name, spaceId])
+
+  @@map("document_infos")
 }

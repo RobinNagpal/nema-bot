@@ -5,7 +5,7 @@ query DocumentInfos {
     xpath
     url
     type
-    branch
+    details
   }
 }
 
@@ -16,6 +16,13 @@ query DocumentInfo($id: String!) {
     xpath
     url
     type
-    branch
+    details
+    namespace
+    spaceId
+
+    indexed
+    indexedAt
+    createdAt
+    updatedAt
   }
 }

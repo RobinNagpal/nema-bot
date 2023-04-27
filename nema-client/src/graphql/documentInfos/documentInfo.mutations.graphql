@@ -1,33 +1,48 @@
-mutation CreateDocumentInfo($id: String!, $name: String!, $url: String!, $type: String!, $xpath: String, $branch: String) {
-  createDocumentInfo(id: $id, name: $name, url: $url, type: $type, xpath: $xpath, branch: $branch) {
+mutation CreateDocumentInfo($id: String!, $spaceId: String!, $input: CreateOrUpdateDocumentInfoInput!){
+  createDocumentInfo(id: $id, spaceId: $spaceId, input: $input) {
     id
     name
     xpath
     url
     type
-    branch
+    details
   }
 }
 
 
-mutation UpdateDocumentInfo($id: String!, $name: String, $url: String, $type: String, $xpath: String, $branch: String) {
-  updateDocumentInfo(id: $id, name: $name, url: $url, type: $type, xpath: $xpath, branch: $branch) {
+mutation UpdateDocumentInfo($id: String!, $spaceId: String!, $input: CreateOrUpdateDocumentInfoInput!){
+  updateDocumentInfo(id: $id, spaceId: $spaceId, input: $input) {
     id
     name
     xpath
     url
     type
-    branch
+    details
   }
 }
 
-mutation DeleteDocumentInfo($id: String!) {
-  deleteDocumentInfo(id: $id) {
+mutation IndexDocumentInfo($id: String!, $spaceId: String!){
+  indexDocumentInfo(id: $id, spaceId: $spaceId) {
     id
     name
     xpath
     url
     type
-    branch
+    details
   }
+}
+
+mutation DeleteDocumentInfo($id: String!, $spaceId: String!) {
+  deleteDocumentInfo(id: $id, spaceId: $spaceId) {
+    id
+    name
+    xpath
+    url
+    type
+    details
+  }
+}
+
+mutation CreateSignedUrl($spaceId: String!, $namespace: String!, $input: CreateSignedUrlInput!){
+  createSignedUrl(spaceId: $spaceId, namespace: $namespace, input: $input)
 }
