@@ -11,6 +11,11 @@ input CreateOrUpdateDocumentInfoInput {
   url: String!
 }
 
+input CreateSignedUrlInput {
+  contentType: String!
+  name: String!
+}
+
 type DocumentInfo {
   createdAt: String!
   details: JSONObject!
@@ -38,6 +43,7 @@ scalar JSONObject
 
 type Mutation {
   createDocumentInfo(id: String!, input: CreateOrUpdateDocumentInfoInput!, spaceId: String!): DocumentInfo!
+  createSignedUrl(input: CreateSignedUrlInput!, namespace: String!, spaceId: String!): String!
   deleteDocumentInfo(id: String!, spaceId: String!): DocumentInfo!
   indexDocumentInfo(id: String!, spaceId: String!): DocumentInfo!
   updateDocumentInfo(id: String!, input: CreateOrUpdateDocumentInfoInput!, spaceId: String!): DocumentInfo!

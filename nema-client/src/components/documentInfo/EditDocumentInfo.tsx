@@ -62,11 +62,14 @@ export const EditDocumentInfo = ({ handleSubmit, documentInfo: initial }: EditDo
         onSave={() => handleSubmit(documentInfo)}
       >
         <Input modelValue={documentInfo.name} onChange={(e) => updateDocumentInfoField('name', e.target.value)} label={'Name'} required={true} />
-
-        <Input modelValue={documentInfo.url} onChange={(e) => updateDocumentInfoField('url', e.target.value)} label={'Url'} required={true} />
-
         <Select options={selectOptions} onChange={(e) => updateDocumentInfoField('type', e)} id="document_info_type_select_id" label="Type" />
-        <EditDocumentInfoDetails type={documentInfo.type} details={documentInfo.details} updateDetailsField={updateDetailsField} />
+        <Input modelValue={documentInfo.url} onChange={(e) => updateDocumentInfoField('url', e.target.value)} label={'Url'} required={true} />
+        <EditDocumentInfoDetails
+          type={documentInfo.type}
+          details={documentInfo.details}
+          updateDocumentInfoField={updateDocumentInfoField}
+          updateDetailsField={updateDetailsField}
+        />
       </Form>
     </div>
   );

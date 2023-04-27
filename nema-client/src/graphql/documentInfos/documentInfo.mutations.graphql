@@ -42,3 +42,7 @@ mutation DeleteDocumentInfo($id: String!, $spaceId: String!) {
     details
   }
 }
+
+mutation CreateSignedUrl($spaceId: String!, $namespace: String!, $input: CreateSignedUrlInput!){
+  createSignedUrl(spaceId: $spaceId, namespace: $namespace, input: $input)
+}
