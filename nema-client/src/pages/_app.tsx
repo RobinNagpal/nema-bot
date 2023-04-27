@@ -44,7 +44,7 @@ const NotificationWrapper = () => {
 
 export default function App({ Component, pageProps }: AppProps) {
   const isThemeCompound = false;
-  const isThemeAave = true;
+  const isThemeAave = false;
   const isThemeUniswap = false;
   return (
     <ApolloProvider client={client}>
