@@ -7,10 +7,17 @@ const nextConfig = {
     FINGERPRINT: process.env.FINGERPRINTJS_API_KEY,
   },
   publicRuntimeConfig: {
-    apiUrl: process.env.API_URL || "http://localhost:3000",
+    apiUrl: process.env.API_URL || 'http://localhost:3000',
   },
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
+  },
+  compiler: {
+    styledComponents: {
+      displayName: true,
+      ssr: true,
+      minify: false,
+    },
   },
 };
 

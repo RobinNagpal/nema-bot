@@ -1,19 +1,46 @@
+import React from 'react';
+import styled from 'styled-components';
+
 export interface DetailsContainerProps {
   heading: string;
   infoText?: string;
   children: React.ReactNode;
 }
 
+const Container = styled.div`
+  --tw-text-opacity: 1;
+  --tw-bg-opacity: 1;
+  --tw-border-opacity: 1;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+`;
+
+const Heading = styled.h2`
+  color: var(--heading-color);
+`;
+
+const InfoText = styled.p`
+  color: var(--text-color);
+`;
+
+const BorderDiv = styled.div`
+  border-color: var(--border-color);
+`;
+
+const Divider = styled.div`
+  border-color: var(--border-color);
+`;
+
 export default function DetailsContainer(props: DetailsContainerProps) {
   return (
-    <div>
+    <Container>
       <div className="px-4 sm:px-0">
-        {props.heading && <h2 className="text-base font-semibold leading-7 text-gray-900">{props.heading}</h2>}
-        {props.infoText && <p className="mt-1 text-sm leading-6 text-gray-600">{props.infoText}</p>}
+        {props.heading && <Heading className="text-base font-semibold leading-7">{props.heading}</Heading>}
+        {props.infoText && <InfoText className="mt-1 text-sm leading-6">{props.infoText}</InfoText>}
       </div>
-      <div className="mt-6 border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">{props.children}</dl>
-      </div>
-    </div>
+      <BorderDiv className="mt-6 border-t">
+        <Divider className="divide-y">{props.children}</Divider>
+      </BorderDiv>
+    </Container>
   );
 }

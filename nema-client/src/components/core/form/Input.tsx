@@ -30,6 +30,8 @@ const StyledInput = styled.input`
 
   &:focus {
     box-shadow: 0 0 0 2px var(--primary-color);
+    outline: 1px solid var(--primary-color);
+    //outline: 5px auto -webkit-focus-ring-color;
   }
 `;
 

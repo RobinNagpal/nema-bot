@@ -43,7 +43,7 @@ const NotificationWrapper = () => {
 };
 
 export default function App({ Component, pageProps }: AppProps) {
-  const isThemeCompound = false;
+  const isThemeCompound = true;
   const isThemeAave = false;
   const isThemeUniswap = false;
   return (

@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 interface ButtonProps {
   onClick: () => void;
@@ -6,14 +7,26 @@ interface ButtonProps {
   label: string;
 }
 
+const StyledButton = styled.button`
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+  &:hover {
+    background-color: var(--block-bg);
+  }
+  &:focus {
+    outline-color: var(--primary-color);
+  }
+`;
+
 export function Button(props: ButtonProps) {
   return (
-    <button
+    <StyledButton
       onClick={props.onClick}
       type={props.type}
-      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+      className="mt-3 w-full inline-flex justify-center rounded-md shadow-sm px-4 py-2 font-medium sm:mt-0 sm:w-auto sm:text-sm"
     >
       {props.label}
-    </button>
+    </StyledButton>
   );
 }

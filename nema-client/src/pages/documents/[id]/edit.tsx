@@ -5,6 +5,11 @@ import { CreateOrUpdateDocumentInfoInput, DocumentInfoDocument, useDocumentInfoQ
 import { useRouter } from 'next/router';
 import React from 'react';
 import Link from 'next/link';
+import styled from 'styled-components';
+
+const StyledLink = styled(Link)`
+  color: var(--text-color);
+`;
 
 const UpdateDocumentInfo = () => {
   const router = useRouter();
@@ -41,9 +46,9 @@ const UpdateDocumentInfo = () => {
 
   return (
     <DefaultLayout>
-      <Link className="cursor-pointer" href="/documents">
+      <StyledLink className="cursor-pointer" href="/documents">
         &#8592; Back
-      </Link>
+      </StyledLink>
       <EditDocumentInfo handleSubmit={handleSubmit} documentInfo={data?.documentInfo} />
     </DefaultLayout>
   );

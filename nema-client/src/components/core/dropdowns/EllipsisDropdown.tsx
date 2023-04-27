@@ -39,6 +39,11 @@ const DropdownItem = styled.a<{ active?: boolean }>`
   }
 `;
 
+const MenuItems = styled(Menu.Items)`
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+`;
+
 export default function EllipsisDropdown(props: EllipsisDropdownProps) {
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -58,7 +63,7 @@ export default function EllipsisDropdown(props: EllipsisDropdownProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             {props.items.map((item, index) => (
               <Menu.Item key={index}>
@@ -68,7 +73,7 @@ export default function EllipsisDropdown(props: EllipsisDropdownProps) {
               </Menu.Item>
             ))}
           </div>
-        </Menu.Items>
+        </MenuItems>
       </Transition>
     </Menu>
   );

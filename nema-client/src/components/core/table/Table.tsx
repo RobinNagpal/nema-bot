@@ -1,3 +1,4 @@
+import { Button } from 'components/core/Button';
 import EllipsisDropdown, { EllipsisDropdownItem } from 'components/core/dropdowns/EllipsisDropdown';
 import React from 'react';
 import styled from 'styled-components';
@@ -37,7 +38,7 @@ const InfoText = styled.p`
   color: var(--text-color);
 `;
 
-const AddNewButton = styled.button`
+const AddNewButton = styled(Button)`
   background-color: var(--primary-color);
   color: var(--text-color);
   &:hover {
@@ -69,13 +70,7 @@ export function Table(props: TableProps) {
         )}
         {props.onAddNew && (
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <AddNewButton
-              type="button"
-              className="block rounded-md px-3 py-2 text-center text-sm font-semibold shadow-sm focus-visible:outline-offset-2"
-              onClick={props.onAddNew}
-            >
-              {props.addNewLabel || 'Add New'}
-            </AddNewButton>
+            <AddNewButton type="button" onClick={props.onAddNew} label={props.addNewLabel || 'Add New'} />
           </div>
         )}
       </div>
