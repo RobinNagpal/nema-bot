@@ -2,6 +2,29 @@ import { Fragment, useEffect, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { CheckCircleIcon, StopCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import styled from 'styled-components';
+
+const NotificationPanel = styled.div`
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+`;
+
+const CloseButton = styled.button`
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  &:hover {
+    color: var(--link-color);
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--link-color);
+  }
+`;
+
+const Paragraph = styled.p`
+  color: var(--text-color);
+`;
 
 export interface NotificationProps {
   type?: 'success' | 'error' | 'info';
@@ -10,6 +33,7 @@ export interface NotificationProps {
   duration?: number;
   onClose?: () => void;
 }
+
 export default function Notification({ heading, details, duration = 500, type = 'success', onClose }: NotificationProps) {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -47,7 +71,7 @@ export default function Notification({ heading, details, duration = 500, type = 
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+            <NotificationPanel className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -56,24 +80,24 @@ export default function Notification({ heading, details, duration = 500, type = 
                     {type === 'info' && <InformationCircleIcon className="h-6 w-6 text-blue-400" aria-hidden="true" />}
                   </div>
                   <div className="ml-3 w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-medium text-gray-900">{heading}</p>
-                    <p className="mt-1 text-sm text-gray-500">{details}</p>
+                    <Paragraph className="text-sm font-medium text-gray-900">{heading}</Paragraph>
+                    <Paragraph className="mt-1 text-sm text-gray-500">{details}</Paragraph>
                   </div>
                   <div className="ml-4 flex flex-shrink-0">
-                    <button
+                    <CloseButton
                       type="button"
-                      className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      className="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       onClick={() => {
                         handleClose();
                       }}
                     >
                       <span className="sr-only">Close</span>
                       <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-                    </button>
+                    </CloseButton>
                   </div>
                 </div>
               </div>
-            </div>
+            </NotificationPanel>
           </Transition>
         </div>
       </div>

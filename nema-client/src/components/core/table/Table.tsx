@@ -1,5 +1,7 @@
+import { Button } from 'components/core/Button';
 import EllipsisDropdown, { EllipsisDropdownItem } from 'components/core/dropdowns/EllipsisDropdown';
 import React from 'react';
+import styled from 'styled-components';
 
 export interface TableRow {
   columns: string[];
@@ -23,25 +25,52 @@ export interface TableProps {
   firstColumnBold?: boolean;
   actions?: TableActions;
 }
+
+const Heading = styled.h1`
+  color: var(--heading-color);
+`;
+
+const ColumnHeading = styled.th`
+  color: var(--heading-color);
+`;
+
+const InfoText = styled.p`
+  color: var(--text-color);
+`;
+
+const AddNewButton = styled(Button)`
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  &:hover {
+    background-color: var(--link-color);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--link-color);
+  }
+`;
+
+const FirstColumnCell = styled.td`
+  color: var(--heading-color);
+`;
+
+const TableCell = styled.td`
+  color: var(--text-color);
+`;
+
 export function Table(props: TableProps) {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center justify-between">
         {props.heading && (
           <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold leading-6 text-gray-900">{props.heading}</h1>
-            {props.infoText && <p className="mt-2 text-sm text-gray-700">{props.infoText}</p>}
+            <Heading className="text-base font-semibold leading-6">{props.heading}</Heading>
+            {props.infoText && <InfoText className="mt-2 text-sm">{props.infoText}</InfoText>}
           </div>
         )}
         {props.onAddNew && (
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button
-              type="button"
-              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              onClick={props.onAddNew}
-            >
-              {props.addNewLabel || 'Add New'}
-            </button>
+            <AddNewButton type="button" onClick={props.onAddNew} label={props.addNewLabel || 'Add New'} />
           </div>
         )}
       </div>
@@ -52,9 +81,9 @@ export function Table(props: TableProps) {
               <thead>
                 <tr>
                   {props.columnsHeadings.map((heading, index) => (
-                    <th key={index} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">
+                    <ColumnHeading key={index} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold sm:pl-3">
                       {heading}
-                    </th>
+                    </ColumnHeading>
                   ))}
                 </tr>
               </thead>
@@ -63,17 +92,17 @@ export function Table(props: TableProps) {
                   <tr key={index}>
                     {row.columns.map((cell, index) => {
                       return index === 0 && props.firstColumnBold ? (
-                        <td
+                        <FirstColumnCell
                           width={`${props.columnsWidthPercents?.[index] || 100}%`}
                           key={index}
-                          className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 break-all	"
+                          className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 break-all"
                         >
                           {cell}
-                        </td>
+                        </FirstColumnCell>
                       ) : (
-                        <td key={index} className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 break-all">
+                        <TableCell key={index} className="whitespace-nowrap px-3 py-4 text-sm break-all">
                           {cell}
-                        </td>
+                        </TableCell>
                       );
                     })}
                     {props.actions && (

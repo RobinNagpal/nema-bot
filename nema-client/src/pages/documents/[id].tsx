@@ -7,7 +7,11 @@ import { useDocumentActions } from 'hooks/useDocumentInfoActions';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
+import styled from 'styled-components';
 
+const StyledLink = styled(Link)`
+  color: var(--text-color);
+`;
 export default function ViewDocumentInfo() {
   const router = useRouter();
   const { id } = router.query;
@@ -16,9 +20,9 @@ export default function ViewDocumentInfo() {
   return (
     <DefaultLayout>
       <div className="flex justify-between">
-        <Link className="cursor-pointer" href="/documents">
+        <StyledLink className="cursor-pointer" href="/documents">
           &#8592; Back
-        </Link>
+        </StyledLink>
         <EllipsisDropdown
           items={actions.items.filter((item) => item.key !== 'view')}
           onSelect={(key) => {
