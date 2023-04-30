@@ -23,7 +23,13 @@ export class PresignedUrlCreator {
   async createSignedUrl(spaceId: string, namespace: string, args: CreateSignedUrlInput): Promise<string> {
     const { contentType, name } = args;
 
-    const client = new S3Client(s3Config);
+    const client = new S3Client({
+      credentials: {
+        accessKeyId: String(process.env.NEMA_AWS_ACCESS_KEY_ID),
+        secretAccessKey: String(process.env.NEMA_AWS_SECRET_ACCESS_KEY),
+      },
+      region: process.env.AWS_DEFAULT_REGION,
+    });
     const command = new PutObjectCommand({
       Key: `${spaceId}/temp-uploads/${namespace}/${Date.now()}_${slugify(name)}`,
       Bucket: process.env.NEMA_PUBLIC_AWS_S3_BUCKET,

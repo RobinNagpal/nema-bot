@@ -10,12 +10,12 @@ export default function updateDocumentInfo(_: any, { id, ...args }: MutationUpda
   // 2. we then upload the file to s3 to a folder - `${spaceId}/user-uploads/${namespace}/${DocumentName_with_extension}`,
   // 3. We then pass the file to pdf splitter
 
-  const splitPdfPages = await splitPdf(downloadedFile);
+  //const splitPdfPages = await splitPdf(downloadedFile);
 
   // read each page of the split pdf file and create pinecone document for each page
 
   //  TODO: PDF_INDEXING - First delete the old pinecone document and then create a new one
-  indexDocument(pineConeDoc, context.pineconeIndex);
+  //indexDocument(pineConeDoc, context.pineconeIndex);
 
   return prisma.documentInfo.update({
     where: { id: id },
