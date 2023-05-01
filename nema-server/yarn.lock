@@ -1753,10 +1753,15 @@
   resolved "https://registry.yarnpkg.com/@discordjs/util/-/util-0.2.0.tgz#91b590dae3934ffa5fe34530afc5212c569d6751"
   integrity sha512-/8qNbebFzLWKOOg+UV+RB8itp4SmU5jw0tBUD3ifElW6rYNOj1Ku5JaSW7lLl/WgjjxF01l/1uQPCzkwr110vg==
 
-"@dqbd/tiktoken@^1.0.4", "@dqbd/tiktoken@^1.0.6":
+"@dqbd/tiktoken@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.6.tgz#96bfd0a4909726c61551a8c783493f01841bd163"
   integrity sha512-umSdeZTy/SbPPKVuZKV/XKyFPmXSN145CcM3iHjBbmhlohBJg7vaDp4cPCW+xNlWL6L2U1sp7T2BD+di2sUKdA==
+
+"@dqbd/tiktoken@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@dqbd/tiktoken/-/tiktoken-1.0.7.tgz#612871cf91eba5599c804f100c573aa4d8596f57"
+  integrity sha512-bhR5k5W+8GLzysjk8zTMVygQZsgvf7W1F0IlL4ZQ5ugjo5rCyiwGM5d8DYriXspytfu98tv59niang3/T+FoDw==
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
@@ -4866,13 +4871,13 @@ jsonpointer@^5.0.1:
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-5.0.1.tgz#2110e0af0900fd37467b5907ecd13a7884a1b559"
   integrity sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==
 
-langchain@^0.0.64:
-  version "0.0.64"
-  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.0.64.tgz#f37ecef998cbee558a99b66feccd343b2aaef123"
-  integrity sha512-EPR5igtuSemtPAesQ8oa8SF/xjTA+bYJW00JNJ/8PYkPNiU+uc+cifOEH3H/DFam+oDY9XhR7WV+GhBEskVNNA==
+langchain@^0.0.66:
+  version "0.0.66"
+  resolved "https://registry.yarnpkg.com/langchain/-/langchain-0.0.66.tgz#dff1c78dde3837854298253c63952660c3ee7e27"
+  integrity sha512-HsVdXFDp2+YB12tvpMFOK6kIXaLvFzJKQUzitr5VEamhZCFUoojZgcS7ckRjxJIv+aVWbEzCi3KJI/2kPKsMkA==
   dependencies:
     "@anthropic-ai/sdk" "^0.4.3"
-    "@dqbd/tiktoken" "^1.0.4"
+    "@dqbd/tiktoken" "^1.0.7"
     binary-extensions "^2.2.0"
     browser-or-node "^2.1.1"
     expr-eval "^2.0.2"
