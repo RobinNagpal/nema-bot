@@ -1,8 +1,9 @@
-import { GitbookContent, GithubContent, PageMetadata, WebArticleContent } from '@/contents/projectsContents';
+import { GitbookContent, GithubContent, PageMetadata, WebArticleContent,PDFContent } from '@/contents/projectsContents';
 import { indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
 import { loadGitbookData } from '@/loaders/gitbookLoader';
 import { loadGithubData } from '@/loaders/githubLoader';
 import { loadWebPage } from '@/loaders/webpageLoader';
+import {loadPDFData} from '../loaders/pdfLoader';
 import { prisma } from '@/prisma';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { DocumentInfo, DocumentInfoType } from '@prisma/client';
@@ -19,6 +20,10 @@ export async function indexDocument(documentInfo: DocumentInfo, index: VectorOpe
     } else if (documentInfo.type == DocumentInfoType.GITBOOK) {
       const docs: Document<PageMetadata>[] = await loadGitbookData(documentInfo as GitbookContent);
       await indexDocsInPinecone(docs, index);
+    }else if (documentInfo.type == DocumentInfoType.PDF_DOCUMENT) {
+      console.log(`\n indexing pdf \n`)
+       const docs: Document<PageMetadata>[] = await loadPDFData(documentInfo as PDFContent);
+       await indexDocsInPinecone(docs, index);
     } else {
       throw new Error(`Unknown content type : ${documentInfo.type}`);
     }

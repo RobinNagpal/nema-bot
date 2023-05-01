@@ -31,6 +31,10 @@ export interface DiscordContent extends Content {
   includeUsers: string[];
 }
 
+export interface PDFContent extends Content {
+  type: 'PDF_DOCUMENT';
+}
+
 export interface PageMetadata {
   chunk: string;
   text: string;
