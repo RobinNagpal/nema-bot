@@ -2,18 +2,32 @@ import { LLMChain, PromptTemplate } from 'langchain';
 import { OpenAI } from 'langchain/llms';
 import { templates } from './templates';
 
-const codeTemplate = `CONTENT privides the source code around which we need to generate new code. For generating the code examples you can use
-    the following frameworks:
+const codeTemplate = `CONTENT provides the source code around which we need to generate new code examples. You should follow these rules when generating code examples:
     
+    - Use the source code in CONTENT as the basis for generating the examples. All examples should relate to or use the functions provided in CONTENT.
     
-    - Make sure all the examples are around the code in CONTENT. That is calls the functions in CONTENT to get information or provides information.
+    - Choose the most relevant framework or language for generating the examples. You can use any of the following frameworks:
+        
+        - Framework_1
+        - Framework_2
+        - Framework_3
     
-
+    - Generate code examples that are relevant to the INQUIRY provided. If the inquiry cannot be answered, the final answer should be empty.
+    
+    - All generated code examples should be valid and functional, and should demonstrate the use of the functions provided in CONTENT.
+    
+    - Provide comments or explanations for each code example to make it easier to understand and use.
+    
+    - Each code example should be presented in markdown format.
+    
     INQUIRY: {inquiry}    
     CONTENT: {original_documents}
+    FRAMEWORK_1: {framework1}
+    FRAMEWORK_2: {framework2}
+    FRAMEWORK_3: {framework3}
 
     Final answer:
-    `;
+`;
 
 const llm = new OpenAI({ concurrency: 10, temperature: 0, modelName: 'gpt-3.5-turbo' });
 
