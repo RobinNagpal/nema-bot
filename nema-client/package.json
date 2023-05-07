@@ -9,7 +9,10 @@
     "lint": "next lint",
     "index": "ts-node --esm ./src/indexData.ts",
     "graphql:download": "graphql-codegen --config introspection.yml",
-    "graphql:generate": "graphql-codegen --config codegen.yml"
+    "graphql:generate": "graphql-codegen --config codegen.yml",
+    "lint-fix": "next lint --fix",
+    "prettier-fix": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "prettier-check": "prettier --check 'src/**/*.ts'"
   },
   "dependencies": {
     "@ably-labs/react-hooks": "^2.1.0",

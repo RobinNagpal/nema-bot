@@ -1,8 +1,6 @@
-
-
 const config = {
-  FINGERPRINTJS: process.env.FINGERPRINTJS_API_KEY
-}
+  FINGERPRINTJS: process.env.FINGERPRINTJS_API_KEY,
+};
 
-console.log(config)
-export default config
+console.log(config);
+export default config;
