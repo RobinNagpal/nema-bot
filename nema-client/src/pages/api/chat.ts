@@ -36,7 +36,6 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
   let summarizedCount = 0;
 
   try {
-    console.log(userId);
     const channel = ably.channels.get(userId);
     const interactionId = uuid();
 
@@ -165,10 +164,8 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
     });
     // Prepare a QA chain and call it with the document summaries and the user's prompt
     const promptTemplate = new PromptTemplate({
-      //   template: templates.qaTemplate,
-      template: templates.codeTemplate,
-      inputVariables: ['summaries', 'question', 'conversationHistory', 'framework_1', 'framework_2', 'framework_3', 'original_documents'],
-      //   inputVariables: ['summaries', 'question', 'conversationHistory', 'urls'],
+      template: templates.qaTemplate,
+      inputVariables: ['summaries', 'question', 'conversationHistory', 'urls'],
     });
 
     const chat = new ChatOpenAI({
@@ -207,10 +204,7 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
       summaries: summary,
       question: prompt,
       conversationHistory,
-      framework_1: 'solidity',
-      framework_2: 'typescript',
-      framework_3: 'javascript',
-      original_documents: fullDocuments,
+      urls,
     });
   } catch (error) {
     //@ts-ignore
