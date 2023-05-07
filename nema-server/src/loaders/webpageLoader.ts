@@ -18,7 +18,6 @@ export async function loadWebPage(webArticleContent: WebArticleContent): Promise
       const [element] = await page.$x(webArticleContent.details.xpath);
       await page.waitForXPath(webArticleContent.details.xpath);
       const contents: string = await page.evaluate((el) => el.textContent as string, element);
-      console.log('contents : ', contents);
       return contents;
     },
   });

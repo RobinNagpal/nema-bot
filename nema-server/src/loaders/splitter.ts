@@ -11,7 +11,7 @@ export async function split(docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[]): P
   const flatMap: LGCDocument<PageMetadata>[] = (
     await Promise.all(
       docs.map(async (doc) => {
-        const splits = await splitter.splitText(doc.pageContent);
+        const splits = doc.pageContent ? await splitter.splitText(doc.pageContent) : [];
         return splits.map((text, i) => {
           return new LGCDocument({ pageContent: text, metadata: { ...doc.metadata, chunk: text } });
         });
