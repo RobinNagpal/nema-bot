@@ -1,5 +1,6 @@
 import { uniswapV3ProjectContents } from '@/contents/projects';
 import { indexUnIndexedDocs } from '@/indexer/indexUnIndexedDocs';
+import { prisma } from '@/prisma';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 
@@ -20,6 +21,8 @@ export async function reIndexAllData() {
     if (!pinecone) {
       await initPineconeClient();
     }
+
+    await prisma.documentInfo.deleteMany({});
 
     const documentInfo = pinecone && pinecone.Index(uniswapV3ProjectContents.indexName);
 
