@@ -9,11 +9,11 @@ import { OpenAI } from 'langchain/llms';
 import { PromptTemplate } from 'langchain/prompts';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { uuid } from 'uuidv4';
-import { summarizeLongDocument } from './summarizer';
+import { summarizeLongDocument } from './pages/api/summarizer';
 
-import { ConversationLog } from './conversationLog';
-import { Metadata, getMatchesFromEmbeddings } from './matches';
-import { templates } from './templates';
+import { ConversationLog } from './pages/api/conversationLog';
+import { Metadata, getMatchesFromEmbeddings } from './pages/api/matches';
+import { templates } from './pages/api/templates';
 
 const llm = new OpenAI({});
 let pinecone: PineconeClient | null = null;
@@ -28,7 +28,7 @@ const initPineconeClient = async () => {
 
 const ably = new Ably.Realtime({ key: process.env.ABLY_API_KEY });
 
-const handleRequest = async ({ prompt, userId }: { prompt: string; userId: string }) => {
+const handleRequest = async () => {
   if (!pinecone) {
     await initPineconeClient();
   }
@@ -36,7 +36,8 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
   let summarizedCount = 0;
 
   try {
-    console.log(userId);
+    const prompt = 'Write the smart contract for uniswap v3 pool';
+    const userId = 'user';
     const channel = ably.channels.get(userId);
     const interactionId = uuid();
 
@@ -167,7 +168,7 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
     const promptTemplate = new PromptTemplate({
       //   template: templates.qaTemplate,
       template: templates.codeTemplate,
-      inputVariables: ['summaries', 'question', 'conversationHistory', 'framework_1', 'framework_2', 'framework_3', 'original_documents'],
+      inputVariables: ['inquiry', 'conversationHistory', 'framework_1', 'framework_2', 'framework_3', 'original_documents'],
       //   inputVariables: ['summaries', 'question', 'conversationHistory', 'urls'],
     });
 
@@ -204,7 +205,7 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
     });
 
     await chain.call({
-      summaries: summary,
+      //   summaries: summary,
       question: prompt,
       conversationHistory,
       framework_1: 'solidity',
@@ -221,6 +222,6 @@ const handleRequest = async ({ prompt, userId }: { prompt: string; userId: strin
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { body } = req;
   const { prompt, userId } = body;
-  await handleRequest({ prompt, userId });
+  await handleRequest();
   res.status(200).json({ message: 'started' });
 }
