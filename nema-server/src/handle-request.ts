@@ -1,21 +1,21 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { PineconeClient } from '@pinecone-database/pinecone';
-import * as Ably from 'ably';
 import { CallbackManager } from 'langchain/callbacks';
 import { LLMChain } from 'langchain/chains';
-import { ChatOpenAI } from 'langchain/chat_models';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { OpenAI } from 'langchain/llms';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAI } from 'langchain/llms/openai';
 import { PromptTemplate } from 'langchain/prompts';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { uuid } from 'uuidv4';
-import { summarizeLongDocument } from './pages/api/summarizer';
 
-import { ConversationLog } from './pages/api/conversationLog';
-import { Metadata, getMatchesFromEmbeddings } from './pages/api/matches';
-import { templates } from './pages/api/templates';
+import { ConversationLog } from './conversationLog';
+import { Metadata, getMatchesFromEmbeddings } from './matches';
+import { templates } from './templates';
+import dotenv from 'dotenv';
 
-const llm = new OpenAI({});
+dotenv.config();
+
+const llm = new OpenAI({
+  openAIApiKey: process.env.OPENAI_API_KEY,
+});
 let pinecone: PineconeClient | null = null;
 
 const initPineconeClient = async () => {
@@ -26,20 +26,14 @@ const initPineconeClient = async () => {
   });
 };
 
-const ably = new Ably.Realtime({ key: process.env.ABLY_API_KEY });
-
 const handleRequest = async () => {
   if (!pinecone) {
     await initPineconeClient();
   }
 
-  let summarizedCount = 0;
-
   try {
     const prompt = 'Write the smart contract for uniswap v3 pool';
     const userId = 'user';
-    const channel = ably.channels.get(userId);
-    const interactionId = uuid();
 
     // Retrieve the conversation log and save the user's prompt
     const conversationLog = new ConversationLog(userId);
@@ -58,7 +52,7 @@ const handleRequest = async () => {
     const inquiry = inquiryChainResult.text;
 
     // Embed the user's intent and query the Pinecone index
-    const embedder = new OpenAIEmbeddings();
+    const embedder = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
 
     const embeddings = await embedder.embedQuery(inquiry);
 
@@ -111,13 +105,6 @@ const handleRequest = async () => {
     // const fullDocuments = urls && await getDocumentsByUrl(urls)
     console.log(fullDocuments);
 
-    const onSummaryDone = (summary: string) => {
-      summarizedCount += 1;
-    };
-
-    const summary = await summarizeLongDocument(fullDocuments!.join('\n'), inquiry, onSummaryDone);
-    console.log(summary);
-
     // Prepare a QA chain and call it with the document summaries and the user's prompt
     const promptTemplate = new PromptTemplate({
       //   template: templates.qaTemplate,
@@ -127,28 +114,13 @@ const handleRequest = async () => {
     });
 
     const chat = new ChatOpenAI({
+      openAIApiKey: process.env.OPENAI_API_KEY,
       streaming: true,
       verbose: true,
       modelName: 'gpt-3.5-turbo',
       callbackManager: CallbackManager.fromHandlers({
         async handleLLMNewToken(token) {
           console.log(token);
-          channel.publish({
-            data: {
-              event: 'response',
-              token: token,
-              interactionId,
-            },
-          });
-        },
-        async handleLLMEnd(result) {
-          channel.publish({
-            data: {
-              event: 'responseEnd',
-              token: 'END',
-              interactionId,
-            },
-          });
         },
       }),
     });
@@ -168,12 +140,11 @@ const handleRequest = async () => {
       original_documents: fullDocuments,
     });
   } catch (error) {
-    //@ts-ignore
     console.error(error);
   }
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: any, res: any) {
   const { body } = req;
   const { prompt, userId } = body;
   await handleRequest();
