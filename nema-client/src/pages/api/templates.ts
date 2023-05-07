@@ -56,6 +56,6 @@ const templates = {
 
     Final answer:
     `,
-}
+};
 
-export { templates }
+export { templates };

@@ -9,8 +9,10 @@
     "prisma:generate": "prisma generate",
     "index-docs": "ts-node --esm src/indexData.ts",
     "dev": "npm run graphql:generate && nodemon",
-    "lint": "eslint . --ext .ts,.js --fix",
-    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    "lint-fix": "eslint . --ext .ts,.js --fix",
+    "prettier-fix": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "lint": "eslint . --ext .ts,.js",
+    "prettier-check": "prettier --check 'src/**/*.ts'"
   },
   "keywords": [],
   "author": "robin",

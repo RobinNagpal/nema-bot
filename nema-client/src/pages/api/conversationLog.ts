@@ -4,33 +4,37 @@ import { Sequelize } from 'sequelize-cockroachdb';
 const sequelize = new Sequelize(process.env.DATABASE_URL!, { logging: false, dialectModule: pg });
 
 type ConversationLogEntry = {
-  entry: string,
-  created_at: Date,
-  speaker: string,
-}
+  entry: string;
+  created_at: Date;
+  speaker: string;
+};
 
 class ConversationLog {
-  constructor(
-    public userId: string,
-  ) {
-    this.userId = userId
+  constructor(public userId: string) {
+    this.userId = userId;
   }
 
-  public async addEntry({ entry, speaker }: { entry: string, speaker: string }) {
+  public async addEntry({ entry, speaker }: { entry: string; speaker: string }) {
     try {
-      await sequelize.query(`INSERT INTO conversations (user_id, entry, speaker) VALUES ('${this.userId}', '${entry}', '${speaker}') ON CONFLICT (created_at) DO NOTHING`);
+      await sequelize.query(
+        `INSERT INTO conversations (user_id, entry, speaker) VALUES ('${this.userId}', '${entry}', '${speaker}') ON CONFLICT (created_at) DO NOTHING`
+      );
     } catch (e) {
-      console.log(`Error adding entry: ${e}`)
+      console.log(`Error adding entry: ${e}`);
     }
   }
 
   public async getConversation({ limit }: { limit: number }): Promise<string[]> {
-    const conversation = await sequelize.query(`SELECT entry, speaker, created_at FROM conversations WHERE user_id = '${this.userId}' ORDER By created_at DESC LIMIT ${limit}`);
-    const history = conversation[0] as ConversationLogEntry[]
+    const conversation = await sequelize.query(
+      `SELECT entry, speaker, created_at FROM conversations WHERE user_id = '${this.userId}' ORDER By created_at DESC LIMIT ${limit}`
+    );
+    const history = conversation[0] as ConversationLogEntry[];
 
-    return history.map((entry) => {
-      return `${entry.speaker.toUpperCase()}: ${entry.entry}`
-    }).reverse()
+    return history
+      .map((entry) => {
+        return `${entry.speaker.toUpperCase()}: ${entry.entry}`;
+      })
+      .reverse();
   }
 
   public async clearConversation() {
@@ -38,4 +42,4 @@ class ConversationLog {
   }
 }
 
-export { ConversationLog }
+export { ConversationLog };

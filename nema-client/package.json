@@ -9,7 +9,10 @@
     "lint": "next lint",
     "index": "ts-node --esm ./src/indexData.ts",
     "graphql:download": "graphql-codegen --config introspection.yml",
-    "graphql:generate": "graphql-codegen --config codegen.yml"
+    "graphql:generate": "graphql-codegen --config codegen.yml",
+    "lint-fix": "next lint --fix",
+    "prettier-fix": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "prettier-check": "prettier --check 'src/**/*.ts'"
   },
   "dependencies": {
     "@ably-labs/react-hooks": "^2.1.0",
@@ -29,7 +32,7 @@
     "exponential-backoff": "^3.1.1",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
-    "langchain": "^0.0.51",
+    "langchain": "^0.0.66",
     "nema-chat-ui-kit-styles": "^1.4.2",
     "next": "13.1.6",
     "next-apollo": "^5.0.8",
