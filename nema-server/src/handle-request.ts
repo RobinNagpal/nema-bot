@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { CallbackManager } from 'langchain/callbacks';
 import { LLMChain } from 'langchain/chains';
@@ -9,9 +13,6 @@ import { PromptTemplate } from 'langchain/prompts';
 import { ConversationLog } from './conversationLog';
 import { Metadata, getMatchesFromEmbeddings } from './matches';
 import { templates } from './templates';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const llm = new OpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
