@@ -59,31 +59,13 @@ const handleRequest = async () => {
 
     // Embed the user's intent and query the Pinecone index
     const embedder = new OpenAIEmbeddings();
-    channel.publish({
-      data: {
-        event: 'status',
-        message: 'Embedding your inquiry...',
-      },
-    });
 
     const embeddings = await embedder.embedQuery(inquiry);
-    channel.publish({
-      data: {
-        event: 'status',
-        message: 'Finding matches...',
-      },
-    });
 
     console.log('embeddings', embeddings.length);
     const matches = await getMatchesFromEmbeddings(embeddings, pinecone!, 3);
 
     console.log('matches', matches.length);
-    channel.publish({
-      data: {
-        event: 'status',
-        message: `Found ${matches?.length} matches`,
-      },
-    });
 
     // const urls = docs && Array.from(new Set(docs.map(doc => doc.metadata.url)))
 
@@ -100,12 +82,6 @@ const handleRequest = async () => {
       );
 
     console.log(urls);
-
-    // const fullDocuments = matches && Array.from(new Set(matches.map(match => {
-    //   const metadata = match.metadata as Metadata
-    //   const { text } = metadata
-    //   return text
-    // })))
 
     const fullDocuments =
       matches &&
@@ -133,37 +109,15 @@ const handleRequest = async () => {
       );
 
     // const fullDocuments = urls && await getDocumentsByUrl(urls)
-    // console.log(fullDocuments)
-
-    channel.publish({
-      data: {
-        event: 'status',
-        message: `Documents are summarized (they are ${fullDocuments?.join('').length} long)`,
-      },
-    });
+    console.log(fullDocuments);
 
     const onSummaryDone = (summary: string) => {
       summarizedCount += 1;
-
-      channel.publish({
-        data: {
-          event: 'status',
-          message: `Done summarizing ${summarizedCount} documents`,
-        },
-      });
     };
 
     const summary = await summarizeLongDocument(fullDocuments!.join('\n'), inquiry, onSummaryDone);
     console.log(summary);
 
-    // const summary = chunkedDocs!.join("\n")
-
-    channel.publish({
-      data: {
-        event: 'status',
-        message: `Documents are summarized. Forming final answer...`,
-      },
-    });
     // Prepare a QA chain and call it with the document summaries and the user's prompt
     const promptTemplate = new PromptTemplate({
       //   template: templates.qaTemplate,
