@@ -48,17 +48,23 @@ export async function indexDocsInPinecone(allDocs: Document<PageMetadata>[], ind
     console.error(e);
   }
 
-  const chunks = sliceIntoChunks(vectors, 10);
+  const chunks = sliceIntoChunks(vectors, 2);
 
   await Promise.all(
     chunks.map(async (chunk) => {
-      index &&
-        (await index.upsert({
-          upsertRequest: {
-            namespace: uniswapV3ProjectContents.namespace,
-            vectors: chunk as Vector[],
-          },
-        }));
+      if (index) {
+        try {
+          await index.upsert({
+            upsertRequest: {
+              namespace: uniswapV3ProjectContents.namespace,
+              vectors: chunk as Vector[],
+            },
+          });
+        } catch (e) {
+          console.error(e);
+          console.error('Error indexing chunk', chunk);
+        }
+      }
     })
   );
 }
