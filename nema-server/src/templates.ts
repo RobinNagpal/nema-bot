@@ -56,6 +56,17 @@ const templates = {
 
     Final answer:
     `,
+  statelessCodeInquiryTemplate: `Given the following user prompt, find all the code snippets that matches to the user's prompt.
+    You should follow the following rules when generating and answer:
+    - Only attempt to answer if a there is a close match.
+    - Return the solidity or typescript code that matches the user prompt.
+    - You should remove any code that  is not relevant to the user prompt
+    - If you are unable to formulate a question, respond: I WAS NOT ABLE TO FIND ANYTHING RELEVANT.
+
+    USER PROMPT: {userPrompt}
+
+    Final answer:
+    `,
   codeTemplate: `CONTENT provides the source code around which we need to generate new code examples. You should follow these rules when generating code examples:
     
     - Use the source code in CONTENT as the basis for generating the examples. All examples should relate to or use the functions provided in CONTENT.

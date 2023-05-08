@@ -1,0 +1,60 @@
+import { getMatchingFullDocs } from '@/prompts/code/getMatchingFullDocs';
+import { templates } from '@/templates';
+import { PineconeClient } from '@pinecone-database/pinecone';
+import dotenv from 'dotenv';
+import { LLMChain } from 'langchain/chains';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAI } from 'langchain/llms/openai';
+import { PromptTemplate } from 'langchain/prompts';
+
+dotenv.config();
+
+const llm = new OpenAI({
+  openAIApiKey: process.env.OPENAI_API_KEY,
+});
+let pinecone: PineconeClient | null = null;
+
+const initPineconeClient = async () => {
+  pinecone = new PineconeClient();
+  await pinecone.init({
+    environment: process.env.PINECONE_ENVIRONMENT!,
+    apiKey: process.env.PINECONE_API_KEY!,
+  });
+};
+
+const handleRequest = async () => {
+  if (!pinecone) {
+    await initPineconeClient();
+  }
+
+  try {
+    const prompt = 'Explain the swapping in uniswap v3 pool smart contract and write couple of test cases for it.';
+
+    // Build an LLM chain that will improve the user prompt
+    const inquiryChain = new LLMChain({
+      llm,
+      prompt: new PromptTemplate({
+        template: templates.statelessCodeInquiryTemplate,
+        inputVariables: ['userPrompt'],
+      }),
+    });
+    const inquiryChainResult = await inquiryChain.call({ userPrompt: prompt });
+    const inquiry = inquiryChainResult.text;
+
+    console.log('inquiry:', inquiry);
+
+    // Embed the user's intent and query the Pinecone index
+    const embedder = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
+
+    const inquiryEmbeddings = await embedder.embedQuery(inquiry);
+
+    // Step 1: Get the top 5 matches from the Pinecone index
+    const fullDocuments = await getMatchingFullDocs(pinecone!, inquiryEmbeddings);
+
+    console.log('fullDocuments', fullDocuments.join('\n \n==========================\n \n'));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+handleRequest();
