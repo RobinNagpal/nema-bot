@@ -89,8 +89,6 @@ const templates = {
     
     CONTENT: {original_documents}
 
-    CONVERSATION LOG: {conversationHistory}
-
     FRAMEWORK_1: {framework1}
     
     FRAMEWORK_2: {framework2}

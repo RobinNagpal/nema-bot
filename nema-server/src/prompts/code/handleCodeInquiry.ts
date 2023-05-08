@@ -1,3 +1,4 @@
+import { getConsolidatedCode } from '@/prompts/code/getConsolidatedCode';
 import { getMatchingFullDocs } from '@/prompts/code/getMatchingFullDocs';
 import { templates } from '@/templates';
 import { PineconeClient } from '@pinecone-database/pinecone';
@@ -30,28 +31,17 @@ const handleRequest = async () => {
   try {
     const prompt = 'Explain the swapping in uniswap v3 pool smart contract and write couple of test cases for it.';
 
-    // Build an LLM chain that will improve the user prompt
-    const inquiryChain = new LLMChain({
-      llm,
-      prompt: new PromptTemplate({
-        template: templates.statelessCodeInquiryTemplate,
-        inputVariables: ['userPrompt'],
-      }),
-    });
-    const inquiryChainResult = await inquiryChain.call({ userPrompt: prompt });
-    const inquiry = inquiryChainResult.text;
-
-    console.log('inquiry:', inquiry);
-
     // Embed the user's intent and query the Pinecone index
     const embedder = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
 
-    const inquiryEmbeddings = await embedder.embedQuery(inquiry);
+    const inquiryEmbeddings = await embedder.embedQuery(prompt);
 
     // Step 1: Get the top 5 matches from the Pinecone index
     const fullDocuments = await getMatchingFullDocs(pinecone!, inquiryEmbeddings);
+    // console.log('fullDocuments', fullDocuments.join('\n \n==========================\n \n'));
 
-    console.log('fullDocuments', fullDocuments.join('\n \n==========================\n \n'));
+    const result = await getConsolidatedCode(prompt, fullDocuments);
+    console.log('result', result);
   } catch (error) {
     console.error(error);
   }

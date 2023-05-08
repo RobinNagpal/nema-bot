@@ -5,7 +5,7 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { PromptTemplate } from 'langchain/prompts';
 import { ChainValues } from 'langchain/schema';
 
-async function getConsolidatedCode(fullDocuments: string[]): Promise<ChainValues> {
+export async function getConsolidatedCode(inquiry: string, fullDocuments: string[]): Promise<ChainValues> {
   const promptTemplate = new PromptTemplate({
     //   template: templates.qaTemplate,
     template: templates.codeTemplate,
@@ -15,14 +15,8 @@ async function getConsolidatedCode(fullDocuments: string[]): Promise<ChainValues
 
   const chat = new ChatOpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
-    streaming: true,
     verbose: true,
     modelName: 'gpt-3.5-turbo',
-    callbackManager: CallbackManager.fromHandlers({
-      async handleLLMNewToken(token) {
-        console.log(token);
-      },
-    }),
   });
 
   const chain = new LLMChain({
@@ -32,7 +26,7 @@ async function getConsolidatedCode(fullDocuments: string[]): Promise<ChainValues
 
   const result = await chain.call({
     //   summaries: summary,
-    inquiry: prompt,
+    inquiry,
     original_documents: fullDocuments.join('\n'),
     framework1: 'solidity',
     framework2: 'typescript',
