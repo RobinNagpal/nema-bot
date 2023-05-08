@@ -33,7 +33,7 @@ const handleRequest = async () => {
   }
 
   try {
-    const prompt = 'Write the smart contract for uniswap v3 pool';
+    const prompt = 'Explain the smart contract for uniswap v3 pool';
     const userId = 'user';
 
     // Retrieve the conversation log and save the user's prompt
@@ -52,15 +52,18 @@ const handleRequest = async () => {
     const inquiryChainResult = await inquiryChain.call({ userPrompt: prompt, conversationHistory });
     const inquiry = inquiryChainResult.text;
 
+    console.log('inquiry:', inquiry);
+
     // Embed the user's intent and query the Pinecone index
     const embedder = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
 
     const embeddings = await embedder.embedQuery(inquiry);
 
     console.log('embeddings', embeddings.length);
-    const matches = await getMatchesFromEmbeddings(embeddings, pinecone!, 3);
+    const matches = await getMatchesFromEmbeddings(embeddings, pinecone!, 500);
 
     console.log('matches', matches.length);
+    // console.log('matches: ', matches);
 
     // const urls = docs && Array.from(new Set(docs.map(doc => doc.metadata.url)))
 
@@ -104,13 +107,15 @@ const handleRequest = async () => {
       );
 
     // const fullDocuments = urls && await getDocumentsByUrl(urls)
-    console.log(fullDocuments);
+    // console.log('fullDocuments: ', fullDocuments);
+
+    // console.log('chunked docs:', chunkedDocs);
 
     // Prepare a QA chain and call it with the document summaries and the user's prompt
     const promptTemplate = new PromptTemplate({
       //   template: templates.qaTemplate,
       template: templates.codeTemplate,
-      inputVariables: ['inquiry', 'conversationHistory', 'framework_1', 'framework_2', 'framework_3', 'original_documents'],
+      inputVariables: ['inquiry', 'original_documents', 'conversationHistory', 'framework1', 'framework2', 'framework3'],
       //   inputVariables: ['summaries', 'question', 'conversationHistory', 'urls'],
     });
 
@@ -133,21 +138,24 @@ const handleRequest = async () => {
 
     await chain.call({
       //   summaries: summary,
-      question: prompt,
-      conversationHistory,
-      framework_1: 'solidity',
-      framework_2: 'typescript',
-      framework_3: 'javascript',
-      original_documents: fullDocuments,
+      inquiry: prompt,
+      original_documents: fullDocuments.join('\n'),
+      //   original_documents: chunkedDocs,
+      conversationHistory: conversationHistory,
+      framework1: 'solidity',
+      framework2: 'typescript',
+      framework3: 'javascript',
     });
   } catch (error) {
     console.error(error);
   }
 };
 
-export default async function handler(req: any, res: any) {
-  const { body } = req;
-  const { prompt, userId } = body;
-  await handleRequest();
-  res.status(200).json({ message: 'started' });
-}
+// export default async function handler(req: any, res: any) {
+//   const { body } = req;
+//   const { prompt, userId } = body;
+//   await handleRequest();
+//   res.status(200).json({ message: 'started' });
+// }
+
+handleRequest();

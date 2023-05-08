@@ -54,11 +54,13 @@ export type Mutation = {
   updateDocumentInfo: DocumentInfo;
 };
 
+
 export type MutationCreateDocumentInfoArgs = {
   id: Scalars['String'];
   input: CreateOrUpdateDocumentInfoInput;
   spaceId: Scalars['String'];
 };
+
 
 export type MutationCreateSignedUrlArgs = {
   input: CreateSignedUrlInput;
@@ -66,15 +68,18 @@ export type MutationCreateSignedUrlArgs = {
   spaceId: Scalars['String'];
 };
 
+
 export type MutationDeleteDocumentInfoArgs = {
   id: Scalars['String'];
   spaceId: Scalars['String'];
 };
 
+
 export type MutationIndexDocumentInfoArgs = {
   id: Scalars['String'];
   spaceId: Scalars['String'];
 };
+
 
 export type MutationUpdateDocumentInfoArgs = {
   id: Scalars['String'];
@@ -88,18 +93,20 @@ export type Query = {
   documentInfos?: Maybe<Array<DocumentInfo>>;
 };
 
+
 export type QueryDocumentInfoArgs = {
   id: Scalars['String'];
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -158,6 +165,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -209,21 +218,11 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createDocumentInfo?: Resolver<
-    ResolversTypes['DocumentInfo'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>
-  >;
+  createDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationCreateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
   createSignedUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationCreateSignedUrlArgs, 'input' | 'namespace' | 'spaceId'>>;
   deleteDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationDeleteDocumentInfoArgs, 'id' | 'spaceId'>>;
   indexDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationIndexDocumentInfoArgs, 'id' | 'spaceId'>>;
-  updateDocumentInfo?: Resolver<
-    ResolversTypes['DocumentInfo'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>
-  >;
+  updateDocumentInfo?: Resolver<ResolversTypes['DocumentInfo'], ParentType, ContextType, RequireFields<MutationUpdateDocumentInfoArgs, 'id' | 'input' | 'spaceId'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -238,3 +237,4 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };
+
