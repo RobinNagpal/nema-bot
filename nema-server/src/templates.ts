@@ -70,12 +70,15 @@ const templates = {
   codeTemplate: `CONTENT provides the source code around which we need to generate new code examples. You should follow these rules when generating code examples:
     
     - Use the source code in CONTENT as the basis for generating the examples. All examples should relate to or use the functions provided in CONTENT.
+
+    - CONTENT also contains relevant text which you can use to understand the concept and explain it using code examples.
     
-    - Choose the most relevant framework or language for generating the examples. You can use any of the following frameworks:
+    - Choose the most relevant framework or language for generating the examples. You can use any of the following frameworks and languages:
         
         - Framework_1
         - Framework_2
-        - Framework_3
+        - Language_1
+        - Language_2
     
     - Generate code examples that are relevant to the INQUIRY provided. If the inquiry cannot be answered, the final answer should be empty.
     
@@ -89,11 +92,13 @@ const templates = {
     
     CONTENT: {original_documents}
 
+    LANGUAGE_1: {language1}
+
+    LANGUAGE_2: {language2}
+
     FRAMEWORK_1: {framework1}
     
     FRAMEWORK_2: {framework2}
-    
-    FRAMEWORK_3: {framework3}
     
     Final answer:
     `,

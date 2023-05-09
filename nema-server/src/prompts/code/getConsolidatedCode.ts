@@ -5,12 +5,10 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { PromptTemplate } from 'langchain/prompts';
 import { ChainValues } from 'langchain/schema';
 
-export async function getConsolidatedCode(inquiry: string, fullDocuments: string[]): Promise<ChainValues> {
+export async function getConsolidatedCode(inquiry: string, fullDocuments: string): Promise<ChainValues> {
   const promptTemplate = new PromptTemplate({
-    //   template: templates.qaTemplate,
     template: templates.codeTemplate,
-    inputVariables: ['inquiry', 'original_documents', 'framework1', 'framework2', 'framework3'],
-    //   inputVariables: ['summaries', 'question', 'conversationHistory', 'urls'],
+    inputVariables: ['inquiry', 'original_documents', 'language1', 'language2', 'framework1', 'framework2'],
   });
 
   const chat = new ChatOpenAI({
@@ -25,12 +23,12 @@ export async function getConsolidatedCode(inquiry: string, fullDocuments: string
   });
 
   const result = await chain.call({
-    //   summaries: summary,
     inquiry,
-    original_documents: fullDocuments.join('\n'),
-    framework1: 'solidity',
-    framework2: 'typescript',
-    framework3: 'javascript',
+    original_documents: fullDocuments,
+    language1: 'solidity',
+    language2: 'typescript',
+    framework1: 'openzeppelin',
+    framework2: 'hardhat',
   });
 
   return result;

@@ -40,7 +40,7 @@ const handleRequest = async () => {
     const fullDocuments = await getMatchingFullDocs(pinecone!, inquiryEmbeddings);
     // console.log('fullDocuments', fullDocuments.join('\n \n==========================\n \n'));
 
-    const result = await getConsolidatedCode(prompt, fullDocuments);
+    const result = await getConsolidatedCode(prompt, fullDocuments.join('\n'));
     console.log('result', result);
   } catch (error) {
     console.error(error);
