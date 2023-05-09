@@ -1,28 +1,20 @@
 import { templates } from '@/templates';
-import { CallbackManager } from 'langchain/callbacks';
-import { LLMChain } from 'langchain/chains';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { OpenAI } from 'langchain/llms/openai';
 import { PromptTemplate } from 'langchain/prompts';
-import { ChainValues } from 'langchain/schema';
 
-export async function getConsolidatedCode(inquiry: string, fullDocuments: string): Promise<ChainValues> {
+export async function getConsolidatedCode(inquiry: string, fullDocuments: string): Promise<string> {
   const promptTemplate = new PromptTemplate({
     template: templates.codeTemplate,
     inputVariables: ['inquiry', 'original_documents', 'language1', 'language2', 'framework1', 'framework2'],
   });
 
-  const chat = new ChatOpenAI({
+  const model = new OpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
     verbose: true,
     modelName: 'gpt-3.5-turbo',
   });
 
-  const chain = new LLMChain({
-    prompt: promptTemplate,
-    llm: chat,
-  });
-
-  const result = await chain.call({
+  const formattedPrompt = await promptTemplate.format({
     inquiry,
     original_documents: fullDocuments,
     language1: 'solidity',
@@ -31,5 +23,10 @@ export async function getConsolidatedCode(inquiry: string, fullDocuments: string
     framework2: 'hardhat',
   });
 
+  console.log('populatedPrompt', formattedPrompt);
+
+  const result = await model.call(formattedPrompt.slice(2048, 4096));
+
+  console.log('result', result);
   return result;
 }
