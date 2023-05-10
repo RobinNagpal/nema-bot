@@ -3,9 +3,11 @@ import { OpenAI } from 'langchain/llms/openai';
 import { PromptTemplate } from 'langchain/prompts';
 
 export async function getConsolidatedCode(inquiry: string, fullDocuments: string): Promise<string> {
+  const languages = ['solidity', 'typescript', 'openzeppelin', 'hardhat'];
+
   const promptTemplate = new PromptTemplate({
     template: templates.codeTemplate,
-    inputVariables: ['inquiry', 'original_documents', 'language1', 'language2', 'framework1', 'framework2'],
+    inputVariables: ['inquiry', 'original_documents', 'languages'],
   });
 
   const model = new OpenAI({
@@ -17,10 +19,7 @@ export async function getConsolidatedCode(inquiry: string, fullDocuments: string
   const formattedPrompt = await promptTemplate.format({
     inquiry,
     original_documents: fullDocuments,
-    language1: 'solidity',
-    language2: 'typescript',
-    framework1: 'openzeppelin',
-    framework2: 'hardhat',
+    languages: languages,
   });
 
   console.log('populatedPrompt', formattedPrompt);

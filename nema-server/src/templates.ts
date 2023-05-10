@@ -72,13 +72,10 @@ const templates = {
     - Use the source code in CONTENT as the basis for generating the examples. All examples should relate to or use the functions provided in CONTENT.
 
     - CONTENT also contains relevant text which you can use to understand the concept and explain it using code examples.
+
+    - When you generate the code examples and test cases, try to be exhaustive in it and cover all the possible cases.
     
-    - Choose the most relevant framework or language for generating the examples. You can use any of the following frameworks and languages:
-        
-        - Framework_1
-        - Framework_2
-        - Language_1
-        - Language_2
+    - Choose the most relevant framework or language for generating the examples. LANGUAGES contains some of the languages and frameworks you can use to get started with but don't consider them exchaustive, they are to help you. You can use any of the frameworks and languages provided in LANGUAGES.
     
     - Generate code examples that are relevant to the INQUIRY provided. If the inquiry cannot be answered, the final answer should be empty.
     
@@ -92,13 +89,7 @@ const templates = {
     
     CONTENT: {original_documents}
 
-    LANGUAGE_1: {language1}
-
-    LANGUAGE_2: {language2}
-
-    FRAMEWORK_1: {framework1}
-    
-    FRAMEWORK_2: {framework2}
+    LANGUAGES: {languages}
     
     Final answer:
     `,
