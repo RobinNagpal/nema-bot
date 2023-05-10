@@ -4,7 +4,7 @@ import { PineconeClient } from '@pinecone-database/pinecone';
 export async function getMatchingFullDocs(pinecone: PineconeClient, inquiryEmbeddings: number[]): Promise<string[]> {
   const matches = await getMatchesFromEmbeddings(inquiryEmbeddings, pinecone, 3);
 
-  console.log('matches', matches.length);
+  // console.log('matches', matches.length);
   // console.log('matches: ', matches);
 
   // const urls = docs && Array.from(new Set(docs.map(doc => doc.metadata.url)))
