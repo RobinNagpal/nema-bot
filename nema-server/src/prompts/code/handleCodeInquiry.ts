@@ -1,18 +1,12 @@
 import { getConsolidatedCode } from '@/prompts/code/getConsolidatedCode';
 import { getMatchingFullDocs } from '@/prompts/code/getMatchingFullDocs';
-import { templates } from '@/templates';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import dotenv from 'dotenv';
-import { LLMChain } from 'langchain/chains';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { OpenAI } from 'langchain/llms/openai';
-import { PromptTemplate } from 'langchain/prompts';
 
 dotenv.config();
 
-const llm = new OpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-});
 let pinecone: PineconeClient | null = null;
 
 const initPineconeClient = async () => {
