@@ -1,10 +1,13 @@
 import { getConsolidatedCode } from '@/prompts/code/getConsolidatedCode';
-import { getMatchingFullDocs } from '@/prompts/code/getMatchingFullDocs';
+import { getMatchingFullDocs, getMetadataOfMatchingDocs } from '@/prompts/code/getMatchingFullDocs';
 import { getRelevantCode } from '@/prompts/code/getRelevantCode';
+import { templates } from '@/templates';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import dotenv from 'dotenv';
+import { ChatOpenAI } from 'langchain/chat_models';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { OpenAI } from 'langchain/llms/openai';
+import { PromptTemplate } from 'langchain/prompts';
 
 dotenv.config();
 
@@ -46,11 +49,10 @@ const handleRequest = async () => {
     const inquiryEmbeddings = await embedder.embedQuery(prompt);
 
     // Step 1: Get the top 5 matches from the Pinecone index
-    const fullDocuments = await getMatchingFullDocs(pinecone!, inquiryEmbeddings);
-    // console.log('fullDocuments', fullDocuments.join('\n \n==========================\n \n'));
+    const fullDocuments = await getMetadataOfMatchingDocs(pinecone!, inquiryEmbeddings);
 
     for (const doc of fullDocuments) {
-      const chunks = chunkString(doc, 2048);
+      const chunks = chunkString(doc.text, 12000);
       for (const chunk of chunks) {
         console.log('================ Call to get relevant code ==================================');
         const relevantCode = await getRelevantCode(prompt, chunk);

@@ -1,27 +1,31 @@
 import { templates } from '@/templates';
-import { OpenAI } from 'langchain/llms/openai';
+import { LLMChain } from 'langchain';
+import { ChatOpenAI } from 'langchain/chat_models';
 import { PromptTemplate } from 'langchain/prompts';
+import { ChainValues } from 'langchain/schema';
 
-export async function getRelevantCode(userPrompt: string, fullDocument: string): Promise<string> {
+export async function getRelevantCode(userPrompt: string, codeChunk: string): Promise<string> {
+  const chat = new ChatOpenAI({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    verbose: false,
+    modelName: 'gpt-3.5-turbo',
+    temperature: 1.2,
+  });
+
   const promptTemplate = new PromptTemplate({
     template: templates.relevantCodeInquiryTemplate,
-    inputVariables: ['userPrompt', 'fullDocument'],
+    inputVariables: ['userPrompt', 'codeChunk'],
   });
 
-  const model = new OpenAI({
-    openAIApiKey: process.env.OPENAI_API_KEY,
-    verbose: true,
-    modelName: 'gpt-3.5-turbo',
-    temperature: 1,
+  const chain = new LLMChain({
+    prompt: promptTemplate,
+    llm: chat,
   });
 
-  const formattedPrompt = await promptTemplate.format({
-    userPrompt: 'Give me the most relevant code for swapping from the provided code snippet.',
-    fullDocument,
+  const result: ChainValues = await chain.call({
+    userPrompt: 'testing swap function',
+    codeChunk,
   });
 
-  // console.log('populatedPrompt', formattedPrompt);
-
-  // console.log('result', result);
-  return await model.call(formattedPrompt);
+  return result['text'];
 }

@@ -67,19 +67,19 @@ const templates = {
 
     Final answer:
     `,
-  relevantCodeInquiryTemplate: `Given the following user prompt, find all the code snippets from the FULL DOCUMENT that matches to the user's prompt.
-    You should follow the following rules when generating and answer:
-    - Only return around 10 most relevant lines of code.
-    - Don't include things like comments, imports, etc.
-    - You should remove any code that  is not relevant to the user prompt
-    - If you are unable to find very relevant code, respond: I WAS NOT ABLE TO FIND ANYTHING RELEVANT.
-
-    USER PROMPT: {userPrompt}
+  relevantCodeInquiryTemplate: `
+    From the provided code, extract out the most relevant lines related to user prompt. Obey the following rules
+    - Return max of 10 lines of code 
+    - Full response should not be more than 15 lines
+    - Include the matching code inline in the response
+    - Response should be only from the provided code. Dont return any description or explanation.
+    - Try your best to find the most relevant code lines related to the user prompt.    
     
-    FULL DOCUMENT: {fullDocument}
-
-    Final answer:
-    `,
+  
+    user prompt: {userPrompt}
+    
+    code: {codeChunk}
+  `,
   codeTemplate: `CONTENT provides the source code around which we need to generate new code examples. You should follow these rules when generating code examples:
     
     - Use the source code in CONTENT as the basis for generating the examples. All examples should relate to or use the functions provided in CONTENT.

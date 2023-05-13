@@ -38,3 +38,11 @@ export async function getMatchingFullDocs(pinecone: PineconeClient, inquiryEmbed
 
   return fullDocuments;
 }
+
+export async function getMetadataOfMatchingDocs(pinecone: PineconeClient, inquiryEmbeddings: number[]): Promise<any[]> {
+  const matches = await getMatchesFromEmbeddings(inquiryEmbeddings, pinecone, 3);
+
+  return matches.map((match) => {
+    return match.metadata as Metadata;
+  });
+}
