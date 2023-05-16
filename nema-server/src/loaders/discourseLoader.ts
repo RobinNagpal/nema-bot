@@ -4,7 +4,7 @@ import { Document as LGCDocument } from 'langchain/document';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 // https://stackoverflow.com/a/53527984/440432
-async function autoScroll(page: Page): Promise<void> {
+export async function autoScroll(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await new Promise<void>((resolve) => {
       let totalHeight = 0;
@@ -23,7 +23,7 @@ async function autoScroll(page: Page): Promise<void> {
   });
 }
 
-async function getPageDetails(browser: Browser, url: string) {
+export async function getDiscoursePageDetails(browser: Browser, url: string) {
   const page = await browser.newPage();
   await page.goto(url);
   await page.setViewport({
@@ -64,7 +64,7 @@ async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
 
   const allPageContents: DiscourseThread[] = [];
   for (const url of hrefs) {
-    const content = await getPageDetails(browser, url);
+    const content = await getDiscoursePageDetails(browser, url);
     console.log('content : ', content);
     allPageContents.push({ url, contents: content || '' });
   }
