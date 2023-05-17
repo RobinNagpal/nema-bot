@@ -9,7 +9,9 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
     height: 800,
   });
 
+  console.log('start scrolling');
   await autoScroll(page);
+  console.log('done scrolling');
 
   const content = await page.content();
 
@@ -38,7 +40,11 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
  *
  */
 export async function createDiscordInsights() {
-  const browser = await puppeteer.launch();
+  // Launch the browser
+  const browser = await puppeteer.launch({ headless: 'new' });
+
+  // Create a page
+  const page = await browser.newPage();
 
   const page1Url = 'https://gov.uniswap.org/t/making-protocol-fees-operational/21198';
   const page2Url = 'https://gov.uniswap.org/t/deploy-uniswap-v3-on-ontology-evm/21224';
