@@ -1,6 +1,6 @@
-import { getConsolidatedCode } from '@/prompts/code/getConsolidatedCode';
-import { getMatchingFullDocs, getMetadataOfMatchingDocs } from '@/prompts/code/getMatchingFullDocs';
-import { getRelevantCode } from '@/prompts/code/getRelevantCode';
+import { getConsolidatedCode } from '@/prompts/writeCode/getConsolidatedCode';
+import { getMatchingFullDocs, getMetadataOfMatchingDocs } from '@/prompts/writeCode/getMatchingFullDocs';
+import { getRelevantCode } from '@/prompts/writeCode/getRelevantCode';
 import { templates } from '@/templates';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import dotenv from 'dotenv';

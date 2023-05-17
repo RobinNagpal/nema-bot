@@ -82,7 +82,7 @@ const uniswapArticles: WebArticleContent[] = [
     indexedAt: null,
   },
 ];
-const uniswapGitbooks: GitbookContent[] = [
+export const uniswapGitbooks: GitbookContent[] = [
   {
     id: 'uniswap-v3-gitbook',
     type: DocumentInfoType.GITBOOK,
