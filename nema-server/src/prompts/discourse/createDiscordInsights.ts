@@ -22,7 +22,8 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
 
 /**
  * What insights to show?
- * 1) What is the particular post about?, What was the discussed a lot? any disagreements in the comments? was any decision made?
+ * 1) What is the particular post about?, What was the main discussion point? any disagreements in the
+ *    comments? was any decision made? relevance on some parameters?
  * 2) Solution
  *    - Read a post and call Open AI to summarize it
  *    - Read all the comments and call Open AI to summarize it
@@ -32,7 +33,7 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
  *
  *
  *  3) To evaluate
- *    - Map Reduce
+ *    - Map Reduce Chain
  *    - Read about prompts how they work and how to write them
  *
  *  4) ToDo
