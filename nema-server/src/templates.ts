@@ -69,7 +69,7 @@ const templates = {
     `,
   relevantCodeInquiryTemplate: `
     From the provided code, extract out the most relevant lines related to user prompt. Obey the following rules
-    - Return max of 10 lines of code 
+    - Return max of 20 lines of code 
     - Full response should not be more than 15 lines
     - Include the matching code inline in the response
     - Response should be only from the provided code. Dont return any description or explanation.
