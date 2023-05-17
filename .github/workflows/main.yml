@@ -24,14 +24,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Change to target directory
-        run: cd ${{ matrix.folder }}
-
       - name: Install dependencies
-        run: yarn
+        run: |
+          cd ${{ matrix.folder }}
+          yarn
 
       - name: Run ESLint
-        run: yarn lint
+        run: |
+          cd ${{ matrix.folder }}
+          yarn lint
 
       - name: Run Prettier
-        run: yarn prettier-check
+        run: |
+          cd ${{ matrix.folder }}
+          yarn prettier-check
