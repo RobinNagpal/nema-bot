@@ -45,16 +45,14 @@ export default async function createSummary() {
 
   // This
   await indexDocument(uniswapGitbooks[0], index)
-  const inputchunk:Array<String|undefined> =[]
-  const outputchunk:Array<String|undefined> =[]
-
- 
   
-
+  const inputchunk:Array<String|undefined> =["The Internet of Things offers many opportunities to grow the economy and improve quality of life. Just as the public sector was instrumental in enabling the development and deployment of the Internet, it must play a similar role to ensure the success of the Internet of Things. Therefore, national governments should create comprehensive national strategies for the Internet of Things to ensure that the technology develops cohesively and rapidly, that consumers and businesses do not face barriers to adoption, and that both the private and public sector take full advantage of the coming wave of smart devices."]
+  const outputchunk:Array<String|undefined> =[]
+  
   async function generateSummary(chunk:String|undefined){
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Summarize this text in a way that a second-grade student would easily understand: \n\n ${chunk}  `,
+      prompt: `Summarize this text in a efficient way: \n\n ${chunk}  `,
       temperature: 0.7,
       max_tokens: 100,
       top_p: 1.0,
@@ -73,12 +71,14 @@ export default async function createSummary() {
   })
 const initialSummary = await outputchunk.join(" ")
 const finalSummary = await generateSummary(initialSummary);
+console.log(finalSummary);
 
 
   
 
 
 }
+createSummary();
 
 
 
