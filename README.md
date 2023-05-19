@@ -8,6 +8,12 @@ To run this demo, you need to have:
 4. A FingerprintJS account. If you don't have one, you can sign up for free at [fingerprintjs.com](https://www.fingerprintjs.com).
 5. A CockroachDB account. If you don't have one, you can sign up for free at [cockroachlabs.com](https://www.cockroachlabs.com).
 
+## Prerequisites
+Here is what you need to be able to run Nema-chatbot
+
+-Node.js (Version: >=18)
+-Yarn 
+-Typescript
 ## Setup
 
 1. Clone this repository
