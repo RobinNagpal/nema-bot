@@ -55,10 +55,10 @@ export default async function createSummary() {
       model: "text-davinci-003",
   prompt: prompt,
   temperature: 0,
-  max_tokens: 60,
+  max_tokens: 130,
   top_p: 1.0,
-  frequency_penalty: 0.0,
-  presence_penalty: 0.0,
+  frequency_penalty: 0.2,
+  presence_penalty: 0.2,
     });
     console.log(response);
     const summary:String | undefined = response.data.choices[0].text?.trim()
@@ -66,26 +66,25 @@ export default async function createSummary() {
   
   }
 
-async function createOutput(){
+  async function runLoop() {
+    await Promise.all(
+      inputchunk.map(async (chunk) => {
+        const output = await generateSummary(chunk);
+        console.log("this is the output:", output?.substring(2));
+        await outputchunk.push(output?.substring(2));
+      })
+    );
+  
+    const initialSummary = outputchunk.join(" ");
+    const finalSummary = await generateSummary(initialSummary);
+  
+    console.log("this is initial summary:", initialSummary);
+    console.log("this is final summary:", finalSummary);
+  }
+  
+  runLoop();
 
-await inputchunk.map(async(chunk)=>{
-    
-    const output = await generateSummary(chunk)
-    console.log("this is the output:",output?.substring(2));
-   await outputchunk.push(output?.substring(2));
-    })
-  summarizer()
-}
 
-function summarizer(){
-  const initialSummary = outputchunk.join(" ")
-  const finalSummary =  generateSummary(initialSummary);
-
-  console.log(`this is initial summary:`,initialSummary)
-  console.log(`this is final summary:`,finalSummary);
-}
-
-createOutput();
       
 }
 createSummary();
