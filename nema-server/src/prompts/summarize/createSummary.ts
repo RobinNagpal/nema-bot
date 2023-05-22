@@ -1,3 +1,4 @@
+import { doScaping } from '@/loaders/siteScrappet';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
 
@@ -18,6 +19,21 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
+
+async function generateSummary(chunk: string | undefined) {
+  const prompt = `${chunk}\n\nTl;dr`;
+  const response = await openai.createCompletion({
+    model: 'text-davinci-003',
+    prompt: prompt,
+    temperature: 0,
+    max_tokens: 130,
+    top_p: 1.0,
+    frequency_penalty: 0.2,
+    presence_penalty: 0.2,
+  });
+  const summary: string | undefined = response.data.choices[0].text?.trim();
+  return summary || '';
+}
 
 export default async function createSummary() {
   // 1) Update README.md to include all the missing steps and how to test if the local
@@ -41,45 +57,20 @@ export default async function createSummary() {
   // This
   // await indexDocument(uniswapGitbooks[0], index)
 
-  const inputchunk: Array<string | undefined> = [
-    'The Internet of Things offers many opportunities to grow the economy and improve quality of life. Just as the public sector was instrumental in enabling the development and deployment of the Internet, it must play a similar role to ensure the success of the Internet of Things. Therefore, national governments should create comprehensive national strategies for the Internet of Things to ensure that the technology develops cohesively and rapidly, that consumers and businesses do not face barriers to adoption, and that both the private and public sector take full advantage of the coming wave of smart devices.',
-    'The Internet has turned our existence upside down. It has revolutionized communications, to the extent that it is now our preferred medium of everyday communication. In almost everything we do, we use the Internet. Ordering a pizza, buying a television, sharing a moment with a friend, sending a picture over instant messaging. Before the Internet, if you wanted to keep up with the news, you had to walk down to the newsstand when it opened in the morning and buy a local edition reporting what had happened the previous day.',
-  ];
-  const outputchunk: Array<string | undefined> = [];
+  const scrappedContent = await doScaping();
+  const inputchunks: string[] = Object.values(scrappedContent);
+  const outputchunks: Array<string | undefined> = [];
 
-  async function generateSummary(chunk: string | undefined) {
-    const prompt = `${chunk}\n\nTl;dr`;
-    const response = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt: prompt,
-      temperature: 0,
-      max_tokens: 130,
-      top_p: 1.0,
-      frequency_penalty: 0.2,
-      presence_penalty: 0.2,
-    });
-    console.log(response);
-    const summary: string | undefined = response.data.choices[0].text?.trim();
-    return summary;
+  for (const inputchunk of inputchunks) {
+    console.log('length of the input: ', inputchunk?.length);
+    const output = await generateSummary(inputchunk);
+    console.log('this is the output:', output);
+    outputchunks.push(output);
   }
+  const joinedChunks = outputchunks.join(' ');
+  const finalSummary = await generateSummary(joinedChunks);
 
-  async function runLoop() {
-    await Promise.all(
-      inputchunk.map(async (chunk) => {
-        console.log('length of the input: ', chunk?.length);
-        const output = await generateSummary(chunk);
-        console.log('this is the output:', output?.substring(2));
-        await outputchunk.push(output?.substring(2));
-      })
-    );
-
-    const initialSummary = outputchunk.join(' ');
-    const finalSummary = await generateSummary(initialSummary);
-
-    console.log('this is initial summary:', initialSummary);
-    console.log('this is final summary:', finalSummary);
-  }
-
-  runLoop();
+  console.log('this is final summary:', finalSummary);
 }
+
 createSummary();
