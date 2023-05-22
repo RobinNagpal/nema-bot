@@ -2,18 +2,19 @@ import { uniswapGitbooks } from '@/contents/uniswapV3Contents';
 import { indexDocument } from '@/indexer/indexDocument';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { Configuration,OpenAIApi } from 'openai';
+import { UnstructuredLoader } from 'langchain/document_loaders';
 import dotenv from 'dotenv';
 dotenv.config();
 
-let pinecone: PineconeClient | null = null;
+// let pinecone: PineconeClient | null = null;
 
-const initPineconeClient = async () => {
-  pinecone = new PineconeClient();
-  await pinecone.init({
-    environment: process.env.PINECONE_ENVIRONMENT!,
-    apiKey: process.env.PINECONE_API_KEY!,
-  });
-};
+// const initPineconeClient = async () => {
+//   pinecone = new PineconeClient();
+//   await pinecone.init({
+//     environment: process.env.PINECONE_ENVIRONMENT!,
+//     apiKey: process.env.PINECONE_API_KEY!,
+//   });
+// };
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY
@@ -69,6 +70,7 @@ export default async function createSummary() {
   async function runLoop() {
     await Promise.all(
       inputchunk.map(async (chunk) => {
+        console.log("length of the input: ",chunk?.length);
         const output = await generateSummary(chunk);
         console.log("this is the output:", output?.substring(2));
         await outputchunk.push(output?.substring(2));
