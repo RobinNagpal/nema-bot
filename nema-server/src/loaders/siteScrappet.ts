@@ -5,7 +5,7 @@ const visited: { [key: string]: boolean } = {};
 const pagesAndContent: Record<string, string> = {};
 
 async function scrapeSite(baseSiteUrl: URL, currentUrl: URL) {
-  if (Object.keys(pagesAndContent).length > 40) {
+  if (Object.keys(pagesAndContent).length > 10) {
     return;
   }
 
@@ -45,7 +45,8 @@ async function scrapeSite(baseSiteUrl: URL, currentUrl: URL) {
   }
 }
 
-async function doScaping(baseSiteUrl = 'https://docs.uniswap.org/concepts/overview') {
+export async function doScaping(baseSiteUrl = 'https://docs.uniswap.org/concepts/overview') {
   await scrapeSite(new URL(baseSiteUrl), new URL(baseSiteUrl));
   console.log(JSON.stringify(Object.keys(pagesAndContent), null, 2));
+  return pagesAndContent;
 }
