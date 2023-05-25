@@ -5,26 +5,27 @@ const visited: { [key: string]: boolean } = {};
 const pagesAndContent: Record<string, string> = {};
 
 async function scrapeSite(baseSiteUrl: URL, currentUrl: URL) {
-  if (Object.keys(pagesAndContent).length > 40) {
+  const currentUrlString = currentUrl.toString().split('#')[0];
+  if (Object.keys(pagesAndContent).length > 10) {
     return;
   }
 
-  if (!currentUrl.toString().startsWith('https://docs.uniswap.org/concepts')) {
+  if (!currentUrlString.startsWith('https://docs.uniswap.org/concepts')) {
     return;
   }
 
   try {
-    if (visited[currentUrl.toString()]) {
+    if (visited[currentUrlString]) {
       return;
     }
-    visited[currentUrl.toString()] = true;
-    const { data } = await axios.get(currentUrl.toString());
+    visited[currentUrlString] = true;
+    const { data } = await axios.get(currentUrlString);
     const $ = load(data);
 
     // Get the website's text content and log it
     const bodyText = $('body').text();
-    pagesAndContent[currentUrl.toString()] = bodyText;
-    console.log(`URL: ${currentUrl}`);
+    pagesAndContent[currentUrlString] = bodyText;
+    console.log(`URL: ${currentUrlString}`);
     // console.log(bodyText);
 
     // Then find other links on the page and scrape them too
@@ -35,6 +36,10 @@ async function scrapeSite(baseSiteUrl: URL, currentUrl: URL) {
       const href = $(element).attr('href')!;
       const fullUrl = new URL(href, currentUrl);
       // Only follow links within the same domain
+      if (fullUrl.hash !== '') {
+        continue;
+      }
+
       if (fullUrl.origin == baseSiteUrl.origin) {
         // Wait for each page to be downloaded before moving to the next one
         await scrapeSite(baseSiteUrl, fullUrl);
@@ -45,7 +50,8 @@ async function scrapeSite(baseSiteUrl: URL, currentUrl: URL) {
   }
 }
 
-async function doScaping(baseSiteUrl = 'https://docs.uniswap.org/concepts/overview') {
+export async function doScaping(baseSiteUrl = 'https://docs.uniswap.org/concepts/overview') {
   await scrapeSite(new URL(baseSiteUrl), new URL(baseSiteUrl));
   console.log(JSON.stringify(Object.keys(pagesAndContent), null, 2));
+  return pagesAndContent;
 }
