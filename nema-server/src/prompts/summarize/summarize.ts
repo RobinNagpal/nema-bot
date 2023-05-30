@@ -1,3 +1,4 @@
+import { uniswapString1, uniswapString2 } from '@/prompts/summarize/uniswapStrings';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
 
@@ -76,3 +77,5 @@ export async function recursivelySummarizeTheContents(contents: string[]): Promi
 // 1) Make sure the summary returned from OpenAI is about 1/4th the length of the content
 // 2) Take a array with four strings 1) 1000 characters 2) 250000 characters 3) 10000 characters  4) 50000 characters
 // 3) Debug and find the results
+
+recursivelySummarizeTheContents([uniswapString1, uniswapString2]);
