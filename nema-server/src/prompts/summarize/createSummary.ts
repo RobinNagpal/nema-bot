@@ -1,6 +1,7 @@
 import { doScaping } from '@/loaders/siteScrappet';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
+import { uniswapString1, uniswapString2 } from '@/prompts/summarize/uniswapStrings';
 
 dotenv.config();
 
@@ -11,8 +12,8 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 async function generateSummary(chunk: string | undefined): Promise<string | undefined> {
-  const prompt = `${chunk}\n\nTl;dr`;
-  const maxCharacters = 16000;
+  const prompt = `summarize the following content in 1000 - 4000 characters ${chunk}\n\n`;
+  const maxCharacters = 15000;
 
   if (!chunk) {
     return '';
@@ -22,7 +23,7 @@ async function generateSummary(chunk: string | undefined): Promise<string | unde
       model: 'text-davinci-003',
       prompt: prompt,
       temperature: 0,
-      max_tokens: 600,
+      max_tokens: 500,
       top_p: 1.0,
       frequency_penalty: 0.2,
       presence_penalty: 0.2,
@@ -30,12 +31,32 @@ async function generateSummary(chunk: string | undefined): Promise<string | unde
     const summary: string | undefined = response.data.choices[0].text?.trim();
     return summary || '';
   } else {
-    const splitIndex = chunk.lastIndexOf(' ', maxCharacters);
-    const currentChunk = chunk.slice(0, 10000);
-    const remainingChunk = chunk.slice(10001);
-    const currentSummary = await generateSummary(currentChunk);
-    const remainingSummary = await generateSummary(remainingChunk);
-    return currentSummary + ' ' + remainingSummary;
+    // const currentChunk = chunk.slice(0, 10000);
+    // const remainingChunk = chunk.slice(10001);
+    // const currentSummary = await generateSummary(currentChunk);
+    // const remainingSummary = await generateSummary(remainingChunk);
+    // return currentSummary + ' ' + remainingSummary;
+
+    const chunkCount = Math.ceil(chunk.length / maxCharacters);
+    const chunkSize = Math.ceil(chunk.length / chunkCount);
+    const chunks: string[] = [];
+
+    for (let i = 0; i < chunkCount; i++) {
+      const start = i * chunkSize;
+      const end = start + chunkSize;
+      const currentChunk = chunk.slice(start, end);
+      chunks.push(currentChunk);
+    }
+
+    const summaries: Array<string | undefined> = [];
+
+    for (const currentChunk of chunks) {
+      console.log('chunk length: ' + currentChunk.length);
+      const currentSummary = await generateSummary(currentChunk);
+      summaries.push(currentSummary);
+    }
+
+    return summaries.join(' ');
   }
 }
 
@@ -99,12 +120,13 @@ async function generateImportantPoints(summary: string) {
 }
 
 export default async function createSummary() {
-  const scrappedContent = await doScaping();
-  const inputchunks: string[] = Object.values(scrappedContent);
+  // const scrappedContent = await doScaping();
+  // const inputchunks: string[] = Object.values(scrappedContent);
+  const inputchunks: string[] = [uniswapString1, uniswapString2];
   const outputchunks: Array<string | undefined> = [];
 
   for (const inputchunk of inputchunks) {
-    // console.log('length of the input: ', inputchunk?.length);
+    console.log('length of the input: ', inputchunk?.length);
     const output = await generateSummary(inputchunk);
     // console.log('this is the output:', output);
     outputchunks.push(output);
@@ -116,11 +138,12 @@ export default async function createSummary() {
 
   const joinedChunks = outputchunks.join(' ');
   // console.log("this is the combined summary: ",joinedChunks)
-  const questionsList = await generateQuestions(joinedChunks, 10);
-  const importantPoints = await generateImportantPoints(joinedChunks);
+  // const questionsList = await generateQuestions(joinedChunks, 10);
+  // const importantPoints = await generateImportantPoints(joinedChunks);
   const finalSummary = await generateSummary(joinedChunks);
 
   console.log('this is final summary:', finalSummary);
+  console.log('final summary length: ', finalSummary?.length);
 }
 
 createSummary();

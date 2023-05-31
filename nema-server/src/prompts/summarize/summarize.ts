@@ -15,11 +15,11 @@ const openai = new OpenAIApi(configuration);
  *  The summary returned is between 1000 - 4000 characters.
  */
 export async function summarizeContents(content: string): Promise<string> {
-  const prompt = `${content}\n\nTl;dr`;
+  const prompt = `summarize the following content in 1000 - 4000 characters ${content}\n\n`;
   const response = await openai.createCompletion({
     model: 'text-davinci-003',
     prompt: prompt,
-    max_tokens: 500,
+    max_tokens: 900,
     temperature: 0.1,
     frequency_penalty: 0.7,
     presence_penalty: 0.6,
@@ -54,6 +54,7 @@ async function splitAndReturnSummary(content: string): Promise<string> {
 export async function recursivelySummarizeTheContents(contents: string[]): Promise<string> {
   const summaries: string[] = [];
   for (const content of contents) {
+    console.log('content length: ', content.length);
     if (content.length <= contentLimit) {
       summaries.push(await summarizeContents(content));
     } else {
@@ -69,7 +70,7 @@ export async function recursivelySummarizeTheContents(contents: string[]): Promi
   while (summariesString.length > contentLimit) {
     summariesString = await splitAndReturnSummary(summariesString);
   }
-
+  console.log(summariesString);
   return summariesString;
 }
 
