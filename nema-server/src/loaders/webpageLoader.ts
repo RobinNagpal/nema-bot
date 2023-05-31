@@ -10,7 +10,8 @@ import { Browser, Page } from 'puppeteer';
 dotenv.config();
 
 export async function loadWebPage(webArticleContent: WebArticleContent): Promise<LGCDocument<PageMetadata>[]> {
-  const loader = new PuppeteerWebBaseLoader(webArticleContent.url, {
+  const url = webArticleContent.url;
+  const loader = new PuppeteerWebBaseLoader(url, {
     gotoOptions: {
       waitUntil: 'networkidle2',
     },
@@ -23,9 +24,9 @@ export async function loadWebPage(webArticleContent: WebArticleContent): Promise
   });
   const docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[] = (await loader.load()).map((doc): LGCDocument<Omit<PageMetadata, 'chunk'>> => {
     const metadata: Omit<PageMetadata, 'chunk'> = {
-      url: webArticleContent.url,
+      url: url,
       text: doc.pageContent,
-      source: webArticleContent.url,
+      source: url,
     };
     return { ...doc, metadata };
   });

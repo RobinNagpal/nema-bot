@@ -1,3 +1,5 @@
+import { getNewsContentsUsingPuppeteer } from '@/prompts/latestNews/getNewsContentsUsingPuppeteer';
+import { getNewsContentsUsingCheerio } from '@/prompts/latestNews/getNewsContentsUsingCheerio';
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
 import robotsParser from 'robots-parser';
@@ -134,6 +136,12 @@ async function run() {
   console.log('sitemapUrls', JSON.stringify(sitemapUrls, null, 2));
   const articleUrls = await getArticleUrls(sitemapUrls);
   console.log('articleUrls', JSON.stringify(articleUrls, null, 2));
+
+  for (const articleUrl of articleUrls) {
+    const contents = await getNewsContentsUsingCheerio(articleUrl);
+    console.log('articleUrl', articleUrl);
+    console.log('contents', contents);
+  }
 }
 
 run();
