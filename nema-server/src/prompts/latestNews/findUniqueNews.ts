@@ -1,15 +1,11 @@
-import { uniswapV3ProjectContents } from '@/contents/projects';
 import { initPineconeClient } from '@/indexer/getPineconeIndex';
 import { getVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
 import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
 import { getNewsContentsUsingCheerio } from '@/prompts/latestNews/getNewsContentsUsingCheerio';
 import { generateSummaryOfContent } from '@/prompts/summarize/createSummary';
-import { ScoredVector, Vector } from '@pinecone-database/pinecone';
+import { Vector } from '@pinecone-database/pinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { Document as LGCDocument } from 'langchain/dist/document';
-import { Document } from 'langchain/document';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { uuid } from 'uuidv4';
 
 const urls = [
   'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
