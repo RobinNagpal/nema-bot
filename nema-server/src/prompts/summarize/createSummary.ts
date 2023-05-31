@@ -20,7 +20,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function generateSummary(chunk: string | undefined) {
+export async function generateSummaryOfContent(chunk: string) {
   const prompt = `${chunk}\n\nTl;dr`;
   const response = await openai.createCompletion({
     model: 'text-davinci-003',
@@ -63,12 +63,12 @@ export default async function createSummary() {
 
   for (const inputchunk of inputchunks) {
     console.log('length of the input: ', inputchunk?.length);
-    const output = await generateSummary(inputchunk);
+    const output = await generateSummaryOfContent(inputchunk);
     console.log('this is the output:', output);
     outputchunks.push(output);
   }
   const joinedChunks = outputchunks.join(' ');
-  const finalSummary = await generateSummary(joinedChunks);
+  const finalSummary = await generateSummaryOfContent(joinedChunks);
 
   console.log('this is final summary:', finalSummary);
 }

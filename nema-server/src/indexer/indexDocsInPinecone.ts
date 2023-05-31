@@ -14,7 +14,7 @@ const limiter = new Bottleneck({
 const sliceIntoChunks = (arr: Vector[], chunkSize: number) => {
   return Array.from({ length: Math.ceil(arr.length / chunkSize) }, (_, i) => arr.slice(i * chunkSize, (i + 1) * chunkSize));
 };
-async function getVectors(documents: Document<PageMetadata>[]): Promise<Vector[]> {
+export async function getVectors(documents: Document<PageMetadata>[]): Promise<Vector[]> {
   const embedder = new OpenAIEmbeddings({
     modelName: 'text-embedding-ada-002',
   });

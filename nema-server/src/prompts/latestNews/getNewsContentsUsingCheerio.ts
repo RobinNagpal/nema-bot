@@ -1,5 +1,7 @@
+import { Metadata } from '@/loaders/discordLoader';
 import axios from 'axios';
 import { load } from 'cheerio';
+import { Document } from 'langchain/document';
 
 function getCheerioSelector(url: string): string {
   if (url.startsWith('https://www.theblock.co')) {
