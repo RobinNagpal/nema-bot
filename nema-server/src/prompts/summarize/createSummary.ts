@@ -1,7 +1,7 @@
 import { doScaping } from '@/loaders/siteScrappet';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
-import { uniswapString1, uniswapString2 } from '@/prompts/summarize/uniswapStrings';
+import { uniswapString1, uniswapString2, uniswapString3, uniswapString4 } from '@/prompts/summarize/uniswapStrings';
 
 dotenv.config();
 
@@ -31,12 +31,6 @@ async function generateSummary(chunk: string | undefined): Promise<string | unde
     const summary: string | undefined = response.data.choices[0].text?.trim();
     return summary || '';
   } else {
-    // const currentChunk = chunk.slice(0, 10000);
-    // const remainingChunk = chunk.slice(10001);
-    // const currentSummary = await generateSummary(currentChunk);
-    // const remainingSummary = await generateSummary(remainingChunk);
-    // return currentSummary + ' ' + remainingSummary;
-
     const chunkCount = Math.ceil(chunk.length / maxCharacters);
     const chunkSize = Math.ceil(chunk.length / chunkCount);
     const chunks: string[] = [];
@@ -63,12 +57,12 @@ async function generateSummary(chunk: string | undefined): Promise<string | unde
 async function generateQuestions(summary: string, numQuestions: number) {
   // Set up the conversation with the user message as the summary
   let newSummary: string | undefined = summary;
-
-  if (summary.length >= 4000) {
+  console.log('num of questions:', numQuestions);
+  if (summary.length >= 15000) {
     newSummary = await generateSummary(summary);
   }
 
-  const prompt = `Create a list of ${numQuestions} most important questions and their answers from this data. Try to focus on the main context : \n ${newSummary}`;
+  const prompt = `Create a list of ${numQuestions} most important questions and their answers from this data. Make sure that the questions are not reapeated : \n ${newSummary}`;
 
   try {
     // Generate questions using OpenAI API
@@ -93,7 +87,7 @@ async function generateQuestions(summary: string, numQuestions: number) {
 async function generateImportantPoints(summary: string) {
   let newSummary: string | undefined = summary;
 
-  if (summary.length >= 4000) {
+  if (summary.length >= 15000) {
     newSummary = await generateSummary(summary);
   }
 
@@ -122,28 +116,24 @@ async function generateImportantPoints(summary: string) {
 export default async function createSummary() {
   // const scrappedContent = await doScaping();
   // const inputchunks: string[] = Object.values(scrappedContent);
-  const inputchunks: string[] = [uniswapString1, uniswapString2];
+  const inputchunks: string[] = [uniswapString1, uniswapString2, uniswapString1, uniswapString2];
   const outputchunks: Array<string | undefined> = [];
 
   for (const inputchunk of inputchunks) {
     console.log('length of the input: ', inputchunk?.length);
     const output = await generateSummary(inputchunk);
-    // console.log('this is the output:', output);
+
     outputchunks.push(output);
   }
-  // console.log('length of the input: ', inputchunks.join(' ')?.length);
-  // const output = await generateSummary(inputchunks.join(' '));
-  // console.log('this is the output:', output);
-  //   outputchunks.push(output);
 
   const joinedChunks = outputchunks.join(' ');
   // console.log("this is the combined summary: ",joinedChunks)
-  // const questionsList = await generateQuestions(joinedChunks, 10);
-  // const importantPoints = await generateImportantPoints(joinedChunks);
+  const questionsList = await generateQuestions(joinedChunks, 10);
+  const importantPoints = await generateImportantPoints(joinedChunks);
   const finalSummary = await generateSummary(joinedChunks);
 
   console.log('this is final summary:', finalSummary);
-  console.log('final summary length: ', finalSummary?.length);
+  // console.log('final summary length: ', finalSummary?.length);
 }
 
 createSummary();

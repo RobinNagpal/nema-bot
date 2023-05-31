@@ -1,4 +1,4 @@
-import { uniswapString1, uniswapString2 } from '@/prompts/summarize/uniswapStrings';
+import { uniswapString1, uniswapString2, uniswapString3, uniswapString4 } from '@/prompts/summarize/uniswapStrings';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
 
