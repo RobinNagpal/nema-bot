@@ -29,7 +29,7 @@ export async function getVectors(documents: Document<PageMetadata>[]): Promise<V
         values: embedding,
         metadata: {
           chunk: doc.pageContent,
-          text: doc.metadata.text as string,
+          text: doc.metadata.fullContent as string,
           url: doc.metadata.url as string,
         },
       } as Vector;

@@ -1,3 +1,4 @@
+import { PageMetadata } from '@/contents/projectsContents';
 import { getVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
 import { getIndexStats, initPineconeClient } from '@/indexer/pineconeHelper';
 import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
@@ -15,13 +16,6 @@ const urls = [
   // 'https://thedefiant.io/robots.txt', //post-sitemap
   // 'https://www.coindesk.com/robots.txt', // news-sitemap-index, new-sitemap-index-es
 ];
-
-export interface PageMetadata {
-  chunk: string;
-  text: string;
-  url: string;
-  source: string;
-}
 
 const thresholdSimilarity = 0.77;
 
@@ -105,7 +99,7 @@ async function findUnique() {
       // console.log(`summary for ${articleUrl} :`, summary);
       const articleDoc: LGCDocument<PageMetadata> = new LGCDocument<PageMetadata>({
         pageContent: summary,
-        metadata: { source: articleUrl, url: articleUrl, text: summary, chunk: chunk },
+        metadata: { source: articleUrl, url: articleUrl, fullContent: summary, chunk: chunk },
       });
       docsToInsert.push(articleDoc);
     } catch (error) {
