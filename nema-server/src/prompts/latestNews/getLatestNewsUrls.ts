@@ -93,7 +93,6 @@ async function getSitemapUrls(sitemapUrls: string[]): Promise<string[]> {
 }
 
 async function getArticleUrls(sitemapUrl: string[]) {
-  console.log('running for ' + sitemapUrl);
   //set logic for past 24hrs
   const currentDate = new Date();
   const twentyFourHoursAgo = currentDate.getTime() - 24 * 60 * 60 * 1000;
@@ -132,19 +131,16 @@ async function getArticleUrls(sitemapUrl: string[]) {
 
 export async function getArticleUrlsForSites(urls: string[]) {
   const sitemapUrls: string[] = await getSitemapUrls(urls);
-  console.log('sitemapUrls', JSON.stringify(sitemapUrls, null, 2));
+
   return await getArticleUrls(sitemapUrls);
 }
 async function run() {
   const sitemapUrls: string[] = await getSitemapUrls(urls);
-  console.log('sitemapUrls', JSON.stringify(sitemapUrls, null, 2));
+
   const articleUrls = await getArticleUrls(sitemapUrls);
-  console.log('articleUrls', JSON.stringify(articleUrls, null, 2));
 
   for (const articleUrl of articleUrls) {
     const contents = await getNewsContentsUsingCheerio(articleUrl);
-    console.log('articleUrl', articleUrl);
-    console.log('contents', contents);
   }
 }
 

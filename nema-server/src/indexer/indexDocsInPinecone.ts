@@ -39,7 +39,7 @@ export async function getVectors(documents: Document<PageMetadata>[]): Promise<V
   return vectors;
 }
 
-export async function indexDocsInPinecone(allDocs: Document<PageMetadata>[], index: null | VectorOperationsApi) {
+export async function indexDocsInPinecone(allDocs: Document<PageMetadata>[], index: null | VectorOperationsApi, namespace: string) {
   let vectors: Vector[] = [];
 
   try {
@@ -56,7 +56,7 @@ export async function indexDocsInPinecone(allDocs: Document<PageMetadata>[], ind
         try {
           await index.upsert({
             upsertRequest: {
-              namespace: uniswapV3ProjectContents.namespace,
+              namespace,
               vectors: chunk as Vector[],
             },
           });

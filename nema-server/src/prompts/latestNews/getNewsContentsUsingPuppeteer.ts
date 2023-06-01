@@ -37,7 +37,7 @@ export const getNewsContentsUsingPuppeteer = async (url: string) => {
 
     // Get text content
     const content = await page.evaluate((el) => el.textContent, elementHandle);
-    console.log(content);
+
     return content;
   } else {
     console.log('Element not found');

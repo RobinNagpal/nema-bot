@@ -9,6 +9,7 @@
     "prisma:generate": "prisma generate",
     "index-docs": "ts-node --esm src/indexData.ts",
     "code": "ts-node --esm src/prompts/writeCode/handleCodeInquiry.ts",
+    "find-news": "ts-node --esm src/prompts/latestNews/findUniqueNews.ts",
     "dev": "npm run graphql:generate && nodemon",
     "lint-fix": "eslint . --ext .ts,.js --fix",
     "prettier-fix": "prettier --config .prettierrc 'src/**/*.ts' --write",
