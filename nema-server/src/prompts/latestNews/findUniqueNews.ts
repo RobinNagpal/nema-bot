@@ -1,11 +1,11 @@
-import { initPineconeClient } from '@/indexer/getPineconeIndex';
 import { getVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
+import { getIndexStats, initPineconeClient } from '@/indexer/pineconeHelper';
 import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
 import { getNewsContentsUsingCheerio } from '@/prompts/latestNews/getNewsContentsUsingCheerio';
 import { generateSummaryOfContent } from '@/prompts/summarize/createSummary';
 import { Vector } from '@pinecone-database/pinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
-import { Document as LGCDocument } from 'langchain/dist/document';
+import { Document as LGCDocument } from 'langchain/document';
 
 const urls = [
   'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
@@ -22,23 +22,42 @@ export interface PageMetadata {
   url: string;
   source: string;
 }
+
+const LATEST_NEWS_NAMESPACE = 'latest-news';
+
 export async function indexVectorsInPinecone(vectors: Vector[], index: VectorOperationsApi) {
   await index.upsert({
     upsertRequest: {
-      namespace: 'latest-news',
+      namespace: LATEST_NEWS_NAMESPACE,
       vectors,
     },
   });
 }
 
+function getNewsSummary(contents: string) {
+  const prompt = (news: string) => `summarize the following paragraph under 40 words in lowercase without any punctuation \n\n ${news}`;
+  return generateSummaryOfContent(contents, prompt);
+}
+
 async function findUnique() {
   const pineconeIndex = await initPineconeClient();
+  await pineconeIndex.delete1({
+    deleteAll: true,
+    namespace: LATEST_NEWS_NAMESPACE,
+  });
   const articleUrls = await getArticleUrlsForSites(urls);
 
   const docsToInsert: LGCDocument<PageMetadata>[] = [];
+  const initStats = await getIndexStats(pineconeIndex, {
+    namespace: LATEST_NEWS_NAMESPACE,
+  });
+
+  console.log('initStats', initStats);
+
   for (const articleUrl of articleUrls) {
     const chunk = await getNewsContentsUsingCheerio(articleUrl);
-    const summary = await generateSummaryOfContent(chunk);
+    const summary = await getNewsSummary(chunk);
+    console.log(`summary for ${articleUrl} :`, summary);
     const articleDoc: LGCDocument<PageMetadata> = new LGCDocument<PageMetadata>({
       pageContent: summary,
       metadata: { source: articleUrl, url: articleUrl, text: summary, chunk },
@@ -49,8 +68,11 @@ async function findUnique() {
   const vectors = await getVectors(docsToInsert);
   await indexVectorsInPinecone(vectors, pineconeIndex);
 
-  // Add docs in pinecone
-  await indexDocsInPinecone(docsToInsert, pineconeIndex);
+  const stats = await getIndexStats(pineconeIndex, {
+    namespace: LATEST_NEWS_NAMESPACE,
+  });
+
+  console.log('statsAfterInsert', stats);
 
   const buckets: LGCDocument<PageMetadata>[][] = [];
 
@@ -63,7 +85,7 @@ async function findUnique() {
 
     const similarArticles = await pineconeIndex.query({
       queryRequest: {
-        namespace: 'latest-news',
+        namespace: LATEST_NEWS_NAMESPACE,
         vector: vector.values,
         topK: 10,
       },
@@ -82,3 +104,5 @@ async function findUnique() {
     buckets.push(bucket);
   }
 }
+
+findUnique();

@@ -22,3 +22,11 @@ export const initPineconeClient = async (): Promise<VectorOperationsApi> => {
 
   return pineconeIndex;
 };
+
+export async function getIndexStats(pineconeIndex: VectorOperationsApi, filter: object) {
+  return await pineconeIndex.describeIndexStats({
+    describeIndexStatsRequest: {
+      filter,
+    },
+  });
+}

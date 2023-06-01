@@ -10,8 +10,10 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-export async function generateSummaryOfContent(chunk: string): Promise<string | undefined> {
-  const prompt = `summarize the following content in 1000 - 4000 characters ${chunk}\n\n`;
+export async function generateSummaryOfContent(
+  chunk: string,
+  promptFn = (chunk: string) => `summarize the following content in 1000 - 4000 characters ${chunk}\n\n`
+): Promise<string> {
   const maxCharacters = 15000;
 
   if (!chunk) {
@@ -20,7 +22,7 @@ export async function generateSummaryOfContent(chunk: string): Promise<string | 
   if (chunk.length <= maxCharacters) {
     const response = await openai.createCompletion({
       model: 'text-davinci-003',
-      prompt: prompt,
+      prompt: promptFn(chunk),
       temperature: 0,
       max_tokens: 500,
       top_p: 1.0,
