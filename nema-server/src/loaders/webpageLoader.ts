@@ -25,7 +25,7 @@ export async function loadWebPage(webArticleContent: WebArticleContent): Promise
   const docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[] = (await loader.load()).map((doc): LGCDocument<Omit<PageMetadata, 'chunk'>> => {
     const metadata: Omit<PageMetadata, 'chunk'> = {
       url: url,
-      text: doc.pageContent,
+      fullContent: doc.pageContent,
       source: url,
     };
     return { ...doc, metadata };

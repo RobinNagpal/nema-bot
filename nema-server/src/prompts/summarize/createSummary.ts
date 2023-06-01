@@ -85,14 +85,14 @@ async function generateQuestions(summary: string, numQuestions: number) {
   }
 }
 
-async function generateImportantPoints(summary: string) {
+export async function generateImportantPoints(summary: string) {
   let newSummary: string | undefined = summary;
 
   if (summary.length >= 15000) {
     newSummary = await generateSummaryOfContent(summary);
   }
 
-  const prompt = `create 10 most important points from the given data : \n${newSummary}`;
+  const prompt = `create 10 most important points from the given data. Don't number the important points : \n${newSummary}`;
 
   try {
     // Generate questions using OpenAI API
@@ -106,18 +106,24 @@ async function generateImportantPoints(summary: string) {
     });
 
     const data = response.data.choices[0].text?.trim();
-    console.log('generated Important points: ', data);
-    return data;
+
+    if (data) {
+      const questionsArray = data.split('\n').map((question) => question.replace(/^\d+\.\s*/, ''));
+      console.log('generated Important points: ', questionsArray);
+      return questionsArray;
+    } else {
+      throw new Error('Failed to generate questions.');
+    }
   } catch (error) {
     console.error('Error:', error);
     throw error;
   }
 }
 
-export default async function createSummary() {
+export async function iterateOnceAndCreateSummary(contents: string[]) {
   // const scrappedContent = await doScaping();
   // const inputchunks: string[] = Object.values(scrappedContent);
-  const inputchunks: string[] = uniswapTestStrings;
+  const inputchunks: string[] = contents;
   const outputchunks: Array<string | undefined> = [];
 
   for (const inputchunk of inputchunks) {
@@ -127,13 +133,20 @@ export default async function createSummary() {
   }
 
   const joinedChunks = outputchunks.join(' ');
-  // console.log("this is the combined summary: ",joinedChunks)
-  const questionsList = await generateQuestions(joinedChunks, 10);
-  const importantPoints = await generateImportantPoints(joinedChunks);
-  const finalSummary = await generateSummaryOfContent(joinedChunks);
-
-  console.log('this is final summary:', finalSummary);
-  // console.log('final summary length: ', finalSummary?.length);
+  return joinedChunks;
 }
 
-createSummary();
+export async function createSummary(contents: string[]) {
+  const joinedChunks = await iterateOnceAndCreateSummary(contents);
+  return await generateSummaryOfContent(joinedChunks);
+}
+
+export async function createImportantPoints(contents: string[]) {
+  const joinedChunks = await iterateOnceAndCreateSummary(contents);
+  return await generateImportantPoints(joinedChunks);
+}
+
+export async function createImportantQuestions(contents: string[]) {
+  const joinedChunks = await iterateOnceAndCreateSummary(contents);
+  return await generateQuestions(joinedChunks, 10);
+}

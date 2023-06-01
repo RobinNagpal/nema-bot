@@ -14,7 +14,7 @@ export async function loadGithubData(content: GithubContent): Promise<LGCDocumen
   const updatedDocs = docs.map((doc): LGCDocument<Omit<PageMetadata, 'chunk'>> => {
     const metadata: Omit<PageMetadata, 'chunk'> = {
       url: doc.metadata.source,
-      text: doc.pageContent,
+      fullContent: doc.pageContent,
       source: doc.metadata.source,
     };
     return { ...doc, metadata };
