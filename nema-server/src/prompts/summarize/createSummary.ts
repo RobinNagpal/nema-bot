@@ -1,7 +1,6 @@
-import { doScaping } from '@/loaders/siteScrappet';
+import { uniswapTestStrings } from '@/prompts/summarize/uniswapStrings';
 import dotenv from 'dotenv';
 import { Configuration, OpenAIApi } from 'openai';
-import { uniswapString1, uniswapString2, uniswapString3, uniswapString4 } from '@/prompts/summarize/uniswapStrings';
 
 dotenv.config();
 
@@ -46,7 +45,7 @@ export async function generateSummaryOfContent(chunk: string): Promise<string | 
 
     for (const currentChunk of chunks) {
       console.log('chunk length: ' + currentChunk.length);
-      const currentSummary = await generateSummary(currentChunk);
+      const currentSummary = await generateSummaryOfContent(currentChunk);
       summaries.push(currentSummary);
     }
 
@@ -59,7 +58,7 @@ async function generateQuestions(summary: string, numQuestions: number) {
   let newSummary: string | undefined = summary;
   console.log('num of questions:', numQuestions);
   if (summary.length >= 15000) {
-    newSummary = await generateSummary(summary);
+    newSummary = await generateSummaryOfContent(summary);
   }
 
   const prompt = `Create a list of ${numQuestions} most important questions and their answers from this data. Make sure that the questions are not reapeated : \n ${newSummary}`;
@@ -88,7 +87,7 @@ async function generateImportantPoints(summary: string) {
   let newSummary: string | undefined = summary;
 
   if (summary.length >= 15000) {
-    newSummary = await generateSummary(summary);
+    newSummary = await generateSummaryOfContent(summary);
   }
 
   const prompt = `create 10 most important points from the given data : \n${newSummary}`;
@@ -116,7 +115,7 @@ async function generateImportantPoints(summary: string) {
 export default async function createSummary() {
   // const scrappedContent = await doScaping();
   // const inputchunks: string[] = Object.values(scrappedContent);
-  const inputchunks: string[] = [uniswapString1, uniswapString2, uniswapString1, uniswapString2];
+  const inputchunks: string[] = uniswapTestStrings;
   const outputchunks: Array<string | undefined> = [];
 
   for (const inputchunk of inputchunks) {

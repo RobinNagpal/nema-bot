@@ -97,3 +97,5 @@ Swaps are the most common way of interacting with the Uniswap protocol. For end-
 Swaps using the Uniswap protocol are different from traditional order book trades in that they are not executed against discrete orders on a first-in-first-out basis — rather, swaps execute against a passive pool of liquidity, with liquidity providers earning fees proportional to their capital committed
     
     `;
+
+export const uniswapTestStrings: string[] = [uniswapString1, uniswapString2, uniswapString3, uniswapString4];
