@@ -11,7 +11,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function generateSummary(chunk: string | undefined): Promise<string | undefined> {
+export async function generateSummaryOfContent(chunk: string): Promise<string | undefined> {
   const prompt = `summarize the following content in 1000 - 4000 characters ${chunk}\n\n`;
   const maxCharacters = 15000;
 
@@ -121,8 +121,7 @@ export default async function createSummary() {
 
   for (const inputchunk of inputchunks) {
     console.log('length of the input: ', inputchunk?.length);
-    const output = await generateSummary(inputchunk);
-
+    const output = await generateSummaryOfContent(inputchunk);
     outputchunks.push(output);
   }
 
@@ -130,7 +129,7 @@ export default async function createSummary() {
   // console.log("this is the combined summary: ",joinedChunks)
   const questionsList = await generateQuestions(joinedChunks, 10);
   const importantPoints = await generateImportantPoints(joinedChunks);
-  const finalSummary = await generateSummary(joinedChunks);
+  const finalSummary = await generateSummaryOfContent(joinedChunks);
 
   console.log('this is final summary:', finalSummary);
   // console.log('final summary length: ', finalSummary?.length);

@@ -1,8 +1,7 @@
-import { getNewsContentsUsingPuppeteer } from '@/prompts/latestNews/getNewsContentsUsingPuppeteer';
 import { getNewsContentsUsingCheerio } from '@/prompts/latestNews/getNewsContentsUsingCheerio';
 import axios from 'axios';
-import { parseStringPromise } from 'xml2js';
 import robotsParser from 'robots-parser';
+import { parseStringPromise } from 'xml2js';
 
 interface SitemapUrl {
   loc: string[];
@@ -131,6 +130,11 @@ async function getArticleUrls(sitemapUrl: string[]) {
   return filteredUrls;
 }
 
+export async function getArticleUrlsForSites(urls: string[]) {
+  const sitemapUrls: string[] = await getSitemapUrls(urls);
+  console.log('sitemapUrls', JSON.stringify(sitemapUrls, null, 2));
+  return await getArticleUrls(sitemapUrls);
+}
 async function run() {
   const sitemapUrls: string[] = await getSitemapUrls(urls);
   console.log('sitemapUrls', JSON.stringify(sitemapUrls, null, 2));
