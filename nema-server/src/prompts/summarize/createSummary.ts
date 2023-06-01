@@ -83,15 +83,16 @@ async function generateQuestions(summary: string, numQuestions: number) {
   }
 }
 
-async function generateImportantPoints(summary: string) {
+export async function generateImportantPoints(summary: string) {
   let newSummary: string | undefined = summary;
 
   if (summary.length >= 15000) {
     newSummary = await generateSummaryOfContent(summary);
   }
 
-  const prompt = `create 10 most important points from the given data : \n${newSummary}`;
+  const prompt = `create 10 most important points from the given data. Don't number the important points : \n${newSummary}`;
 
+  
   try {
     // Generate questions using OpenAI API
     const response = await openai.createCompletion({
@@ -104,8 +105,14 @@ async function generateImportantPoints(summary: string) {
     });
 
     const data = response.data.choices[0].text?.trim();
-    console.log('generated Important points: ', data);
-    return data;
+
+    if (data) {
+      const questionsArray = data.split('\n').map(question => question.replace(/^\d+\.\s*/, ''));
+      console.log('generated Important points: ', questionsArray);
+      return questionsArray;
+    } else {
+      throw new Error('Failed to generate questions.');
+    }
   } catch (error) {
     console.error('Error:', error);
     throw error;
@@ -134,4 +141,4 @@ export default async function createSummary() {
   // console.log('final summary length: ', finalSummary?.length);
 }
 
-createSummary();
+

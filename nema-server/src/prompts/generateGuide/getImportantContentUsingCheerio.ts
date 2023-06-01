@@ -31,7 +31,7 @@ const AD_KEYWORDS = ['advertisement', 'promo', 'sponsor']; // list of keywords i
 export async function getImportantContentUsingCheerio(url: string) {
   const response = await axios.get(url);
   const $ = load(response.data);
-  $('script, style, footer, header, nav, aside').remove();
+  $('script, style, footer, header, nav, aside, img, style').remove();
   const bodyText = $('body').text();
 
   let paragraphs = bodyText
