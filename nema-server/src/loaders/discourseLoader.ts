@@ -81,7 +81,7 @@ async function getAllDiscourseDocs(discourseUrl: string): Promise<LGCDocument<Pa
     (pageContent) =>
       new LGCDocument({
         pageContent: pageContent.contents,
-        metadata: { source: pageContent.url, url: pageContent.url, text: pageContent.contents },
+        metadata: { source: pageContent.url, url: pageContent.url, fullContent: pageContent.contents },
       })
   );
   return split(docs);

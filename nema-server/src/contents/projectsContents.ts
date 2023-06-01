@@ -33,7 +33,7 @@ export interface DiscordContent extends Content {
 
 export interface PageMetadata {
   chunk: string;
-  text: string;
+  fullContent: string;
   url: string;
   source: string;
 }
