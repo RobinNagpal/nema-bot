@@ -1,47 +1,38 @@
-import { PineconeClient } from "@pinecone-database/pinecone";
-import * as dotenv from "dotenv";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
+import { PineconeClient } from '@pinecone-database/pinecone';
+import * as dotenv from 'dotenv';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Document as LGCDocument } from 'langchain/document';
 import { PageMetadata } from '@/contents/projectsContents';
-
 
 dotenv.config();
 
 const client = new PineconeClient();
 
-if(process.env.PINECONE_API_KEY&&process.env.PINECONE_ENVIRONMENT&&process.env.PINECONE_INDEX){
-     client.init({
-        apiKey: process.env.PINECONE_API_KEY,
-        environment: process.env.PINECONE_ENVIRONMENT,
-      });
-}else{
-    console.log("set the required values in the .env file")
+if (process.env.PINECONE_API_KEY && process.env.PINECONE_ENVIRONMENT && process.env.PINECONE_INDEX) {
+  client.init({
+    apiKey: process.env.PINECONE_API_KEY,
+    environment: process.env.PINECONE_ENVIRONMENT,
+  });
+} else {
+  console.log('set the required values in the .env file');
 }
 
-const pineconeIndex = client.Index("nema-bot");
+const pineconeIndex = client.Index('nema-bot');
 
 const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPENAI_API_KEY, // In Node.js defaults to process.env.OPENAI_API_KEY
+  openAIApiKey: process.env.OPENAI_API_KEY, // In Node.js defaults to process.env.OPENAI_API_KEY
+});
+
+export async function storeLangDocs(docs: LGCDocument<PageMetadata>[]) {
+  await PineconeStore.fromDocuments(docs, new OpenAIEmbeddings(), {
+    pineconeIndex,
   });
-
-
-export async function storeLangDocs(docs:LGCDocument<PageMetadata>[]){
-
-    await PineconeStore.fromDocuments(docs, new OpenAIEmbeddings(), {
-        pineconeIndex,
-      });
-
 }
 
-export async function getRelevantContent(query:string){
-
-  const vectorStore = await PineconeStore.fromExistingIndex(
-    new OpenAIEmbeddings(),
-    { pineconeIndex }
-  );
-  const docs = await vectorStore.similaritySearch(query)
+export async function getRelevantContent(query: string) {
+  const vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings(), { pineconeIndex });
+  const docs = await vectorStore.similaritySearch(query);
   console.log(docs);
   return docs;
-
 }

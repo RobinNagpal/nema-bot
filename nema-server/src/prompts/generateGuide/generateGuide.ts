@@ -3,20 +3,19 @@ import { extractUrls } from '@/prompts/generateGuide/extractContentFromInputStri
 import { getImportantContentUsingCheerio } from '@/prompts/generateGuide/getImportantContentUsingCheerio';
 import { getImportantPointsBasedOnDirections } from '@/prompts/generateGuide/getImportantPointsBasedOnDirections';
 import { impermanentLossGuideDirections, impermanentLossGuideString } from '@/prompts/generateGuide/guideStringExamples';
-import { createImportantPoints, generateImportantPoints,createSummary,createImportantQuestions } from '@/prompts/summarize/createSummary';
+import { createImportantPoints, generateImportantPoints, createSummary, createImportantQuestions } from '@/prompts/summarize/createSummary';
 import dotenv from 'dotenv';
 import { Document as LGCDocument } from 'langchain/document';
 import { Configuration, OpenAIApi } from 'openai';
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import {split} from "@/loaders/splitter"
-import { storeLangDocs,getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { split } from '@/loaders/splitter';
+import { storeLangDocs, getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
 
 dotenv.config();
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
 
 const openai = new OpenAIApi(configuration);
 
@@ -66,11 +65,10 @@ export async function generateGuide(guideInput: string, directions?: string) {
   return;
   // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
 
-async  function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]){
- const splittedDocs = await split(guideContents);
-await storeLangDocs(splittedDocs);
-}
-
+  async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
+    const splittedDocs = await split(guideContents);
+    await storeLangDocs(splittedDocs);
+  }
 
   // console.log('LangChain Docs:', langChainDocs);
 
@@ -86,44 +84,33 @@ await storeLangDocs(splittedDocs);
 
   // Step 5: For each of the important points, go to pinecone and find the matching content
   // Step 6: Generate a summary of the matching content by giving all the matching content to the OpenAI API
- 
 
+  async function getMatchingSummary(importantPoint: string) {
+    const contents: string[] = [];
+    const docs = await getRelevantContent(importantPoint);
+    docs.map((doc) => {
+      contents.push(doc.pageContent);
+    });
 
-async function getMatchingSummary(importantPoint:string){
-  const contents:string[] =[]
-  const docs = await  getRelevantContent(importantPoint);
-  docs.map((doc)=>{
-    contents.push(doc.pageContent);
-  })
-  
-  const summary = await createSummary(contents);
-  return summary
+    const summary = await createSummary(contents);
+    return summary;
+  }
 
-}
+  // Step 7: Do this for each of the important points
 
+  async function getAllSummaryAndQuestions(importantPoints: string[]) {
+    const finalSummaries: Array<string> = [];
+    await importantPoints.map(async (importantPoint) => {
+      const summary = await getMatchingSummary(importantPoint);
+      finalSummaries.push(summary);
+    });
 
- 
- // Step 7: Do this for each of the important points
-
-
-
-async function getAllSummaryAndQuestions(importantPoints:string[]){
-  const finalSummaries: Array<string> = []
- await importantPoints.map(async(importantPoint)=>{
-    const summary = await getMatchingSummary(importantPoint);
-    finalSummaries.push(summary);
-  })
-
-  const allQuestions = await createImportantQuestions(finalSummaries)
-}
-
-
+    const allQuestions = await createImportantQuestions(finalSummaries);
+  }
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 
   // Step 8: Generate questions from the summary present in the array.
-
-
 
   // Step 9: Combine questions and summaries to create a guide.
 
