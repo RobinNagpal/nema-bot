@@ -25,7 +25,7 @@ import { load } from 'cheerio';
  * Please note that this process might not work perfectly on all webpages due to the diversity of ways in which webpages can be designed. It may need to be customized and refined depending on the specific webpages you are dealing with. Also, ensure you're in compliance with the website's policy on web scraping and respect user data privacy.
  */
 
-const MIN_PARAGRAPH_LENGTH = 50; // minimum paragraph length
+const MIN_PARAGRAPH_LENGTH = 100; // minimum paragraph length
 const AD_KEYWORDS = ['advertisement', 'promo', 'sponsor']; // list of keywords indicative of ads
 
 export async function getImportantContentUsingCheerio(url: string) {
