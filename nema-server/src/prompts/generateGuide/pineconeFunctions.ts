@@ -11,8 +11,8 @@ const client = new PineconeClient();
 
 if (process.env.PINECONE_API_KEY && process.env.PINECONE_ENVIRONMENT && process.env.PINECONE_INDEX) {
   client.init({
-    apiKey: process.env.PINECONE_API_KEY,
-    environment: process.env.PINECONE_ENVIRONMENT,
+    apiKey: "f31110dc-f9c9-44da-ada0-06fdcc204a8b",
+    environment: "eu-west1-gcp",
   });
 } else {
   console.log('set the required values in the .env file');

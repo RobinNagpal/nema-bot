@@ -1,6 +1,6 @@
 import { OpenAIApi } from 'openai';
 
-export async function getImportantPointsBasedOnDirections(openai: OpenAIApi, inferedImportantPoints: string, directions: string): Promise<string[]> {
+export async function getImportantPointsBasedOnDirections(openai: OpenAIApi, inferedImportantPoints: string, directions: string){
   const prompt = `
   Create a list of 5 most important points from this data. 
   Use DIRECTIONS to decide the most important points from the INFERRED_POINTS. 
@@ -12,8 +12,6 @@ export async function getImportantPointsBasedOnDirections(openai: OpenAIApi, inf
   \n
   DIRECTIONS: 
   ${directions}
-  
-  Output the most important points in javascript string array format like ['point1', 'point2', 'point3'] 
   `;
 
   const response = await openai.createCompletion({
@@ -25,9 +23,10 @@ export async function getImportantPointsBasedOnDirections(openai: OpenAIApi, inf
     presence_penalty: 0.6,
   });
 
-  const data = response.data.choices[0].text?.trim();
+  const data = response.data.choices[0].text?.trim().split('\n').map((question) => question.replace(/^\d+\.\s*/, ''));
   if (data) {
-    return JSON.parse(data);
+    const filteredOutput = data.filter((item) => item !== '' && item !== data[0]);
+    return filteredOutput;
   }
   throw new Error('Failed to generate important points.');
 }

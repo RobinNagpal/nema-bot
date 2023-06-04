@@ -7,9 +7,8 @@ import { createImportantPoints, generateImportantPoints, createSummary, createIm
 import dotenv from 'dotenv';
 import { Document as LGCDocument } from 'langchain/document';
 import { Configuration, OpenAIApi } from 'openai';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { split } from '@/loaders/splitter';
-import { storeLangDocs, getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
+// import { storeLangDocs, getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
 
 dotenv.config();
 
@@ -57,18 +56,19 @@ export async function generateGuide(guideInput: string, directions?: string) {
   console.log('importantPoints Before Directions: ', importantPoints);
 
   if (directions) {
-    importantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
+   const NewImportantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
+   console.log('importantPoints: ', NewImportantPoints);
   }
 
-  console.log('importantPoints: ', importantPoints);
+
 
   return;
   // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
 
-  async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
-    const splittedDocs = await split(guideContents);
-    await storeLangDocs(splittedDocs);
-  }
+  // async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
+  //   const splittedDocs = await split(guideContents);
+  //   await storeLangDocs(splittedDocs);
+  // }
 
   // console.log('LangChain Docs:', langChainDocs);
 
@@ -85,28 +85,28 @@ export async function generateGuide(guideInput: string, directions?: string) {
   // Step 5: For each of the important points, go to pinecone and find the matching content
   // Step 6: Generate a summary of the matching content by giving all the matching content to the OpenAI API
 
-  async function getMatchingSummary(importantPoint: string) {
-    const contents: string[] = [];
-    const docs = await getRelevantContent(importantPoint);
-    docs.map((doc) => {
-      contents.push(doc.pageContent);
-    });
+  // async function getMatchingSummary(importantPoint: string) {
+  //   const contents: string[] = [];
+  //   const docs = await getRelevantContent(importantPoint);
+  //   docs.map((doc) => {
+  //     contents.push(doc.pageContent);
+  //   });
 
-    const summary = await createSummary(contents);
-    return summary;
-  }
+  //   const summary = await createSummary(contents);
+  //   return summary;
+  // }
 
   // Step 7: Do this for each of the important points
 
-  async function getAllSummaryAndQuestions(importantPoints: string[]) {
-    const finalSummaries: Array<string> = [];
-    await importantPoints.map(async (importantPoint) => {
-      const summary = await getMatchingSummary(importantPoint);
-      finalSummaries.push(summary);
-    });
+  // async function getAllSummaryAndQuestions(importantPoints: string[]) {
+  //   const finalSummaries: Array<string> = [];
+  //   await importantPoints.map(async (importantPoint) => {
+  //     const summary = await getMatchingSummary(importantPoint);
+  //     finalSummaries.push(summary);
+  //   });
 
-    const allQuestions = await createImportantQuestions(finalSummaries);
-  }
+  //   const allQuestions = await createImportantQuestions(finalSummaries);
+  // }
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 
