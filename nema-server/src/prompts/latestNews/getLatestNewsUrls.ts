@@ -119,7 +119,7 @@ async function getArticleUrls(sitemapUrl: string[]) {
             return filteredUrl.loc[0];
           });
 
-        filteredUrls.push(...filter);
+        filteredUrls.push(...(filter || []));
       } catch (error) {
         console.error('Error fetching sitemap:', error);
       }
@@ -144,7 +144,7 @@ async function run() {
   }
 }
 
-run();
+// run();
 
 // getSitemapUrls(urls);
 
