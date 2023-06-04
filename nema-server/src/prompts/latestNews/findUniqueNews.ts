@@ -1,5 +1,5 @@
 import { PageMetadata } from '@/contents/projectsContents';
-import { getVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
+import { getEmbeddingVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
 import { getIndexStats, initPineconeClient } from '@/indexer/pineconeHelper';
 import { getImportantContentUsingCheerio } from '@/prompts/generateGuide/getImportantContentUsingCheerio';
 import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
@@ -199,7 +199,7 @@ async function getAllExistingNewsVectors(pineconeIndex: VectorOperationsApi): Pr
 async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
   const docsToInsert = await getLatestNewsDocs();
 
-  const vectors = await getVectors(docsToInsert);
+  const vectors = await getEmbeddingVectors(docsToInsert);
 
   await indexVectorsInPinecone(vectors, pineconeIndex);
   return vectors;
@@ -210,7 +210,7 @@ async function getIndexedVectorsForTestNews(pineconeIndex: VectorOperationsApi) 
 
   const nonEmptyDocs = docsToInsert.filter((doc) => doc.pageContent.length > 5);
 
-  const vectors = await getVectors(nonEmptyDocs);
+  const vectors = await getEmbeddingVectors(nonEmptyDocs);
 
   await indexVectorsInPinecone(vectors, pineconeIndex);
   return vectors;
