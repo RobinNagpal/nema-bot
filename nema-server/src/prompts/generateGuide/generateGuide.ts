@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import { Document as LGCDocument } from 'langchain/document';
 import { Configuration, OpenAIApi } from 'openai';
 import { split } from '@/loaders/splitter';
-// import { storeLangDocs, getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
+import { storeLangDocs, getRelevantContent } from '@/prompts/generateGuide/pineconeFunctions';
 
 dotenv.config();
 
@@ -27,8 +27,8 @@ export async function generateGuide(guideInput: string, directions?: string) {
   const urls = extractUrls(guideInput);
 
   for (const url of urls) {
-    const articleContent = '';
-    // const articleContent = await getImportantContentUsingCheerio(url);
+    // const articleContent = '';
+    const articleContent = await getImportantContentUsingCheerio(url);
 
     const articleDoc: LGCDocument<PageMetadata> = new LGCDocument<PageMetadata>({
       pageContent: articleContent,
@@ -38,9 +38,9 @@ export async function generateGuide(guideInput: string, directions?: string) {
     guideContents.push(articleDoc);
   }
 
-  const contents = guideContents.map((content) => content.metadata.fullContent);
+  // const contents = guideContents.map((content) => content.metadata.fullContent);
   // let importantPoints = await createImportantPoints(contents);
-  let importantPoints = [
+  const importantPoints = [
     'Important Points: ',
     '- Uniswap V3 introduces concentrated liquidity positions, amplifying gains and losses of the position as well as trading fee share, but also increasing impermanent loss. ',
     '- Impermanent loss is calculated as a percentage change between the value of the initial holding in terms of asset Y, and the value of the holding if kept outside of the pool. ',
@@ -53,60 +53,51 @@ export async function generateGuide(guideInput: string, directions?: string) {
     '- Liquidity providers can offset IL risks through buying/selling crypto options or using perpetual futures contracts or options which come in both call/put flavors and carry no risk of liquidation.  ',
     '- Options provide more value than regular investor: increasing profitability of liquidity pool, lower risks when adding liquidity for risky instruments, higher yield farming APYs while keeping protocol sustainable.',
   ];
-  console.log('importantPoints Before Directions: ', importantPoints);
+  // console.log('importantPoints Before Directions: ', importantPoints);
 
-  if (directions) {
-   const NewImportantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
-   console.log('importantPoints: ', NewImportantPoints);
-  }
-
-
-
-  return;
-  // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
-
-  // async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
-  //   const splittedDocs = await split(guideContents);
-  //   await storeLangDocs(splittedDocs);
+  // if (directions) {
+  //  importantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
+  //  console.log('importantPoints: ', importantPoints);
   // }
 
-  // console.log('LangChain Docs:', langChainDocs);
+  // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
+
+  async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
+    const splittedDocs = await split(guideContents);
+    await storeLangDocs(splittedDocs);
+  }
+
+  generateEmbeddingsAndStore(guideContents);
 
   // Step 3: Generate important points from the array of contents. We already have code for this.
 
-  // const ImportantPoints = await generateImportantPoints(guideContents.join(' '));
-  // console.log('importantPoints: ', ImportantPoints);
-
   // Step 4: If user gives direction, update the important points with the direction.
-
-  // const direction = impermanentLossGuideDirections.split('\n');
-  // const updatedImportantPoints = direction ? [...ImportantPoints, ...direction] : ImportantPoints;
 
   // Step 5: For each of the important points, go to pinecone and find the matching content
   // Step 6: Generate a summary of the matching content by giving all the matching content to the OpenAI API
 
-  // async function getMatchingSummary(importantPoint: string) {
-  //   const contents: string[] = [];
-  //   const docs = await getRelevantContent(importantPoint);
-  //   docs.map((doc) => {
-  //     contents.push(doc.pageContent);
-  //   });
+  async function getMatchingSummary(importantPoint: string) {
+    const contents: string[] = [];
+    const docs = await getRelevantContent(importantPoint);
+    docs.map((doc) => {
+      contents.push(doc.pageContent);
+    });
 
-  //   const summary = await createSummary(contents);
-  //   return summary;
-  // }
+    const summary = await createSummary(contents);
+    return summary;
+  }
 
   // Step 7: Do this for each of the important points
 
-  // async function getAllSummaryAndQuestions(importantPoints: string[]) {
-  //   const finalSummaries: Array<string> = [];
-  //   await importantPoints.map(async (importantPoint) => {
-  //     const summary = await getMatchingSummary(importantPoint);
-  //     finalSummaries.push(summary);
-  //   });
+  async function getAllSummaryAndQuestions(importantPoints: string[]) {
+    const finalSummaries: Array<string> = [];
+    await importantPoints.map(async (importantPoint) => {
+      const summary = await getMatchingSummary(importantPoint);
+      finalSummaries.push(summary);
+    });
 
-  //   const allQuestions = await createImportantQuestions(finalSummaries);
-  // }
+    const allQuestions = await createImportantQuestions(finalSummaries);
+  }
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 
