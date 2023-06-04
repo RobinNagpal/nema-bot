@@ -14,7 +14,7 @@ const limiter = new Bottleneck({
 const sliceIntoChunks = (arr: Vector[], chunkSize: number) => {
   return Array.from({ length: Math.ceil(arr.length / chunkSize) }, (_, i) => arr.slice(i * chunkSize, (i + 1) * chunkSize));
 };
-export async function getVectors(documents: Document<PageMetadata>[]): Promise<Vector[]> {
+export async function getEmbeddingVectors(documents: Document<PageMetadata>[]): Promise<Vector[]> {
   const embedder = new OpenAIEmbeddings({
     modelName: 'text-embedding-ada-002',
   });
@@ -43,7 +43,7 @@ export async function indexDocsInPinecone(allDocs: Document<PageMetadata>[], ind
   let vectors: Vector[] = [];
 
   try {
-    vectors = (await limiter.schedule(() => getVectors(allDocs))) as unknown as Vector[];
+    vectors = (await limiter.schedule(() => getEmbeddingVectors(allDocs))) as unknown as Vector[];
   } catch (e) {
     console.error(e);
   }
