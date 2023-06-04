@@ -47,7 +47,7 @@ export async function generateGuide(guideInput: string, directions?: string) {
 
   // const contents = guideContents.map((content) => content.metadata.fullContent);
   // let importantPoints = await createImportantPoints(contents);
-  const importantPoints = [
+  let importantPoints = [
     'Important Points: ',
     '- Uniswap V3 introduces concentrated liquidity positions, amplifying gains and losses of the position as well as trading fee share, but also increasing impermanent loss. ',
     '- Impermanent loss is calculated as a percentage change between the value of the initial holding in terms of asset Y, and the value of the holding if kept outside of the pool. ',
@@ -60,37 +60,23 @@ export async function generateGuide(guideInput: string, directions?: string) {
     '- Liquidity providers can offset IL risks through buying/selling crypto options or using perpetual futures contracts or options which come in both call/put flavors and carry no risk of liquidation.  ',
     '- Options provide more value than regular investor: increasing profitability of liquidity pool, lower risks when adding liquidity for risky instruments, higher yield farming APYs while keeping protocol sustainable.',
   ];
-  // console.log('importantPoints Before Directions: ', importantPoints);
+  console.log('importantPoints Before Directions: ', importantPoints);
 
-  // if (directions) {
-  //  importantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
-  //  console.log('importantPoints: ', importantPoints);
-  // }
+  if (directions) {
+    importantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
+    console.log('importantPoints: ', importantPoints);
+  }
 
-  const NewImportantPoints = [
-    'Impermanent loss is calculated as a percentage change between the value of the initial holding in terms of asset Y, and the value of the holding if kept outside of the pool. ',
+  // const NewImportantPoints = [
+  //   'Impermanent loss is calculated as a percentage change between the value of the initial holding in terms of asset Y, and the value of the holding if kept outside of the pool. ',
 
-    'Market making is a complex activity with risk of losing money during large and sustained movement in underlying asset price compared to simply holding an asset. ',
+  //   'Market making is a complex activity with risk of losing money during large and sustained movement in underlying asset price compared to simply holding an asset. ',
 
-    'Liquidity providers can offset IL risks through buying/selling crypto options or using perpetual futures contracts or options which come in both call/put flavors and carry no risk of liquidation.  ',
+  //   'Liquidity providers can offset IL risks through buying/selling crypto options or using perpetual futures contracts or options which come in both call/put flavors and carry no risk of liquidation.  ',
 
-    'Options provide more value than regular investor: increasing profitability of liquidity pool, lower risks when adding liquidity for risky instruments, higher yield farming APYs while keeping protocol sustainable.   ',
-    'Clipper has beaten impermanent loss by running more sophisticated AMMs than CPMM and closely tracking zero cost Daily Rebalancing Portfolio (DRP).',
-  ];
-
-  const queries = [
-    `Explain impermanent loss`,
-
-    `Give a few concrete examples of impermanent loss`,
-
-    `Explain how to calculate impermanent loss`,
-
-    `Explain how to minimize impermanent loss`,
-
-    `Explain how to track impermanent loss`,
-
-    `Explain how to hedge impermanent loss`,
-  ];
+  //   'Options provide more value than regular investor: increasing profitability of liquidity pool, lower risks when adding liquidity for risky instruments, higher yield farming APYs while keeping protocol sustainable.   ',
+  //   'Clipper has beaten impermanent loss by running more sophisticated AMMs than CPMM and closely tracking zero cost Daily Rebalancing Portfolio (DRP).',
+  // ];
 
   // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
 
@@ -143,6 +129,7 @@ export async function generateGuide(guideInput: string, directions?: string) {
     const finalSummaries: Array<string> = [];
     await Promise.all(
       importantPoints.map(async (importantPoint) => {
+        console.log('important point: ', importantPoint);
         const summary = await getMatchingSummary(importantPoint);
         finalSummaries.push(summary);
         console.log(`summary for the important point: ${importantPoint} = ${summary}`);
@@ -153,7 +140,7 @@ export async function generateGuide(guideInput: string, directions?: string) {
 
     console.log('list of questions: ', allQuestions);
   }
-  getAllSummaryAndQuestions(NewImportantPoints);
+  getAllSummaryAndQuestions(importantPoints);
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 
