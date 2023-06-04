@@ -19,7 +19,7 @@ const urls = [
   'https://www.coindesk.com/robots.txt', // news-sitemap-index, new-sitemap-index-es
 ];
 
-const thresholdSimilarity = 0.77;
+const thresholdSimilarity = 0.85;
 
 const LATEST_NEWS_NAMESPACE = 'latest-news';
 
@@ -42,6 +42,7 @@ async function getNewsSummary(contents: string): Promise<string> {
 async function getLatestNewsDocs(): Promise<LGCDocument<PageMetadata>[]> {
   const docsToInsert: LGCDocument<PageMetadata>[] = [];
   const articleUrls = await getArticleUrlsForSites(urls);
+
   for (const articleUrl of articleUrls) {
     try {
       const chunk = await getImportantContentUsingCheerio(articleUrl);
@@ -77,21 +78,45 @@ async function getAllExistingNewsVectors(pineconeIndex: VectorOperationsApi): Pr
   const result = await pineconeIndex.fetch({
     namespace: LATEST_NEWS_NAMESPACE,
     ids: [
-      '9216b705-2055-414d-a644-3309ca7e6c00',
-      'c48c07e5-9f77-421c-96a0-795d7811a097',
-      '70371636-1e38-4cd5-8b61-b0abbee15c05',
-      '11856b30-9255-4d5d-8984-39551e5f8279',
-      'cbf5ca1c-7184-4f06-83b4-6b272e3f1dd0',
-      '82c00865-18ad-4805-97ef-f4d402371577',
-      'e19ed082-0186-45d5-96af-b2411577e220',
-      '3974a6a4-afb6-489a-b78a-0241ef8aab70',
-      '933de847-8266-4fab-ba1b-d15380f6c3af',
-      'e1786d9f-9616-4cfe-88a0-9d94134e6922',
-      '9d9bbb5d-1f86-48d3-9fd8-0e2896aea901',
-      'e5971401-5844-48f3-b2b2-6a37ddd9ceee',
-      '36a2ff90-0bec-42b5-b0b2-6b89b50f17a3',
-      '47dfb352-0063-427b-aea9-272fc02c586b',
-      '5be2d28d-f0f3-415b-bffd-2288d39f568a',
+      //Testcase-2
+      'fbb291fa-9be1-4674-a07d-08e77918aa93',
+      '9c92ffc2-03d3-4c51-b558-1c53d2e62e57',
+      '28d53633-35d7-4f98-b698-a1077d73915c',
+      '65a89150-0767-4673-a0aa-31832b78c20f',
+      // |
+      // |
+      // |
+      //Testcase-1
+      // '65ae276a-0338-418b-85ec-cb739ba5ab48',
+      // '73eb5db9-3715-41e0-b951-0765e3a3cc21',
+      // '042eb57c-c036-42da-bc3e-386a136efd10',
+      // '77148506-adcb-44bc-8469-f73151b4d7ae',
+      // 'c481f03f-07b1-4468-8f3e-f8b3858456f7',
+      // 'c3f067e5-d028-46e2-a9cc-8997a7f433cf',
+      // '35b85e52-54a5-424b-809e-dfefc68053ce',
+      // '266371e6-f0c8-489b-a606-4260139e3f99',
+      // '37f676c0-4723-4a22-8a2a-c390ea92d8ee',
+      // '675a04b8-e437-4b7f-b167-91f2ced08a53',
+      // '21a5754b-5c75-4be0-b123-d23d03b0e2e4',
+      // '8307f9f9-d15f-4ccb-9cd7-63d0da76e9ef',
+      // |
+      // |
+      // |
+      // '9216b705-2055-414d-a644-3309ca7e6c00',
+      // 'c48c07e5-9f77-421c-96a0-795d7811a097',
+      // '70371636-1e38-4cd5-8b61-b0abbee15c05',
+      // '11856b30-9255-4d5d-8984-39551e5f8279',
+      // 'cbf5ca1c-7184-4f06-83b4-6b272e3f1dd0',
+      // '82c00865-18ad-4805-97ef-f4d402371577',
+      // 'e19ed082-0186-45d5-96af-b2411577e220',
+      // '3974a6a4-afb6-489a-b78a-0241ef8aab70',
+      // '933de847-8266-4fab-ba1b-d15380f6c3af',
+      // 'e1786d9f-9616-4cfe-88a0-9d94134e6922',
+      // '9d9bbb5d-1f86-48d3-9fd8-0e2896aea901',
+      // 'e5971401-5844-48f3-b2b2-6a37ddd9ceee',
+      // '36a2ff90-0bec-42b5-b0b2-6b89b50f17a3',
+      // '47dfb352-0063-427b-aea9-272fc02c586b',
+      // '5be2d28d-f0f3-415b-bffd-2288d39f568a',
       // 'd0421c5b-6c64-4e08-b8f9-1d6d1467823a',
       // '4f7eaa8b-b13f-45bd-bec3-d3c55af2e76a',
       // '5e74ae8b-bd3b-42be-ab35-d849756974eb',
@@ -207,12 +232,18 @@ async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
 
 async function getIndexedVectorsForTestNews(pineconeIndex: VectorOperationsApi) {
   const docsToInsert = await getTestNewsDocs();
+  const ids: string[] = [];
 
   const nonEmptyDocs = docsToInsert.filter((doc) => doc.pageContent.length > 5);
 
   const vectors = await getVectors(nonEmptyDocs);
 
   await indexVectorsInPinecone(vectors, pineconeIndex);
+  for (const vector of vectors) {
+    ids.push(vector.id);
+  }
+  console.log(ids);
+
   return vectors;
 }
 
@@ -260,6 +291,12 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
         },
       });
 
+      similarArticles.matches?.map((match) => {
+        console.log('score: ', match.score);
+        console.log('metadata: ', match.metadata);
+      });
+      // console.log(similarArticles);
+
       const matches = (similarArticles.matches || []).filter((match) => {
         return (match.score || 0) > thresholdSimilarity;
       }); // TODO: should it be 0.9?
@@ -277,6 +314,7 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
       console.error(`Error while grouping similar articles: ${error}`);
     }
   }
+  console.log(buckets);
 }
 
 async function findUniqueNews() {

@@ -20,22 +20,22 @@ const urls = [
 function includeSitemap(sitemap: SitemapUrl): boolean {
   const url = sitemap.loc[0];
   if (url.startsWith('https://www.theblock.co')) {
-    return url.includes('post_type_post');
+    return url.includes('post_type_post') && !url.includes('video') && !url.includes('podcast');
   }
   if (url.startsWith('https://blockworks.co')) {
-    return url.includes('news-sitemap');
+    return url.includes('news-sitemap') && !url.includes('video') && !url.includes('podcast');
   }
   if (url.startsWith('https://www.coinbureau.com')) {
-    return url.includes('post-sitemap');
+    return url.includes('post-sitemap') && !url.includes('video') && !url.includes('podcast');
   }
   if (url.startsWith('https://coingape.com')) {
-    return url.includes('post-sitemap');
+    return url.includes('post-sitemap') && !url.includes('video') && !url.includes('podcast');
   }
   if (url.startsWith('https://thedefiant.io')) {
-    return url.includes('post-sitemap');
+    return url.includes('post-sitemap') && !url.includes('video') && !url.includes('podcast');
   }
   if (url.startsWith('https://www.coindesk.com')) {
-    return url.includes('news-sitemap-index') && !url.includes('news-sitemap-index-es');
+    return url.includes('news-sitemap-index') && !url.includes('news-sitemap-index-es') && !url.includes('video') && !url.includes('podcast');
   }
   return false;
 }
