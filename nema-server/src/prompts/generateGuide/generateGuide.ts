@@ -127,8 +127,8 @@ export async function generateGuide(guideInput: string, directions?: string) {
   async function getMatchingSummary(importantPoint: string) {
     const contents: string[] = [];
     const response = await getRelevantContent(importantPoint);
-    const docs = response.sourceDocuments;
-    docs.map((doc: LGCDocument<PageMetadata>) => {
+    const docs = response;
+    docs.map((doc) => {
       contents.push(doc.pageContent);
     });
     const summary = await createSummary(contents);
@@ -148,12 +148,12 @@ export async function generateGuide(guideInput: string, directions?: string) {
         console.log(`summary for the important point: ${importantPoint} = ${summary}`);
       })
     );
-    console.log('final summary: ', finalSummaries);
-    // const allQuestions = await createImportantQuestions(finalSummaries);
+    // console.log('final summary: ', finalSummaries);
+    const allQuestions = await createImportantQuestions(finalSummaries);
 
-    // console.log('list of questions: ', allQuestions);
+    console.log('list of questions: ', allQuestions);
   }
-  getAllSummaryAndQuestions(importantPoints);
+  getAllSummaryAndQuestions(NewImportantPoints);
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 

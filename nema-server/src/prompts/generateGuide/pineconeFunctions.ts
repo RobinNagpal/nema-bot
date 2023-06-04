@@ -36,13 +36,13 @@ export async function getIndex() {
 export async function getRelevantContent(query: string) {
   const pineconeIndex = await getIndex();
   const vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings(), { pineconeIndex, namespace: 'guides' });
-  const model = new OpenAI();
-  const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-    k: 1,
-    returnSourceDocuments: true,
-  });
-  const response = await chain.call({ query: query });
+  // const model = new OpenAI();
+  // const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
+  //   k: 1,
+  //   returnSourceDocuments: true,
+  // });
+  // const response = await chain.call({ query: query });
 
-  // const docs = await vectorStore.similaritySearch(query,5);
-  return response;
+  const docs = await vectorStore.similaritySearch(query, 3, {});
+  return docs;
 }
