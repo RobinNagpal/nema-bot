@@ -9,28 +9,34 @@ dotenv.config();
 
 const client = new PineconeClient();
 
-if (process.env.PINECONE_API_KEY && process.env.PINECONE_ENVIRONMENT) {
-  client.init({
-    apiKey: process.env.PINECONE_API_KEY,
-    environment: process.env.PINECONE_ENVIRONMENT,
+async function getIndex() {
+  await client.init({
+    apiKey: process.env.MY_PINECONE_API_KEY ?? '',
+    environment: process.env.MY_PINECONE_ENVIRONMENT ?? '',
   });
-} else {
-  console.log('set the required values in the .env file');
-}
 
-const pineconeIndex = client.Index('nema-bot');
+  const pineconeIndex = await client.Index(process.env.MY_PINECONE_INDEX_NAME ?? 'nemabot1');
+  return pineconeIndex;
+}
 
 const embeddings = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY, // In Node.js defaults to process.env.OPENAI_API_KEY
 });
 
+// export async function listIndexes(){
+//   const existingIndexes = await client.listIndexes()
+//   console.log("existing indexes :",existingIndexes);
+// }
+
 export async function storeLangDocs(docs: LGCDocument<PageMetadata>[]) {
+  const pineconeIndex = await getIndex();
   await PineconeStore.fromDocuments(docs, new OpenAIEmbeddings(), {
     pineconeIndex,
   });
 }
 
 export async function getRelevantContent(query: string) {
+  const pineconeIndex = await getIndex();
   const vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings(), { pineconeIndex });
   const docs = await vectorStore.similaritySearch(query);
   console.log(docs);
