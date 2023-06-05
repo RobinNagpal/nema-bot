@@ -1,14 +1,17 @@
 import { PageMetadata } from '@/contents/projectsContents';
-import { getVectors, indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
+import { getEmbeddingVectors } from '@/indexer/getEmbeddingVectors';
 import { getIndexStats, initPineconeClient } from '@/indexer/pineconeHelper';
 import { getImportantContentUsingCheerio } from '@/prompts/generateGuide/getImportantContentUsingCheerio';
+import { LATEST_NEWS_NAMESPACE } from '@/prompts/latestNews/constants';
 import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
-import { getNewsContentsUsingCheerio } from '@/prompts/latestNews/getNewsContentsUsingCheerio';
-import { getTestNewsDocs } from '@/prompts/latestNews/testNews';
+// import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
+import { getIndexedVectorsForTestNews } from '@/prompts/latestNews/testCases/testNews';
+import { getIndexedVectorsForSmallerSetNews } from '@/prompts/latestNews/testCases/testSmallerSet';
 import { generateSummaryOfContent } from '@/prompts/summarize/createSummary';
-import { ScoredVector, Vector } from '@pinecone-database/pinecone';
+import { Vector } from '@pinecone-database/pinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { Document as LGCDocument } from 'langchain/document';
+import { getIndexedVectorsForSmallerButRewriteSet } from './testCases/testSmallerButRewrites';
 
 const urls = [
   // 'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
@@ -20,8 +23,6 @@ const urls = [
 ];
 
 const thresholdSimilarity = 0.85;
-
-const LATEST_NEWS_NAMESPACE = 'latest-news';
 
 export async function indexVectorsInPinecone(vectors: Vector[], index: VectorOperationsApi) {
   await index.upsert({
@@ -220,32 +221,28 @@ async function getAllExistingNewsVectors(pineconeIndex: VectorOperationsApi): Pr
 
   return Object.values(result.vectors || {});
 }
+async function getAllExistingCuratedNewsVectors(pineconeIndex: VectorOperationsApi): Promise<Vector[]> {
+  const result = await pineconeIndex.fetch({
+    namespace: LATEST_NEWS_NAMESPACE,
+    ids: [
+      'fbb291fa-9be1-4674-a07d-08e77918aa93',
+      '9c92ffc2-03d3-4c51-b558-1c53d2e62e57',
+      '28d53633-35d7-4f98-b698-a1077d73915c',
+      '65a89150-0767-4673-a0aa-31832b78c20f',
+    ],
+  });
 
-async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
-  const docsToInsert = await getLatestNewsDocs();
-
-  const vectors = await getVectors(docsToInsert);
-
-  await indexVectorsInPinecone(vectors, pineconeIndex);
-  return vectors;
+  return Object.values(result.vectors || {});
 }
 
-async function getIndexedVectorsForTestNews(pineconeIndex: VectorOperationsApi) {
-  const docsToInsert = await getTestNewsDocs();
-  const ids: string[] = [];
+// async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
+//   const docsToInsert = await getLatestNewsDocs();
 
-  const nonEmptyDocs = docsToInsert.filter((doc) => doc.pageContent.length > 5);
+//   const vectors = await getVectors(docsToInsert);
 
-  const vectors = await getVectors(nonEmptyDocs);
-
-  await indexVectorsInPinecone(vectors, pineconeIndex);
-  for (const vector of vectors) {
-    ids.push(vector.id);
-  }
-  console.log(ids);
-
-  return vectors;
-}
+//   await indexVectorsInPinecone(vectors, pineconeIndex);
+//   return vectors;
+// }
 
 function existsInBuckets(vector: any, buckets: LGCDocument<PageMetadata>[][]): boolean {
   let exists = false;
@@ -310,6 +307,9 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
       });
 
       buckets.push(bucket);
+
+      const message = buckets.map((bucket) => ({ length: bucket.length, urls: bucket.map((doc) => doc.metadata.url) }));
+      console.log(JSON.stringify(message, null, 2));
     } catch (error) {
       console.error(`Error while grouping similar articles: ${error}`);
     }
@@ -317,21 +317,46 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
   console.log(buckets);
 }
 
-async function findUniqueNews() {
-  const pineconeIndex = await initPineconeClient();
-  const vectors = await getIndexedVectorsForNews(pineconeIndex);
-  await findUniquieDocsFromVectors(vectors, pineconeIndex);
-}
+// async function findUniqueNews() {
+//   const pineconeIndex = await initPineconeClient();
+//   const vectors = await getIndexedVectorsForNews(pineconeIndex);
+//   await findUniquieDocsFromVectors(vectors, pineconeIndex);
+// }
 
 async function findUniqueTestNews() {
   const pineconeIndex = await initPineconeClient();
-  // await cleanUpPineconeNews(pineconeIndex);
   await printStats(pineconeIndex);
-  // const vectors = await getIndexedVectorsForTestNews(pineconeIndex);
   const vectors = await getAllExistingNewsVectors(pineconeIndex);
 
   await printStats(pineconeIndex);
   await findUniquieDocsFromVectors(vectors, pineconeIndex);
 }
 
-findUniqueTestNews();
+async function findUniqueTestSmallerSetNews() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getIndexedVectorsForSmallerSetNews(pineconeIndex);
+
+  await printStats(pineconeIndex);
+  await findUniquieDocsFromVectors(vectors, pineconeIndex);
+}
+
+async function findUniqueTestSmallerButRewrites() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getIndexedVectorsForSmallerButRewriteSet(pineconeIndex);
+
+  await printStats(pineconeIndex);
+  await findUniquieDocsFromVectors(vectors, pineconeIndex);
+}
+
+async function findUniqueTestCurated() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getAllExistingCuratedNewsVectors(pineconeIndex);
+
+  await printStats(pineconeIndex);
+  await findUniquieDocsFromVectors(vectors, pineconeIndex);
+}
+
+findUniqueTestSmallerSetNews();
