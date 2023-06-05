@@ -344,7 +344,7 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
 
       buckets.push(bucket);
 
-      const message = buckets.map((bucket) => ({ length: bucket.length, urls: bucket.map((doc) => doc.metadata.url) }));
+      const message = buckets.map((bucket) => ({ length: bucket.length, urls: bucket.map((doc) => doc.metadata) }));
       console.log(JSON.stringify(message, null, 2));
     } catch (error) {
       console.error(`Error while grouping similar articles: ${error}`);
@@ -401,3 +401,5 @@ async function findUniqueTestCurated() {
   await printStats(pineconeIndex);
   await findUniquieDocsFromVectors(vectors, pineconeIndex);
 }
+
+findUniqueTestCurated();
