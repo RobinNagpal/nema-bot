@@ -3,6 +3,9 @@ import { Document as LGCDocument } from 'langchain/document';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { getEmbeddingVectors } from '@/indexer/getEmbeddingVectors';
 import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
+import { Vector } from '@pinecone-database/pinecone';
+
+import { LATEST_NEWS_NAMESPACE } from '@/prompts/latestNews/constants';
 
 const testNews: { summary: string; url: string }[] = [
   {
@@ -95,6 +98,30 @@ export async function getTestNewsDocs(): Promise<LGCDocument<PageMetadata>[]> {
         metadata: { source: news.url, url: news.url, fullContent: news.summary, chunk: news.summary },
       });
     });
+}
+export async function getAllExistingSmallerButRewrites(pineconeIndex: VectorOperationsApi): Promise<Vector[]> {
+  const result = await pineconeIndex.fetch({
+    namespace: LATEST_NEWS_NAMESPACE,
+    ids: [
+      '776ab4b2-b79a-4950-85e5-d5c8c3b0ed60',
+      '93bd8134-f968-4b5d-9139-3c598e068f22',
+      '0c141e72-6633-4178-825b-ff10815be2a0',
+      '45ec71ab-eeba-4799-b824-6209aa3f3b9f',
+      '3b28c5cb-de7f-4870-9d61-b085aa0ad81a',
+      '9b9639da-608c-44f1-831e-fa573b137229',
+      '23129d06-7993-4a2d-aa77-0741de0777a2',
+      'd34764fe-b570-43c8-be48-d3deec8e458f',
+      '7986137a-9fa7-40d5-9317-98615805983b',
+      '12798b9d-5d2f-4222-91f0-66bcff9029a7',
+      'e4214896-77a7-498e-85b2-31f8afb0b449',
+      '35aba320-efe4-432a-a44e-242e5769cbb6',
+      '60751f21-cd0f-49fa-af74-635134895b73',
+      'fa672339-70b7-4cfa-aa5d-f8801874b23b',
+      'd5c80429-c7ac-4adb-aa0f-2b0170c480d8',
+    ],
+  });
+
+  return Object.values(result.vectors || {});
 }
 
 export async function getIndexedVectorsForSmallerButRewriteSet(pineconeIndex: VectorOperationsApi) {

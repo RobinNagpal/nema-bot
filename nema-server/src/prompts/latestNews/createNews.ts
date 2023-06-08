@@ -14,15 +14,19 @@ function mergeChunk(bucket: LGCDocument<PageMetadata>[]) {
 
 async function generateNewsFromMergedChunk(chunk: string) {
   const promptFn = (chunk: string) =>
-    `Write a crisp heading for the content:\n\n${chunk}\n\nwrite a summary in under 30 words:\n\nRewrite the given content under 2 paragraphs:\n\nalso generate SEO for this content:\n\n return a json string of which has heading, summary, content, and seo`;
+    `Given the information in the following content : ${chunk}, please generate a concise heading. Then, write a summary of no more than 30 words. Afterward, rewrite the content to fit within two paragraphs. Additionally, generate SEO keywords for this content, and identify the crypto projects mentioned within, if no crypto projects then mention "none" in the respective field. The response should be formatted as a JSON string, with fields for 'heading', 'summary', 'content', 'seo', and 'projects'`;
   const response = await generateSummaryOfContent(chunk, promptFn);
-  const [heading, summary, content, seo] = JSON.parse(response);
+
+  console.log('response: ', response);
+
+  const { heading, summary, content, seo, projects } = JSON.parse(response);
 
   return {
     heading: heading.trim(),
     summary: summary.trim(),
     content: content.trim(),
     seo: seo.trim(),
+    projects: projects.trim(),
   };
 }
 
@@ -34,10 +38,17 @@ function getSourcesFromBucket(bucket: LGCDocument<PageMetadata>[]) {
   return sources;
 }
 
-async function writeNews(bucket: LGCDocument<PageMetadata>[]) {
-  const mergedChunk = mergeChunk(bucket);
-  const sources = getSourcesFromBucket(bucket);
-  const news = generateNewsFromMergedChunk(mergedChunk);
+export async function writeNews(bucket: LGCDocument<PageMetadata>[]) {
+  const mergedChunk = await mergeChunk(bucket);
+  const sources = await getSourcesFromBucket(bucket);
+  const news = await generateNewsFromMergedChunk(mergedChunk);
 
-  return { news, ...sources };
+  const result = {
+    news: news,
+    sources: sources,
+  };
+
+  console.log('result: ', JSON.stringify(result));
+
+  return JSON.stringify(result);
 }

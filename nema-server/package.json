@@ -43,7 +43,6 @@
     "graphql": "^16.6.0",
     "graphql-type-json": "^0.3.2",
     "langchain": "^0.0.64",
-    "lemmatizer": "^0.0.1",
     "openai": "^3.2.1",
     "pg": "^8.10.0",
     "prettier": "^2.8.7",
