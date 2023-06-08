@@ -3,6 +3,8 @@ import { getEmbeddingVectors } from '@/indexer/getEmbeddingVectors';
 import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { Document as LGCDocument } from 'langchain/document';
+import { LATEST_NEWS_NAMESPACE } from '@/prompts/latestNews/constants';
+import { Vector } from '@pinecone-database/pinecone';
 
 const testNews: { summary: string; url: string }[] = [
   {
@@ -97,13 +99,43 @@ export async function getTestNewsDocs(): Promise<LGCDocument<PageMetadata>[]> {
     });
 }
 
+export async function getAllExistingSmallerTestNewsVectors(pineconeIndex: VectorOperationsApi): Promise<Vector[]> {
+  const result = await pineconeIndex.fetch({
+    namespace: LATEST_NEWS_NAMESPACE,
+    ids: [
+      '40ece177-eee6-421c-9614-9fc27c8fd5bf',
+      '66136fc5-5055-4ab5-8388-48ddd05f5eba',
+      '1e9b4376-2446-488e-b472-e598e4b1de70',
+      'bbd0bd66-4589-49c6-a9c4-3fd93c82398a',
+      '10cc69ea-5bf9-4c6a-8ed8-6319b80debe4',
+      '7240ff21-832a-41cc-9369-55804150f53a',
+      'cfed3a3f-5041-4fbf-9bfa-f684a6a46b1a',
+      '2ab4988b-e4cc-488b-9a46-d1d23c0a8ed8',
+      '1b1345c4-c7fd-4476-a826-22bfe42ea41e',
+      '4f00c467-e0b2-411e-80c0-2df7b232e795',
+      '3bb9a56a-8655-4aa5-836f-26233a962a1c',
+      '1956b317-1a15-4950-ad3b-8b0f4f0d9605',
+      'f166fb8a-2c69-4b4b-abf0-f802aaaf265c',
+      'f679321c-2f0b-4cf8-becf-963c9788e593',
+      '6b8900c7-2e23-4ffa-b185-680bff2d9af8',
+    ],
+  });
+
+  return Object.values(result.vectors || {});
+}
+
 export async function getIndexedVectorsForSmallerSetNews(pineconeIndex: VectorOperationsApi) {
   const docsToInsert = await getTestNewsDocs();
 
+  const ids = [];
   const nonEmptyDocs = docsToInsert.filter((doc) => doc.pageContent.length > 5);
 
   const vectors = await getEmbeddingVectors(nonEmptyDocs);
 
   await indexVectorsInPinecone(vectors, pineconeIndex);
+  for (const vector of vectors) {
+    ids.push(vector.id);
+  }
+  console.log(ids);
   return vectors;
 }

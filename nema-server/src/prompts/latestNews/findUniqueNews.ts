@@ -3,14 +3,18 @@ import { getEmbeddingVectors } from '@/indexer/getEmbeddingVectors';
 import { getIndexStats, initPineconeClient } from '@/indexer/pineconeHelper';
 import { getImportantContentUsingCheerio } from '@/prompts/generateGuide/getImportantContentUsingCheerio';
 import { LATEST_NEWS_NAMESPACE } from '@/prompts/latestNews/constants';
-import { getArticleUrlsForSites } from '@/prompts/latestNews/getLatestNewsUrls';
-import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
-import { getIndexedVectorsForTestNews } from '@/prompts/latestNews/testCases/testNews';
-import { getIndexedVectorsForSmallerSetNews } from '@/prompts/latestNews/testCases/testSmallerSet';
+import { getArticleUrlsForSites, run } from '@/prompts/latestNews/getLatestNewsUrls';
+// import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
+
 import { generateSummaryOfContent } from '@/prompts/summarize/createSummary';
 import { Vector } from '@pinecone-database/pinecone';
 import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
 import { Document as LGCDocument } from 'langchain/document';
+import { writeNews } from './createNews';
+import { bucket1, bucket2 } from './testCases/bucketsForNewsCreation';
+import { getAllExistingCuratedNewsVectors, getAllExistingNewsSubSetVectors, getAllExistingNewsVectors } from './testCases/testNews';
+import { getAllExistingSmallerTestNewsVectors } from './testCases/testSmallerSet';
+import { getAllExistingSmallerButRewrites } from './testCases/testSmallerButRewrites';
 
 const urls = [
   // 'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
@@ -21,7 +25,16 @@ const urls = [
   'https://www.coindesk.com/robots.txt', // news-sitemap-index, new-sitemap-index-es
 ];
 
-const thresholdSimilarity = 0.92;
+const thresholdSimilarity = 0.85;
+
+export async function indexVectorsInPinecone(vectors: Vector[], index: VectorOperationsApi) {
+  await index.upsert({
+    upsertRequest: {
+      namespace: LATEST_NEWS_NAMESPACE,
+      vectors,
+    },
+  });
+}
 
 async function getNewsSummary(contents: string): Promise<string> {
   const prompt = (news: string) => `summarize the following paragraph under 150 words, summary must be in lowercase without any punctuation \n\n ${news}`;
@@ -33,6 +46,7 @@ async function getNewsSummary(contents: string): Promise<string> {
 async function getLatestNewsDocs(): Promise<LGCDocument<PageMetadata>[]> {
   const docsToInsert: LGCDocument<PageMetadata>[] = [];
   const articleUrls = await getArticleUrlsForSites(urls);
+
   for (const articleUrl of articleUrls) {
     try {
       const chunk = await getImportantContentUsingCheerio(articleUrl);
@@ -64,14 +78,14 @@ async function printStats(pineconeIndex: VectorOperationsApi) {
   console.log('Stats', initStats);
 }
 
-async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
-  const docsToInsert = await getLatestNewsDocs();
+// async function getIndexedVectorsForNews(pineconeIndex: VectorOperationsApi) {
+//   const docsToInsert = await getLatestNewsDocs();
 
-  const vectors = await getEmbeddingVectors(docsToInsert);
+//   const vectors = await getVectors(docsToInsert);
 
-  await indexVectorsInPinecone(vectors, pineconeIndex);
-  return vectors;
-}
+//   await indexVectorsInPinecone(vectors, pineconeIndex);
+//   return vectors;
+// }
 
 function existsInBuckets(vector: any, buckets: LGCDocument<PageMetadata>[][]): boolean {
   let exists = false;
@@ -90,7 +104,7 @@ function existsInBuckets(vector: any, buckets: LGCDocument<PageMetadata>[][]): b
   return exists;
 }
 
-async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: VectorOperationsApi) {
+async function findUniqueDocsFromVectors(vectors: Vector[], pineconeIndex: VectorOperationsApi) {
   const buckets: LGCDocument<PageMetadata>[][] = [];
 
   for (const vector of vectors) {
@@ -117,6 +131,12 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
         },
       });
 
+      similarArticles.matches?.map((match) => {
+        console.log('score: ', match.score);
+        console.log('metadata: ', match.metadata);
+      });
+      // console.log(similarArticles);
+
       const matches = (similarArticles.matches || []).filter((match) => {
         return (match.score || 0) > thresholdSimilarity;
       }); // TODO: should it be 0.9?
@@ -131,40 +151,64 @@ async function findUniquieDocsFromVectors(vectors: Vector[], pineconeIndex: Vect
 
       buckets.push(bucket);
 
-      const message = buckets.map((bucket) => ({ length: bucket.length, urls: bucket.map((doc) => doc.metadata.url) }));
+      const message = buckets.map((bucket) => ({ length: bucket.length, urls: bucket.map((doc) => doc) }));
       console.log(JSON.stringify(message, null, 2));
     } catch (error) {
       console.error(`Error while grouping similar articles: ${error}`);
     }
   }
+  console.log(buckets);
 }
 
-async function findUniqueNews() {
-  const pineconeIndex = await initPineconeClient();
-  const vectors = await getIndexedVectorsForNews(pineconeIndex);
-  await findUniquieDocsFromVectors(vectors, pineconeIndex);
-}
+// async function findUniqueNews() {
+//   const pineconeIndex = await initPineconeClient();
+//   const vectors = await getIndexedVectorsForNews(pineconeIndex);
+//   await findUniqueDocsFromVectors(vectors, pineconeIndex);
+// }
 
+// the following functions are to test the unique function using different test cases
 async function findUniqueTestNews() {
   const pineconeIndex = await initPineconeClient();
-  // await cleanUpPineconeNews(pineconeIndex);
   await printStats(pineconeIndex);
-  const vectors = await getIndexedVectorsForTestNews(pineconeIndex);
-  // const vectors = await getAllExistingNewsVectors(pineconeIndex);
-
+  const vectors = await getAllExistingNewsVectors(pineconeIndex);
   await printStats(pineconeIndex);
-  await findUniquieDocsFromVectors(vectors, pineconeIndex);
+  await findUniqueDocsFromVectors(vectors, pineconeIndex);
+}
+async function findUniqueTestSubSetNews() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getAllExistingNewsSubSetVectors(pineconeIndex);
+  await printStats(pineconeIndex);
+  await findUniqueDocsFromVectors(vectors, pineconeIndex);
 }
 
 async function findUniqueTestSmallerSetNews() {
   const pineconeIndex = await initPineconeClient();
-  // await cleanUpPineconeNews(pineconeIndex);
   await printStats(pineconeIndex);
-  const vectors = await getIndexedVectorsForSmallerSetNews(pineconeIndex);
-  // const vectors = await getAllExistingNewsVectors(pineconeIndex);
+  const vectors = await getAllExistingSmallerTestNewsVectors(pineconeIndex);
 
   await printStats(pineconeIndex);
-  await findUniquieDocsFromVectors(vectors, pineconeIndex);
+  await findUniqueDocsFromVectors(vectors, pineconeIndex);
 }
 
-findUniqueTestNews();
+async function findUniqueTestSmallerButRewrites() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getAllExistingSmallerButRewrites(pineconeIndex);
+
+  await printStats(pineconeIndex);
+  await findUniqueDocsFromVectors(vectors, pineconeIndex);
+}
+
+async function findUniqueTestCurated() {
+  const pineconeIndex = await initPineconeClient();
+  await printStats(pineconeIndex);
+  const vectors = await getAllExistingCuratedNewsVectors(pineconeIndex);
+
+  await printStats(pineconeIndex);
+  await findUniqueDocsFromVectors(vectors, pineconeIndex);
+}
+
+// To test news creation
+// writeNews(bucket1);
+// writeNews(bucket2);

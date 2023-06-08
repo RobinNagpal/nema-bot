@@ -1,5 +1,11 @@
 import { PageMetadata } from '@/contents/projectsContents';
 import { Document as LGCDocument } from 'langchain/document';
+import { VectorOperationsApi } from '@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch';
+import { getEmbeddingVectors } from '@/indexer/getEmbeddingVectors';
+import { indexVectorsInPinecone } from '@/prompts/latestNews/indexVectorsInPinecone';
+import { Vector } from '@pinecone-database/pinecone';
+
+import { LATEST_NEWS_NAMESPACE } from '@/prompts/latestNews/constants';
 
 const testNews: { summary: string; url: string }[] = [
   {
@@ -14,7 +20,7 @@ const testNews: { summary: string; url: string }[] = [
   },
   {
     summary:
-      "silvergate agrees with fed deadline for wind-down plan of crypto-friendly bank, skale network introduces ethereum zk-rollup levitation protocol, ton foundation proposes burning 50% of network fees, formula 1's red bull racing forges crypto alliance with mysten labs, avalanche hits 1 million monthly active users for the first time, circle says it's launching usdc natively on arbitrum, cross-chain transfer protocol to be brought to layer 2 network after launch of native usdc, circle rolls out euro coin stablecoin on avalanche network, uphold offers easy, secure and transparent crypto platform, lock acs tokens with the block to access pro's crypto ecosystem content.",
+      'silvergate agrees fed deadline for bank wind-down, skale network introduces zk-rollup levitation protocol, ton foundation proposes burning 50% network fees, red bull racing partners with mysten labs, avalanche reaches 1 million monthly users.',
     url: 'https://www.theblock.co/post/232867/circle-says-its-launching-usdc-natively-on-arbitrum',
   },
   {
@@ -54,7 +60,7 @@ const testNews: { summary: string; url: string }[] = [
   },
   {
     summary:
-      "silvergate bank has agreed to file a self-liquidation plan with california financial regulators within 10 days in response to a consent order issued by the federal reserve board. the bank has been ordered to responsibly manage its cash reserves and other available resources in order to compensate depositors in full. the order links the bank's failure to its involvement with the now-defunct crypto exchange, ftx. silvergate bank managed to weather the storm caused by ftx's collapse and absorb losses from the write-down on diem, a facebook-linked digital asset, by securing an emergency loan from the federal home loan bank of san francisco. coingape comprises an experienced team of native content writers and editors working round the clock to cover news globally and present news as a fact rather than an opinion",
+      'Silvergate complies with Fed deadline for bank wind-down, Skale Network introduces Ethereum zk-rollup levitation protocol, TON Foundation suggests burning 50% of network fees, Red Bull Racing forms crypto alliance with Mysten Labs, Avalanche surpasses 1 million monthly active users.',
     url: 'https://coingape.com/breaking-silvergate-bank-prepares-to-self-liquidate-following-fed-approval/',
   },
   {
@@ -92,4 +98,44 @@ export async function getTestNewsDocs(): Promise<LGCDocument<PageMetadata>[]> {
         metadata: { source: news.url, url: news.url, fullContent: news.summary, chunk: news.summary },
       });
     });
+}
+export async function getAllExistingSmallerButRewrites(pineconeIndex: VectorOperationsApi): Promise<Vector[]> {
+  const result = await pineconeIndex.fetch({
+    namespace: LATEST_NEWS_NAMESPACE,
+    ids: [
+      '776ab4b2-b79a-4950-85e5-d5c8c3b0ed60',
+      '93bd8134-f968-4b5d-9139-3c598e068f22',
+      '0c141e72-6633-4178-825b-ff10815be2a0',
+      '45ec71ab-eeba-4799-b824-6209aa3f3b9f',
+      '3b28c5cb-de7f-4870-9d61-b085aa0ad81a',
+      '9b9639da-608c-44f1-831e-fa573b137229',
+      '23129d06-7993-4a2d-aa77-0741de0777a2',
+      'd34764fe-b570-43c8-be48-d3deec8e458f',
+      '7986137a-9fa7-40d5-9317-98615805983b',
+      '12798b9d-5d2f-4222-91f0-66bcff9029a7',
+      'e4214896-77a7-498e-85b2-31f8afb0b449',
+      '35aba320-efe4-432a-a44e-242e5769cbb6',
+      '60751f21-cd0f-49fa-af74-635134895b73',
+      'fa672339-70b7-4cfa-aa5d-f8801874b23b',
+      'd5c80429-c7ac-4adb-aa0f-2b0170c480d8',
+    ],
+  });
+
+  return Object.values(result.vectors || {});
+}
+
+export async function getIndexedVectorsForSmallerButRewriteSet(pineconeIndex: VectorOperationsApi) {
+  const docsToInsert = await getTestNewsDocs();
+
+  const ids = [];
+  const nonEmptyDocs = docsToInsert.filter((doc) => doc.pageContent.length > 5);
+
+  const vectors = await getEmbeddingVectors(nonEmptyDocs);
+  for (const vector of vectors) {
+    ids.push(vector.id);
+  }
+  console.log(ids);
+
+  await indexVectorsInPinecone(vectors, pineconeIndex);
+  return vectors;
 }
