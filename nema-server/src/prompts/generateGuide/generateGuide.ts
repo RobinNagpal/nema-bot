@@ -3,10 +3,14 @@ import { extractUrls } from '@/prompts/generateGuide/extractContentFromInputStri
 import { getImportantContentUsingCheerio } from '@/prompts/generateGuide/getImportantContentUsingCheerio';
 import { getImportantPointsBasedOnDirections } from '@/prompts/generateGuide/getImportantPointsBasedOnDirections';
 import { impermanentLossGuideDirections, impermanentLossGuideString } from '@/prompts/generateGuide/guideStringExamples';
-import { createImportantPoints, generateImportantPoints } from '@/prompts/summarize/createSummary';
+import { createImportantPoints, generateImportantPoints, createSummary, createImportantQuestions } from '@/prompts/summarize/createSummary';
 import dotenv from 'dotenv';
 import { Document as LGCDocument } from 'langchain/document';
 import { Configuration, OpenAIApi } from 'openai';
+import { split } from '@/loaders/splitter';
+import { getRelevantContent, getIndex } from '@/prompts/generateGuide/pineconeFunctions';
+import { indexDocsInPinecone } from '@/indexer/indexDocsInPinecone';
+import { initPineconeClient } from '@/indexer/pineconeHelper';
 
 dotenv.config();
 
@@ -22,21 +26,26 @@ export async function generateGuide(guideInput: string, directions?: string) {
   // const content = extractStringContentWithoutUrls(impermanentLossGuideString);
   // guideContents.push(content);
 
-  const urls = extractUrls(guideInput);
+  // const urls = extractUrls(guideInput);
 
-  for (const url of urls) {
-    const articleContent = '';
-    // const articleContent = await getImportantContentUsingCheerio(url);
+  // for (const url of urls) {
+  //   // const articleContent = '';
+  //   try {
+  //     const articleContent = await getImportantContentUsingCheerio(url);
 
-    const articleDoc: LGCDocument<PageMetadata> = new LGCDocument<PageMetadata>({
-      pageContent: articleContent,
-      metadata: { source: url, url: url, fullContent: articleContent, chunk: articleContent },
-    });
+  //     const articleDoc: LGCDocument<PageMetadata> = new LGCDocument<PageMetadata>({
+  //       pageContent: articleContent,
+  //       metadata: { source: url, url: url, fullContent: articleContent, chunk: articleContent },
+  //     });
 
-    guideContents.push(articleDoc);
-  }
+  //     guideContents.push(articleDoc);
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
 
-  const contents = guideContents.map((content) => content.metadata.fullContent);
+  // }
+
+  // const contents = guideContents.map((content) => content.metadata.fullContent);
   // let importantPoints = await createImportantPoints(contents);
   let importantPoints = [
     'Important Points: ',
@@ -55,38 +64,83 @@ export async function generateGuide(guideInput: string, directions?: string) {
 
   if (directions) {
     importantPoints = await getImportantPointsBasedOnDirections(openai, importantPoints.join('\n\n'), directions);
+    console.log('importantPoints: ', importantPoints);
   }
 
-  console.log('importantPoints: ', importantPoints);
+  // const NewImportantPoints = [
+  //   'Impermanent loss is calculated as a percentage change between the value of the initial holding in terms of asset Y, and the value of the holding if kept outside of the pool. ',
 
-  return;
+  //   'Market making is a complex activity with risk of losing money during large and sustained movement in underlying asset price compared to simply holding an asset. ',
+
+  //   'Liquidity providers can offset IL risks through buying/selling crypto options or using perpetual futures contracts or options which come in both call/put flavors and carry no risk of liquidation.  ',
+
+  //   'Options provide more value than regular investor: increasing profitability of liquidity pool, lower risks when adding liquidity for risky instruments, higher yield farming APYs while keeping protocol sustainable.   ',
+  //   'Clipper has beaten impermanent loss by running more sophisticated AMMs than CPMM and closely tracking zero cost Daily Rebalancing Portfolio (DRP).',
+  // ];
+
   // Step 2: Generate LangChain Docs from the array of contents. Make sure to divide the contents into smaller chunks
 
-  // const chunkSize = 2000; // Set the desired chunk size
-  // const langChainDocs: string[] = [];
+  async function storeLangDocs(docs: LGCDocument<PageMetadata>[]) {
+    try {
+      const pineconeIndex = await getIndex();
+      await indexDocsInPinecone(docs, pineconeIndex, 'guides');
+      console.log('sucessfully indexed the docs in pinecone');
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // for (const content of guideContents) {
-  //   const chunks = content.match(new RegExp(`.{1,${chunkSize}}`, 'g'));
-  //   if (chunks) {
-  //     langChainDocs.push(...chunks);
-  //   }
-  // }
+  async function generateEmbeddingsAndStore(guideContents: LGCDocument<PageMetadata>[]) {
+    try {
+      const splittedDocs = await split(guideContents);
+      console.log('completed splitting docs -->: ', splittedDocs);
 
-  // console.log('LangChain Docs:', langChainDocs);
+      await storeLangDocs(splittedDocs);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // generateEmbeddingsAndStore(guideContents);
 
   // Step 3: Generate important points from the array of contents. We already have code for this.
 
-  const ImportantPoints = await generateImportantPoints(guideContents.join(' '));
-  console.log('importantPoints: ', ImportantPoints);
-
   // Step 4: If user gives direction, update the important points with the direction.
-
-  const direction = impermanentLossGuideDirections.split('\n');
-  const updatedImportantPoints = direction ? [...ImportantPoints, ...direction] : ImportantPoints;
 
   // Step 5: For each of the important points, go to pinecone and find the matching content
   // Step 6: Generate a summary of the matching content by giving all the matching content to the OpenAI API
+
+  async function getMatchingSummary(importantPoint: string) {
+    const contents: string[] = [];
+    const response = await getRelevantContent(importantPoint);
+    const docs = response;
+    docs.map((doc) => {
+      contents.push(doc.pageContent);
+    });
+    const summary = await createSummary(contents);
+    //  console.log(`this is the returned output for- ${importantPoint}: `,contents);
+
+    return summary;
+  }
+
   // Step 7: Do this for each of the important points
+
+  async function getAllSummaryAndQuestions(importantPoints: string[]) {
+    const finalSummaries: Array<string> = [];
+    await Promise.all(
+      importantPoints.map(async (importantPoint) => {
+        console.log('important point: ', importantPoint);
+        const summary = await getMatchingSummary(importantPoint);
+        finalSummaries.push(summary);
+        console.log(`summary for the important point: ${importantPoint} = ${summary}`);
+      })
+    );
+    // console.log('final summary: ', finalSummaries);
+    const allQuestions = await createImportantQuestions(finalSummaries);
+
+    console.log('list of questions: ', allQuestions);
+  }
+  getAllSummaryAndQuestions(importantPoints);
 
   // Step 8: Save all these new summaries of important points in a new array. This size of this array should be between 3-6
 

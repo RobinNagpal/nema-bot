@@ -77,8 +77,11 @@ async function generateQuestions(summary: string, numQuestions: number) {
     });
 
     const questions = response.data.choices[0].text?.trim();
-    console.log('generated questions: ', questions);
-    return questions;
+    const questionsArray = questions?.split('\n').map((question) => {
+      return question.replace(/^\d+\.\s*/, '');
+    });
+    console.log('generated questions: ', questionsArray);
+    return questionsArray;
   } catch (error) {
     console.error('Error:', error);
     throw error;
