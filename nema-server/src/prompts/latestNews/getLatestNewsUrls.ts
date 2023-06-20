@@ -9,12 +9,12 @@ interface SitemapUrl {
 }
 
 const urls = [
-  // 'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
+  'https://www.theblock.co/sitemap_tbco_index.xml', //post_type_post,post_type_chart, post_type_linked
   // "https://blockworks.co/news-sitemap-index.xml", // news-sitemap
   // 'https://www.coinbureau.com/sitemap_index.xml', //post-sitemap
   // 'https://coingape.com/sitemap_index.xml', //post-sitemap, post_tag
   // 'https://thedefiant.io/robots.txt', //post-sitemap
-  'https://www.coindesk.com/robots.txt', // news-sitemap-index, new-sitemap-index-es
+  // 'https://www.coindesk.com/robots.txt', // news-sitemap-index, new-sitemap-index-es
 ];
 
 function includeSitemap(sitemap: SitemapUrl): boolean {
@@ -36,14 +36,6 @@ function includeSitemap(sitemap: SitemapUrl): boolean {
   }
   if (url.startsWith('https://www.coindesk.com')) {
     return url.includes('news-sitemap-index') && !url.includes('news-sitemap-index-es');
-  }
-  return false;
-}
-function includeArticleUrl(sitemap: SitemapUrl): boolean {
-  const url = sitemap.loc[0];
-
-  if (url.startsWith('https://www.coindesk.com')) {
-    return !url.includes('/video/') && !url.includes('/podcast/') && !url.includes('/tv/') && !url.includes('/es/');
   }
   return false;
 }
@@ -123,7 +115,6 @@ async function getArticleUrls(sitemapUrl: string[]) {
               return lastmodDate.getTime() >= twentyFourHoursAgo;
             }
           })
-          .filter(includeArticleUrl)
           .map((filteredUrl) => {
             return filteredUrl.loc[0];
           });
@@ -143,16 +134,14 @@ export async function getArticleUrlsForSites(urls: string[]) {
 
   return await getArticleUrls(sitemapUrls);
 }
-export async function run() {
+async function run() {
   const sitemapUrls: string[] = await getSitemapUrls(urls);
 
   const articleUrls = await getArticleUrls(sitemapUrls);
 
-  console.log(articleUrls);
-
-  // for (const articleUrl of articleUrls) {
-  //   const contents = await getNewsContentsUsingCheerio(articleUrl);
-  // }
+  for (const articleUrl of articleUrls) {
+    const contents = await getNewsContentsUsingCheerio(articleUrl);
+  }
 }
 
 // run();

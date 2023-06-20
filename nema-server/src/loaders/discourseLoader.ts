@@ -2,8 +2,22 @@ import { PageMetadata } from '@/contents/projectsContents';
 import { split } from '@/loaders/splitter';
 import { Document as LGCDocument } from 'langchain/document';
 import puppeteer, { Browser, Page } from 'puppeteer';
+import fs from 'fs';
 
-// https://stackoverflow.com/a/53527984/440432
+interface Comment {
+  replyFullContent: string;
+  author: string;
+  date: string;
+}
+
+export interface DiscourseThread {
+  url: string;
+  postFullContent: string;
+  author: string;
+  date: string;
+  comments: Comment[];
+}
+
 export async function autoScroll(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await new Promise<void>((resolve) => {
@@ -23,7 +37,7 @@ export async function autoScroll(page: Page): Promise<void> {
   });
 }
 
-export async function getDiscoursePageDetails(browser: Browser, url: string) {
+export async function getDiscoursePageDetails(browser: Browser, url: string): Promise<DiscourseThread> {
   const page = await browser.newPage();
   await page.goto(url);
   await page.setViewport({
@@ -33,24 +47,54 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
 
   await autoScroll(page);
 
-  const content = await page.$eval('div.container.posts', (e) => e.textContent);
+  const postFullContent = (await page.$eval('.cooked', (e) => e.textContent)) as string;
+  const author = (await page.$eval('.username', (e) => e.textContent)) as string;
+  const date = (await page.$eval('.relative-date', (e) => e.textContent)) as string;
+
+  const commentElements = await page.$$('.topic-post');
+  const comments: Comment[] = [];
+
+  for (const commentElement of commentElements) {
+    const replyFullContent = (await commentElement.$eval('.cooked', (e) => e.textContent)) as string;
+    const author = (await commentElement.$eval('.username', (e) => e.textContent)) as string;
+    const date = (await commentElement.$eval('.relative-date', (e) => e.textContent)) as string;
+
+    comments.push({ replyFullContent, author, date });
+  }
 
   await page.close();
 
-  return content;
+  return {
+    url,
+    postFullContent,
+    author,
+    date,
+    comments,
+  };
 }
 
-// https://stackoverflow.com/a/55388485/440432
 async function getHrefs(page: Page, selector: string): Promise<string[]> {
-  return (await page.$$eval(selector, (anchors) => [].map.call(anchors, (a: HTMLAnchorElement) => a.href))) as string[];
+  const hrefs: string[] = [];
+  let continueScrolling = true;
+
+  while (continueScrolling) {
+    const newHrefs: string[] = (await page.$$eval(selector, (anchors) => [].map.call(anchors, (a: HTMLAnchorElement) => a.href))) as string[];
+    hrefs.push(...newHrefs);
+
+    if (hrefs.length >= 15) {
+      hrefs.length = 15;  // cut off any extras
+      continueScrolling = false;
+    } else {
+      await autoScroll(page);
+    }
+  }
+
+  return hrefs;
 }
 
-export interface DiscourseThread {
-  url: string;
-  contents: string;
-}
 async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
-  const browser = await puppeteer.launch();
+  console.log("Came to getAllthreads Function")
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(discourseUrl);
   await page.setViewport({
@@ -64,9 +108,9 @@ async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
 
   const allPageContents: DiscourseThread[] = [];
   for (const url of hrefs) {
-    const content = await getDiscoursePageDetails(browser, url);
-    console.log('content : ', content);
-    allPageContents.push({ url, contents: content || '' });
+    const threadDetails = await getDiscoursePageDetails(browser, url);
+    console.log('Thread Details:', threadDetails);
+    allPageContents.push(threadDetails);
   }
 
   await browser.close();
@@ -76,13 +120,35 @@ async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
 
 async function getAllDiscourseDocs(discourseUrl: string): Promise<LGCDocument<PageMetadata>[]> {
   const allPageContents = await getAllThreads(discourseUrl);
-
+  console.log("The Code Started ") ; 
   const docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[] = allPageContents.map(
-    (pageContent) =>
+    (threadDetails) =>
       new LGCDocument({
-        pageContent: pageContent.contents,
-        metadata: { source: pageContent.url, url: pageContent.url, fullContent: pageContent.contents },
+        pageContent: threadDetails.postFullContent,
+        metadata: {
+          source: threadDetails.url,
+          url: threadDetails.url,
+          fullContent: threadDetails.postFullContent,
+          author: threadDetails.author,
+          datePublished: threadDetails.date,
+          comments: threadDetails.comments.map(comment => ({
+            replyFullContent: comment.replyFullContent,
+            author: comment.author,
+            date: comment.date
+          }))
+        },
       })
   );
   return split(docs);
 }
+
+getAllDiscourseDocs('https://gov.uniswap.org/top')
+  .then((result) => {
+    fs.writeFileSync('output.json', JSON.stringify(result, null, 2));
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+
+   

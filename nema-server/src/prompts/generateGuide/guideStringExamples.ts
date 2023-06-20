@@ -7,9 +7,13 @@ https://medium.com/auditless/impermanent-loss-in-uniswap-v3-6c7161d3b445
 
 https://mymerlin.io/website/track-impermanent-loss-on-uniswap-v3/
 
+https://thedefiant.io/uniswap-v3-impermanent-loss
+
 https://docs.uniswap.org/contracts/v2/concepts/advanced-topics/understanding-returns
 
 https://www.flovtec.com/post/market-making-solution-to-impermanent-loss-problem-on-uniswap-v3
+
+https://www.shipyardsoftware.org/post/impermanent-loss-is-a-choice
 
 https://bdc.consulting/insights/options/integrating-options-are-an-effective-hedge
 `;
@@ -52,5 +56,3 @@ export const concentratedLiquidityGuideString = `
 
 export const concentratedLiquidityGuideDirections = `
 `;
-// https://thedefiant.io/uniswap-v3-impermanent-loss
-// https://www.shipyardsoftware.org/post/impermanent-loss-is-a-choice
