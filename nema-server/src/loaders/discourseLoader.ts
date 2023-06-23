@@ -80,26 +80,34 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
     height: 800,
   });
 
-  await autoScroll(page, 100000);
+  // await autoScroll(page, 100000);
 
-  const postSelector = 'div.topic-post.topic-owner div.cooked';
-  const commentSelector = '.topic-post .clearfix .regular > div.cooked';
-  const postContentFull = (await page.$eval(postSelector, (e) => e.textContent)) as string;
-  const commentContentFull = await page.$$eval(commentSelector, (e) => e.map((element) => element.textContent));
-  const author = (await page.$eval('.username', (e) => e.textContent)) as string;
-  const date = (await page.$eval('.relative-date', (e) => e.textContent)) as string;
+  const contentElement = await page.$('.regular.contents');
+  const postContentFull = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
+  const mainAuthorElement = await page.$('.first.username a') ;
+  const author =( mainAuthorElement ? await page.evaluate((element) => element.textContent, mainAuthorElement) : '') as string ;
 
-  const commentElements = await page.$$('.topic-post .clearfix .regular');
+  const mainDateElement =await page.$('.post-date [data-time]');
+  const date = (mainDateElement ? await page.evaluate((element) => element.getAttribute('title'), mainDateElement) : '') as string;
+
+  // Scrape comments
+  const commentElements = await page.$$('.topic-post.clearfix.regular');
   const comments: Comment[] = [];
 
-  for (const commentElement of commentElements) {
-    const replyFullContent = (await commentElement.$eval('.cooked', (e) => e.textContent)) as string;
-    const author = (await commentElement.$eval('.username', (e) => e.textContent)) as string;
-    const date = (await commentElement.$eval('.relative-date', (e) => e.textContent)) as string;
+  for (let i = 1; i < commentElements.length; i++) {
+    const commentElement = commentElements[i];
 
-    comments.push({ replyFullContent, author, date });
+    const authorElement = await commentElement.$('.first.username a');
+    const author = (await page.evaluate((element) => element!.textContent, authorElement)) as string;
+
+    const dateElement = await commentElement.$('.post-date [data-time]');
+    const date =( await page.evaluate((element) => element!.getAttribute('title'), dateElement)) as string;
+
+    const contentElement = await commentElement.$('.cooked');
+    const replyFullContent = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
+
+    comments.push({replyFullContent, author, date});
   }
-
   await page.close();
 
   return {
@@ -117,7 +125,7 @@ async function getHrefs(page: Page, selector: string): Promise<string[]> {
 
 async function getAllPosts(discourseUrl: string): Promise<DiscourseThread[]> {
   console.log('Came to getAllthreads Function');
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(discourseUrl);
   await page.setViewport({
@@ -130,7 +138,7 @@ async function getAllPosts(discourseUrl: string): Promise<DiscourseThread[]> {
   const hrefs: string[] = await getHrefs(page, 'tr.topic-list-item > td.main-link > span > a');
 
   const allPageContents: DiscourseThread[] = [];
-  const limitedHrefs = hrefs.slice(0, 1);
+  const limitedHrefs = hrefs.slice(0, 10);
 
   console.log('limitedHrefs: ', limitedHrefs.join('\n'));
   console.log('limitedHrefs length: ', limitedHrefs.length);
