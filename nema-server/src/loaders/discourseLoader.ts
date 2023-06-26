@@ -1,5 +1,6 @@
 import fs from 'fs';
 import puppeteer, { Browser, Page } from 'puppeteer';
+import unionBy from 'lodash/unionBy';
 
 interface Comment {
   replyFullContent: string;
@@ -50,26 +51,37 @@ export async function autoScroll(page: Page, totalHeightLimit: number): Promise<
   }, totalHeightLimit);
 }
 
-export async function scrollAndCapture(page: Page, selector: string): Promise<any[]> {
-  return await page.evaluate(async (selector) => {
-    return await new Promise<any[]>((resolve) => {
-      const matchingElements: any[] = [];
+export async function scrollAndCapture(page: Page): Promise<Comment[]> {
+  const commentWithDuplicates = await page.evaluate(async () => {
+    return await new Promise<Comment[]>((resolve) => {
+      const allComments: Comment[] = [];
       let totalHeight = 0;
       const distance = 100;
       const timer = setInterval(() => {
         const scrollHeight = document.body.scrollHeight;
         window.scrollBy(0, distance);
         totalHeight += distance;
+        const comments = document.querySelectorAll('.topic-post.clearfix.regular').values();
+        for (const comment of comments) {
+          const fullContent = comment.getElementsByClassName('cooked')[0].textContent;
+          const author = comment.getElementsByClassName('.first.username a')[0].textContent;
+          const date = comment.getElementsByClassName('.post-date [data-time]')[0].textContent;
+          allComments.push({
+            author: author || '',
+            date: date || '',
+            replyFullContent: fullContent || '',
+          });
+        }
 
-        const elements = document.querySelectorAll(selector);
-        // const matchingElements.push(elements.values())
         if (totalHeight >= scrollHeight - window.innerHeight) {
           clearInterval(timer);
-          resolve(matchingElements);
+          resolve(allComments);
         }
       }, 300);
     });
-  }, selector);
+  });
+  unionBy(commentWithDuplicates, 'replyFullContent');
+  return commentWithDuplicates;
 }
 
 export async function getDiscoursePostWithComments(browser: Browser, url: string): Promise<DiscourseThread> {
@@ -84,10 +96,10 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
 
   const contentElement = await page.$('.regular.contents');
   const postContentFull = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
-  const mainAuthorElement = await page.$('.first.username a') ;
-  const author =( mainAuthorElement ? await page.evaluate((element) => element.textContent, mainAuthorElement) : '') as string ;
+  const mainAuthorElement = await page.$('.first.username a');
+  const author = (mainAuthorElement ? await page.evaluate((element) => element.textContent, mainAuthorElement) : '') as string;
 
-  const mainDateElement =await page.$('.post-date [data-time]');
+  const mainDateElement = await page.$('.post-date [data-time]');
   const date = (mainDateElement ? await page.evaluate((element) => element.getAttribute('title'), mainDateElement) : '') as string;
 
   // Scrape comments
@@ -101,12 +113,12 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
     const author = (await page.evaluate((element) => element!.textContent, authorElement)) as string;
 
     const dateElement = await commentElement.$('.post-date [data-time]');
-    const date =( await page.evaluate((element) => element!.getAttribute('title'), dateElement)) as string;
+    const date = (await page.evaluate((element) => element!.getAttribute('title'), dateElement)) as string;
 
     const contentElement = await commentElement.$('.cooked');
     const replyFullContent = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
 
-    comments.push({replyFullContent, author, date});
+    comments.push({ replyFullContent, author, date });
   }
   await page.close();
 
