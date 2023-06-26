@@ -50,7 +50,6 @@ export async function autoScroll(page: Page, totalHeightLimit: number): Promise<
     });
   }, totalHeightLimit);
 }
-
 export async function scrollAndCapture(page: Page): Promise<Comment[]> {
   const commentWithDuplicates = await page.evaluate(async () => {
     return await new Promise<Comment[]>((resolve) => {
@@ -58,14 +57,29 @@ export async function scrollAndCapture(page: Page): Promise<Comment[]> {
       let totalHeight = 0;
       const distance = 100;
       const timer = setInterval(() => {
+        const comments = document.querySelectorAll('.topic-post.clearfix.regular');
         const scrollHeight = document.body.scrollHeight;
         window.scrollBy(0, distance);
         totalHeight += distance;
-        const comments = document.querySelectorAll('.topic-post.clearfix.regular').values();
-        for (const comment of comments) {
-          const fullContent = comment.getElementsByClassName('cooked')[0].textContent;
-          const author = comment.getElementsByClassName('.first.username a')[0].textContent;
-          const date = comment.getElementsByClassName('.post-date [data-time]')[0].textContent;
+       
+        const allComments = [];
+
+        for (let i = 0; i < comments.length; i++) {
+          const comment = comments[i];
+          const fullContentElement = comment.querySelector('.cooked');
+          const fullContent = fullContentElement ? fullContentElement.textContent : '';
+
+          const authorElement = comment.querySelector('.first.username a');
+          const author = authorElement ? authorElement.textContent : '';
+
+          const dateElement = comment.querySelector('.post-date [data-time]');
+          const date = dateElement ? dateElement.textContent : '';
+          const com= {
+            author: author || '',
+            date: date || '',
+            replyFullContent: fullContent || '',
+          }
+          console.log(com);
           allComments.push({
             author: author || '',
             date: date || '',
@@ -92,7 +106,8 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
     height: 800,
   });
 
-  // await autoScroll(page, 100000);
+  // const comments: Comment[] = []; 
+  
 
   const contentElement = await page.$('.regular.contents');
   const postContentFull = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
@@ -101,9 +116,9 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
 
   const mainDateElement = await page.$('.post-date [data-time]');
   const date = (mainDateElement ? await page.evaluate((element) => element.getAttribute('title'), mainDateElement) : '') as string;
-
+  await scrollAndCapture(page);
   // Scrape comments
-  const commentElements = await page.$$('.topic-post.clearfix.regular');
+   const commentElements = await page.$$('.topic-post.clearfix.regular');
   const comments: Comment[] = [];
 
   for (let i = 1; i < commentElements.length; i++) {
@@ -117,9 +132,11 @@ export async function getDiscoursePostWithComments(browser: Browser, url: string
 
     const contentElement = await commentElement.$('.cooked');
     const replyFullContent = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
-
+    
     comments.push({ replyFullContent, author, date });
   }
+  
+  
   await page.close();
 
   return {
@@ -150,7 +167,7 @@ async function getAllPosts(discourseUrl: string): Promise<DiscourseThread[]> {
   const hrefs: string[] = await getHrefs(page, 'tr.topic-list-item > td.main-link > span > a');
 
   const allPageContents: DiscourseThread[] = [];
-  const limitedHrefs = hrefs.slice(0, 10);
+  const limitedHrefs = hrefs.slice(0, 1);
 
   console.log('limitedHrefs: ', limitedHrefs.join('\n'));
   console.log('limitedHrefs length: ', limitedHrefs.length);
