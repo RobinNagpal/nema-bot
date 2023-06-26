@@ -1,11 +1,32 @@
-import { PageMetadata } from '@/contents/projectsContents';
-import { split } from '@/loaders/splitter';
-import { Document as LGCDocument } from 'langchain/document';
+import fs from 'fs';
 import puppeteer, { Browser, Page } from 'puppeteer';
+import unionBy from 'lodash/unionBy';
 
-// https://stackoverflow.com/a/53527984/440432
-export async function autoScroll(page: Page): Promise<void> {
-  await page.evaluate(async () => {
+interface Comment {
+  replyFullContent: string;
+  author: string;
+  date: string;
+}
+
+export interface DiscoursePost {
+  source: string;
+  url: string;
+  fullContent: string;
+  author: string;
+  datePublished: string;
+  comments: Comment[];
+}
+
+export interface DiscourseThread {
+  url: string;
+  postContentFull: string;
+  author: string;
+  date: string;
+  comments: Comment[];
+}
+
+export async function autoScroll(page: Page, totalHeightLimit: number): Promise<void> {
+  await page.evaluate(async (heightLimit) => {
     await new Promise<void>((resolve) => {
       let totalHeight = 0;
       const distance = 100;
@@ -14,16 +35,70 @@ export async function autoScroll(page: Page): Promise<void> {
         window.scrollBy(0, distance);
         totalHeight += distance;
 
-        if (totalHeight >= scrollHeight - window.innerHeight) {
+        console.log('totalHeight: ', totalHeight, 'heightLimit: ', heightLimit, 'scrollHeight: ', scrollHeight);
+
+        if (totalHeight >= heightLimit) {
           clearInterval(timer);
           resolve();
+        } else {
+          if (totalHeight >= scrollHeight - window.innerHeight) {
+            clearInterval(timer);
+            resolve();
+          }
+        }
+      }, 300);
+    });
+  }, totalHeightLimit);
+}
+export async function scrollAndCapture(page: Page): Promise<Comment[]> {
+  const commentWithDuplicates = await page.evaluate(async () => {
+    return await new Promise<Comment[]>((resolve) => {
+      const allComments: Comment[] = [];
+      let totalHeight = 0;
+      const distance = 100;
+      const timer = setInterval(() => {
+        const comments = document.querySelectorAll('.topic-post.clearfix.regular');
+        const scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+       
+        const allComments = [];
+
+        for (let i = 0; i < comments.length; i++) {
+          const comment = comments[i];
+          const fullContentElement = comment.querySelector('.cooked');
+          const fullContent = fullContentElement ? fullContentElement.textContent : '';
+
+          const authorElement = comment.querySelector('.first.username a');
+          const author = authorElement ? authorElement.textContent : '';
+
+          const dateElement = comment.querySelector('.post-date [data-time]');
+          const date = dateElement ? dateElement.textContent : '';
+          const com= {
+            author: author || '',
+            date: date || '',
+            replyFullContent: fullContent || '',
+          }
+          console.log(com);
+          allComments.push({
+            author: author || '',
+            date: date || '',
+            replyFullContent: fullContent || '',
+          });
+        }
+
+        if (totalHeight >= scrollHeight - window.innerHeight) {
+          clearInterval(timer);
+          resolve(allComments);
         }
       }, 300);
     });
   });
+  unionBy(commentWithDuplicates, 'replyFullContent');
+  return commentWithDuplicates;
 }
 
-export async function getDiscoursePageDetails(browser: Browser, url: string) {
+export async function getDiscoursePostWithComments(browser: Browser, url: string): Promise<DiscourseThread> {
   const page = await browser.newPage();
   await page.goto(url);
   await page.setViewport({
@@ -31,26 +106,55 @@ export async function getDiscoursePageDetails(browser: Browser, url: string) {
     height: 800,
   });
 
-  await autoScroll(page);
+  // const comments: Comment[] = []; 
+  
 
-  const content = await page.$eval('div.container.posts', (e) => e.textContent);
+  const contentElement = await page.$('.regular.contents');
+  const postContentFull = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
+  const mainAuthorElement = await page.$('.first.username a');
+  const author = (mainAuthorElement ? await page.evaluate((element) => element.textContent, mainAuthorElement) : '') as string;
 
+  const mainDateElement = await page.$('.post-date [data-time]');
+  const date = (mainDateElement ? await page.evaluate((element) => element.getAttribute('title'), mainDateElement) : '') as string;
+  await scrollAndCapture(page);
+  // Scrape comments
+   const commentElements = await page.$$('.topic-post.clearfix.regular');
+  const comments: Comment[] = [];
+
+  for (let i = 1; i < commentElements.length; i++) {
+    const commentElement = commentElements[i];
+
+    const authorElement = await commentElement.$('.first.username a');
+    const author = (await page.evaluate((element) => element!.textContent, authorElement)) as string;
+
+    const dateElement = await commentElement.$('.post-date [data-time]');
+    const date = (await page.evaluate((element) => element!.getAttribute('title'), dateElement)) as string;
+
+    const contentElement = await commentElement.$('.cooked');
+    const replyFullContent = (await page.evaluate((element) => element!.textContent, contentElement)) as string;
+    
+    comments.push({ replyFullContent, author, date });
+  }
+  
+  
   await page.close();
 
-  return content;
+  return {
+    url,
+    postContentFull,
+    author,
+    date,
+    comments,
+  };
 }
 
-// https://stackoverflow.com/a/55388485/440432
 async function getHrefs(page: Page, selector: string): Promise<string[]> {
   return (await page.$$eval(selector, (anchors) => [].map.call(anchors, (a: HTMLAnchorElement) => a.href))) as string[];
 }
 
-export interface DiscourseThread {
-  url: string;
-  contents: string;
-}
-async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
-  const browser = await puppeteer.launch();
+async function getAllPosts(discourseUrl: string): Promise<DiscourseThread[]> {
+  console.log('Came to getAllthreads Function');
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(discourseUrl);
   await page.setViewport({
@@ -58,15 +162,20 @@ async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
     height: 800,
   });
 
-  await autoScroll(page);
+  await autoScroll(page, 600);
 
   const hrefs: string[] = await getHrefs(page, 'tr.topic-list-item > td.main-link > span > a');
 
   const allPageContents: DiscourseThread[] = [];
-  for (const url of hrefs) {
-    const content = await getDiscoursePageDetails(browser, url);
-    console.log('content : ', content);
-    allPageContents.push({ url, contents: content || '' });
+  const limitedHrefs = hrefs.slice(0, 1);
+
+  console.log('limitedHrefs: ', limitedHrefs.join('\n'));
+  console.log('limitedHrefs length: ', limitedHrefs.length);
+
+  for (const url of limitedHrefs) {
+    const threadDetails = await getDiscoursePostWithComments(browser, url);
+    console.log('Thread Details:', threadDetails);
+    allPageContents.push(threadDetails);
   }
 
   await browser.close();
@@ -74,15 +183,32 @@ async function getAllThreads(discourseUrl: string): Promise<DiscourseThread[]> {
   return allPageContents;
 }
 
-async function getAllDiscourseDocs(discourseUrl: string): Promise<LGCDocument<PageMetadata>[]> {
-  const allPageContents = await getAllThreads(discourseUrl);
-
-  const docs: LGCDocument<Omit<PageMetadata, 'chunk'>>[] = allPageContents.map(
-    (pageContent) =>
-      new LGCDocument({
-        pageContent: pageContent.contents,
-        metadata: { source: pageContent.url, url: pageContent.url, fullContent: pageContent.contents },
-      })
+async function getAllDiscourseDocs(discourseUrl: string): Promise<DiscoursePost[]> {
+  const allPageContents = await getAllPosts(discourseUrl);
+  console.log('All Page Contents Length:', allPageContents.length);
+  console.log('All Page Contents URLs:', allPageContents.map((c) => c.url).join('\n'));
+  console.log('The Code Started ');
+  const docs: DiscoursePost[] = allPageContents.map(
+    (threadDetails: DiscourseThread): DiscoursePost => ({
+      source: threadDetails.url,
+      url: threadDetails.url,
+      fullContent: threadDetails.postContentFull,
+      author: threadDetails.author,
+      datePublished: threadDetails.date,
+      comments: threadDetails.comments.map((comment) => ({
+        replyFullContent: comment.replyFullContent,
+        author: comment.author,
+        date: comment.date,
+      })),
+    })
   );
-  return split(docs);
+  return docs;
 }
+
+getAllDiscourseDocs('https://gov.uniswap.org/top')
+  .then((result) => {
+    fs.writeFileSync('output.json', JSON.stringify(result, null, 2));
+  })
+  .catch((error) => {
+    console.error(error);
+  });
