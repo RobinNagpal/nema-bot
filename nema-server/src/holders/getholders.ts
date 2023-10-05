@@ -1,119 +1,91 @@
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
 
-console.log("Script started");
-const INFURA_ID_KEY = "186d5309014940108be371528b7595d2";
-const TOKENS = ["AAVE", "COMP", "UNI"];
+const INFURA_ID_KEY = '186d5309014940108be371528b7595d2';
+const TOKENS = ['AAVE', 'COMP', 'UNI'];
 const n = 2;
-const ABI = [
-  "event Transfer(address indexed from, address indexed to, uint256 value)",
-];
-const provider = new ethers.InfuraProvider("homestead", INFURA_ID_KEY);
-
-async function getHolders(contractAddress: string): Promise<string[]> {
+const ABI = ['event Transfer(address indexed from, address indexed to, uint256 value)'];
+const provider = new ethers.InfuraProvider('homestead', INFURA_ID_KEY);
+interface token {
+  tokenName: string;
+  amount: bigint;
+}
+interface holderInfo {
+  holderAddress: string;
+  tokens: token[];
+}
+const holderMaps: Map<string, { tokenName: string; amount: bigint }[]> = new Map();
+async function getHolders(contractAddress: string, tokenName: string): Promise<void> {
   try {
     const contract = new ethers.Contract(contractAddress, ABI, provider);
-
-    
     let currentBlock = await provider.getBlockNumber();
-    let logs: (ethers.Log | ethers.EventLog)[]= []; 
+    let logs: any[] = [];
+    const MAX_LOGS = 1000;
 
-    const MAX_LOGS = 1000; 
-    console.log(logs) ; 
     while (logs.length < MAX_LOGS) {
       const previousBlock = currentBlock - 1000;
-      const newLogs = await contract.queryFilter(
-        contract.filters.Transfer(null, null),
-        previousBlock,
-        currentBlock
-      );
+      const newLogs = await contract.queryFilter(contract.filters.Transfer(null, null), previousBlock, currentBlock);
       logs = [...logs, ...newLogs];
-      console.log(logs);
-      if (newLogs.length === 0) break; 
+
+      if (newLogs.length === 0) break;
       currentBlock = previousBlock - 1;
     }
 
-    const holderMap: Map<string, bigint> = new Map();
-
     for (const log of logs) {
-      const logDescription = contract.interface.parseLog(log as any);
-      if (logDescription !== null) {
+      const logDescription = contract.interface.parseLog(log);
+      if (logDescription) {
         const args = logDescription.args;
-        const sender = args.from;
         const recipient = args.to;
-        const value = BigInt(args.value.toString());
-        const senderBalance: bigint = holderMap.get(sender) || 0n;
-        holderMap.set(sender, senderBalance - value);
+        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+        const value: bigint = BigInt(args.value.toString());
 
-        const recipientBalance: bigint = holderMap.get(recipient) || 0n;
-        holderMap.set(recipient, recipientBalance + value);
+        const holderData = holderMaps.get(recipient) || [];
+        const tokenData = holderData.find((data) => data.tokenName === tokenName);
+        if (tokenData) {
+          tokenData.amount += value;
+        } else {
+          holderData.push({ tokenName, amount: value });
+        }
+
+        holderMaps.set(recipient, holderData);
       } else {
-        console.error("Failed to parse log");
+        console.error('Failed to parse log');
       }
     }
-
-    const topHolders = [...holderMap.entries()]
-      .sort((a, b) => Number(b[1] - a[1]))
-      .slice(0, 1000)
-      .map((entry) => entry[0]);
-
-    return topHolders;
   } catch (error) {
-    console.error(`Failed to fetch holders: `);
-    throw error;
+    console.error(`Failed to fetch holders: `, error);
   }
 }
-
 
 const getContractAddress = (tokenSymbol: string) => {
   const tokenAddresses: { [key: string]: string } = {
-    aave: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-    uni: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-    comp: "0xc00e94Cb662C3520282E6f5717214004A7f26888",
+    aave: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+    uni: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    comp: '0xc00e94Cb662C3520282E6f5717214004A7f26888',
   };
+
   return tokenAddresses[tokenSymbol.toLowerCase()];
 };
+function findEligibleHolders(): holderInfo[] {
+  const eligibleHolders: holderInfo[] = [];
 
-function findEligibleHolders(
-  holderMaps: Map<string, number>[],
-  n: number
-): string[] {
-  const totalCount: Map<string, number> = new Map();
-
-  for (const holderMap of holderMaps) {
-    for (const [holder, count] of holderMap.entries()) {
-      totalCount.set(holder, (totalCount.get(holder) || 0) + count);
+  for (const [holder, tokens] of holderMaps.entries()) {
+    if (tokens.length >= n) {
+      const dataOfHolder: holderInfo = {
+        holderAddress: holder,
+        tokens: tokens,
+      };
+      eligibleHolders.push(dataOfHolder);
     }
   }
-
-  const eligibleHolders: string[] = [];
-
-  for (const [holder, count] of totalCount.entries()) {
-    if (count >= n) {
-      eligibleHolders.push(holder);
-    }
-  }
-
   return eligibleHolders;
 }
-
 async function main() {
-  const holderMaps: Map<string, number>[] = [];
-  let i = 0;
   for (const token of TOKENS) {
     const contractAddress = getContractAddress(token);
-    console.log(contractAddress);
-    const holders = await getHolders(contractAddress);
-    console.log(i);
-    i++;
-    const holderMap: Map<string, number> = new Map();
-    holders.forEach((holder) =>
-      holderMap.set(holder, (holderMap.get(holder) || 0) + 1)
-    );
-    holderMaps.push(holderMap);
+    await getHolders(contractAddress, token);
   }
-
-  const eligibleHolders = findEligibleHolders(holderMaps, n);
-  console.log(eligibleHolders);
+  const eligibleHolders = findEligibleHolders();
+  console.log(eligibleHolders.length);
 }
 
 main();
